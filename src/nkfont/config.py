@@ -12,7 +12,7 @@ BUILD_DIR = ROOT / "build"
 DIST_DIR = ROOT / "dist"
 
 # Reserved Font Names of upstream fonts; they must never appear in our names.
-RESERVED_NAMES = ("Source", "Pretendard", "Plex")
+RESERVED_NAMES = ("Source", "Pretendard", "Plex", "NeoDunggeunmo", "둥근모")
 
 
 def _load(path: Path) -> dict:

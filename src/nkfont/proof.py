@@ -19,13 +19,13 @@ SAMPLE = [
 ]
 
 
-def _pil_font(font: TTFont | Path, size: int) -> ImageFont.FreeTypeFont:
+def _pil_font(font: TTFont | Path, size: int, **kwargs) -> ImageFont.FreeTypeFont:
     if isinstance(font, TTFont):
         buf = io.BytesIO()
         font.save(buf)
         buf.seek(0)
-        return ImageFont.truetype(buf, size)
-    return ImageFont.truetype(str(font), size)
+        return ImageFont.truetype(buf, size, **kwargs)
+    return ImageFont.truetype(str(font), size, **kwargs)
 
 
 def render(fonts: list[tuple[str, TTFont | Path]], size: int = 28, lines=SAMPLE) -> Image.Image:

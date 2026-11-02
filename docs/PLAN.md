@@ -1,6 +1,6 @@
 # [기획서] nk-nerd-font: 터미널 완벽 호환 한글 Nerd Font (Sans · Serif · Pixel)
 
-> 문서 상태: v0.3 (2026-11-02) · 패밀리명 NK 확정, 빌드 도구·조절 도구 반영 · 원본: `nerd_font.md`(가칭 K-Mono Nerd Font) 개정판
+> 문서 상태: v0.4 (2026-11-02) · 결정 사항 확정(§10), 테스트 자동화 CLI 반영([TESTING.md](TESTING.md)) · 원본: `nerd_font.md`(가칭 K-Mono Nerd Font) 개정판
 > 레포: `naturalkei/nk-font-r1` · 라이선스: SIL OFL 1.1 (아이콘 세트는 별도 고지, §7 참고)
 
 ---
@@ -58,10 +58,10 @@ Starship, zsh(Oh My Zsh / Powerlevel10k), iTerm2, Linux 터미널(GNOME Terminal
 
 | 가족 | 영문 베이스 | 한글 베이스 | 비고 |
 | --- | --- | --- | --- |
-| **Sans** | **JetBrains Mono** (OFL, RFN 없음, UPM 1000, 폭 600, 글리프 1,754, `calt` 포함, 8 weight + italic) | **본고딕 KR** Source Han Sans KR (OFL, RFN `Source`, UPM 1000, CFF, 한글 advance 920, `ljmo/vjmo/tjmo` 포함, 7 weight) | 추천 조합. 대안 영문: Geist Mono (OFL, RFN 없음) |
+| **Sans** (확정) | **JetBrains Mono** (OFL, RFN 없음, UPM 1000, 폭 600, 글리프 1,754, `calt` 포함, 8 weight + italic) | **본고딕 KR** Source Han Sans KR (OFL, RFN `Source`, UPM 1000, CFF, 한글 advance 920, `ljmo/vjmo/tjmo` 포함, 7 weight) | 추천 조합. 대안 영문: Geist Mono (OFL, RFN 없음) |
 | Sans 대안 | 〃 | Pretendard (OFL, RFN `Pretendard` + `Source`, UPM 2048, CFF, 한글 1770, **U+1100 자모 없음**) | Pretendard 한글은 본고딕 파생이라 이점이 작고 UPM 변환이 추가됨 → 비추천 |
 | **Serif** | IBM Plex Mono (OFL, RFN `Plex`, 슬랩 세리프, 7 weight + italic) | 본명조 KR Source Han Serif KR (OFL, RFN `Source`) | 명조 가로획이 얇아 10~12pt에서 사라질 수 있음 → weight를 한 단계 올려 매핑(예: 영문 Regular ↔ 한글 Medium) 검토. Plex Mono UPM·폭은 착수 시 실측 필요 |
-| **Pixel** | (단일 소스 권장, §2.3) | NeoDunggeunmo Code (Neo둥근모 코드, 16px 격자) 또는 Galmuri Mono (갈무리, OFL 확인됨, 11/9/7px) | 픽셀 폰트는 한·영이 **같은 픽셀 격자**여야 하므로 서로 다른 폰트를 스케일 병합하지 않음. Neo둥근모 라이선스는 착수 시 원문 확인 필요 |
+| **Pixel** | (단일 소스, §2.3) | **Neo둥근모 Code로 확정** (16px 격자, OFL 1.1, RFN `Neo둥근모`·`Neo둥근모 Code`·`NeoDunggeunmo Code`). 대안: 갈무리 (OFL, RFN 없음, 11/9/7px) | 픽셀 폰트는 한·영이 **같은 픽셀 격자**여야 하므로 서로 다른 폰트를 스케일 병합하지 않음. Neo둥근모는 비트맵 원본 소스가 공개되어 있어 픽셀 마스터로 쓰기 좋음 |
 
 ### 2.3 Pixel 가족 원칙
 * **격자:** 반각 8×16px / 전각 16×16px을 기본으로 합니다. GNU Unifont와 같은 규격이라 마인크래프트 `unihex` 포맷, Linux BDF/PCF와 그대로 호환됩니다. 작은 크기용으로 11px(갈무리 계열) 변형을 추가로 검토합니다.
@@ -191,7 +191,7 @@ def enforce_terminal_flags(path: str) -> None:
 ### 6.1 자동 검사 (CI에서 매 빌드)
 1. **폭 전수 검사:** `cmap`의 모든 코드포인트에 대해 Python `wcwidth` 결과(0/1/2)와 advance(0/600/1200)가 일치하는지 확인
 2. **메트릭 검사:** `usWin* ≥ bbox`, `hhea == Typo`, `lineGap == 0`, `isFixedPitch == 1`, `xAvgCharWidth == 600`, Panose `2 / … / 9`
-3. **이름 검사:** RFN 단어(`Source`, `Pretendard`, `Plex`)가 name 테이블·파일명에 없는지
+3. **이름 검사:** RFN 단어(`Source`, `Pretendard`, `Plex`, `Neo둥근모`, `NeoDunggeunmo`)가 name 테이블·파일명에 없는지
 4. **OpenType 보존:** 영문 베이스와 결과물의 GSUB feature 목록 비교 (`calt` 등 누락 여부)
 5. **Font Bakery** `universal` 프로파일
 6. 동일 입력 → 동일 출력(재현 빌드): `head.created/modified` 고정, 업스트림 폰트와 패처 이미지 버전·SHA256 고정
@@ -224,7 +224,7 @@ def enforce_terminal_flags(path: str) -> None:
 | Pretendard | OFL 1.1 | `Pretendard`, `Source` (본고딕 파생) |
 | IBM Plex Mono | OFL 1.1 | `Plex` |
 | 갈무리 (Galmuri) | OFL 1.1 | 없음 (원문 확인) |
-| Neo둥근모 / Neo둥근모 Code | OFL 1.1로 알려짐 | **착수 시 원문 확인 필요** |
+| Neo둥근모 / Neo둥근모 Code | OFL 1.1 (원문 확인) | `Neo둥근모`, `Neo둥근모 Code`, `NeoDunggeunmo Code` |
 
 ### 7.2 준수 사항
 * 패밀리명·파일명·PostScript명에 RFN 단어를 쓰지 않습니다. RFN이 없는 폰트도 혼동을 피하려고 이름을 바꿉니다("JetBrains"는 상표이기도 함).
@@ -287,13 +287,16 @@ Pixel 가족 단계에서 `pixel-src/`(픽셀 마스터)와 `examples/`(마인�
 
 ---
 
-## 10. 결정이 필요한 사항
+## 10. 결정 사항 (2026-11-02 확정)
 
-1. ~~패밀리명~~ → **NK Sans / NK Serif / NK Pixel로 확정** (2026-11-02)
-2. Sans 한글 베이스: 본고딕 KR(추천) vs Pretendard
-3. Pixel 베이스: Neo둥근모 Code(16px, Unifont·마인크래프트 격자와 일치) vs 갈무리(11px 중심)
-4. 로드맵 순서: Pixel(M3) → Serif(M4) 순서 유지 여부
-5. 업스트림 폰트를 레포에 커밋하지 않고 CI에서 내려받는 방식 동의 여부
+| 항목 | 결정 |
+| --- | --- |
+| 패밀리명 | NK Sans / NK Serif / NK Pixel, 저작권 `Copyright 2026 naturalk (nk-font)` |
+| Sans 한글 베이스 | 본고딕 KR (Source Han Sans KR) |
+| Pixel 베이스 | Neo둥근모 Code (OFL 1.1, RFN 확인: 이름에 `Neo둥근모`·`NeoDunggeunmo` 사용 금지) |
+| 로드맵 순서 | M3 Pixel → M4 Serif |
+| 업스트림 폰트 | 레포에 커밋하지 않고 `sources.lock`으로 고정해 내려받음 |
+| 라이선스 | 폰트 OFL 1.1, 빌드 도구 코드(`src/`, `tests/`) MIT |
 
 ---
 

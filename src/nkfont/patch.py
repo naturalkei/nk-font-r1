@@ -9,6 +9,7 @@ from pathlib import Path
 from fontTools.ttLib import TTFont
 
 from . import config
+from .build import save_reproducible
 from .flags import enforce_terminal_flags, fit_terminal_widths
 from .merge import half_width
 
@@ -44,6 +45,6 @@ def patch(masters: list[Path], out_dir: Path | None = None) -> list[Path]:
             fit_terminal_widths(font, half)
             enforce_terminal_flags(font, half, hhea.ascent, hhea.descent)
             dest = out_dir / f.name
-            font.save(dest)
+            save_reproducible(font, dest)
             results.append(dest)
     return results

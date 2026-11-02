@@ -40,6 +40,37 @@ def check_widths(font: TTFont) -> list[str]:
     return problems
 
 
+def is_pua(cp: int) -> bool:
+    return 0xE000 <= cp <= 0xF8FF or 0xF0000 <= cp <= 0x10FFFF
+
+
+def check_overflow(
+    font: TTFont, inherited: set[int] | None = None, tolerance: float = 0.05
+) -> tuple[list[str], list[str]]:
+    """Ink that leaves its cell overlaps the neighbouring character in a terminal.
+
+    Returns (errors, warnings). Glyphs we added are errors. Code points in `inherited` (from the
+    Latin base, or added by the Nerd Fonts patcher whose non-Mono variant overhangs on purpose)
+    and PUA icons are warnings.
+    """
+    glyf, hmtx = font["glyf"], font["hmtx"]
+    errors, warnings = [], []
+    for cp, name in sorted(font.getBestCmap().items()):
+        g = glyf[name]
+        adv = hmtx[name][0]
+        if adv == 0 or getattr(g, "numberOfContours", 0) == 0:
+            continue
+        if not hasattr(g, "xMin"):
+            g.recalcBounds(glyf)
+        tol = adv * tolerance
+        if g.xMin >= -tol and g.xMax <= adv + tol:
+            continue
+        msg = f"U+{cp:04X} ink {g.xMin}..{g.xMax} outside cell 0..{adv}"
+        theirs = inherited is not None and cp in inherited
+        (warnings if theirs or is_pua(cp) else errors).append(msg)
+    return errors, warnings
+
+
 def check_metrics(font: TTFont) -> list[str]:
     os2, hhea, post = font["OS/2"], font["hhea"], font["post"]
     half = half_width(font)
@@ -84,9 +115,22 @@ def check_features(font: TTFont, base: TTFont) -> list[str]:
     return [f"GSUB feature lost: {t}" for t in sorted(missing)]
 
 
-def run_all(font: TTFont, base: TTFont | None = None) -> dict[str, list[str]]:
+def inherited_codepoints(
+    font: TTFont, base: TTFont | None, own: set[int] | None = None
+) -> set[int] | None:
+    """Code points not added by us: everything except `own` if given, else the base's cmap."""
+    if own is not None:
+        return set(font.getBestCmap()) - own
+    return set(base.getBestCmap()) if base is not None else None
+
+
+def run_all(
+    font: TTFont, base: TTFont | None = None, own: set[int] | None = None
+) -> dict[str, list[str]]:
+    """`own`: code points we import (master cmap minus Latin base); improves overflow triage."""
     result = {
         "widths": check_widths(font),
+        "overflow": check_overflow(font, inherited_codepoints(font, base, own))[0],
         "metrics": check_metrics(font),
         "names": check_names(font),
     }

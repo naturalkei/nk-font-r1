@@ -3,11 +3,13 @@ name = "nkfont"
 version = "0.1.0"
 description = "Build pipeline for nk-nerd-font (NK Sans / NK Serif / NK Pixel)"
 requires-python = ">=3.11"
-license = "OFL-1.1"
+license = "MIT"  # build tooling; the fonts themselves are OFL-1.1 (OFL.txt)
+# Exact pins: fontTools affects output bytes (reproducible builds), wcwidth is the terminal width
+# table the checks enforce, Pillow (bundled FreeType) affects golden-image renders.
 dependencies = [
-  "fonttools[woff]>=4.53",
-  "wcwidth>=0.2.13",
-  "pillow>=10.0",
+  "fonttools[woff]==4.68.0",
+  "wcwidth==0.9.4",
+  "pillow==13.0.0",
 ]
 
 [project.optional-dependencies]

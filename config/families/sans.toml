@@ -12,6 +12,9 @@ scale = 0.96
 dy = -10
 # Horizontal placement inside the full-width cell: "advance" keeps the source spacing centered.
 center = "advance"
+# Imported ink may use at most this share of its cell width; wider source glyphs (Source Han
+# Sans "halfwidth" jamo are 920 wide) are shrunk uniformly to fit.
+fit = 0.92
 
 [[weight]]
 name = "Regular"

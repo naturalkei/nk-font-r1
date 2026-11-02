@@ -29,6 +29,7 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 
 ### M0 기반 구축 (완료, 2026-11)
 * 기획안, 빌드 도구 `nkfont`(fetch / build / patch / check / proof / tune), CI, 개발 컨테이너, Claude 스킬
+* 테스트 자동화 CLI `nkfont qa`(프로필 quick / ci / release), 재현 빌드, 골든 이미지 회귀 검사, `nkfont diff` ([TESTING.md](TESTING.md))
 * NK Sans Regular·Bold 빌드와 Nerd Font·Nerd Font Mono 패치가 QA 전 항목 통과
 
 ### M1 NK Sans 알파 (약 3주)
@@ -47,7 +48,7 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 * **완료 기준:** §1 표 전체 충족, `v1.0.0` 릴리스
 
 ### M3 NK Pixel (약 6주)
-* 16×16 픽셀 마스터 (Neo둥근모 Code 또는 갈무리 기반, 라이선스 원문 확인 후 확정)
+* 16×16 픽셀 마스터 (Neo둥근모 Code 기반으로 확정, OFL 1.1, RFN 때문에 이름은 NK Pixel 유지)
 * 출력: TTF, BDF/PCF, 마인크래프트 리소스팩(unihex), BMFont, 테라리아 XNB
 * 예제 팩과 게임 내 스크린샷, 사이트에 Pixel 전용 섹션
 * Starship·Powerline에 자주 쓰는 아이콘 50~100개 픽셀 리드로잉
@@ -96,6 +97,7 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 | 트랙 | M1 | M2 | M3 | M4 |
 | --- | --- | --- | --- | --- |
 | 타입 디자인 | 스케일·weight 확정 | 규칙 기반 미세 조절, 이탤릭 | 픽셀 마스터, 아이콘 리드로잉 | 명조 weight 보정 |
+| 테스트 자동화 | 골든 이미지 weight 전체로 확대, 렌더링 환경 고정 | 실제 터미널 스크린샷 자동화(Xvfb + kitty/Alacritty/WezTerm) | 게임 포맷 검증기(unihex, BMFont 파서) | Serif 골든 추가 |
 | 엔지니어링 | 8 weight, 힌팅 실험 | 렌더링 교정, 웹폰트 분할 | 비트맵·게임 포맷 출력기 | Serif 파이프라인 |
 | 조절 도구 | T1 개선 | T2 웹 UI | 픽셀 격자 편집 보조 | |
 | 사이트 | 와이어프레임 | 1차 공개 | Pixel 섹션 | 가족 비교 |
@@ -116,6 +118,6 @@ Starship(Nerd Font Symbols 프리셋), zsh + Powerlevel10k, iTerm2, macOS Termin
 | 본고딕 한글을 그대로 쓰면 1200 셀 안에서 작고 성기게 보임 | M1에서 스케일 범위를 교정 시트로 확정, M2에서 규칙 기반 보정. 그래도 부족하면 M5에 고정폭 최적화 한글(자소 폭 재설계) 검토 |
 | ttfautohint가 한글을 잘 처리하지 못할 수 있음 | 한글 무힌팅 + 영문 원본 힌팅 유지안을 기본 대안으로 둠 |
 | Nerd Fonts 아이콘 라이선스 혼재 | 세트별 고지(`LICENSES/`, `NOTICE`), "100% OFL" 표기 금지 |
-| 픽셀 베이스 폰트 라이선스 불명확 | 원문 확인 전에는 M3 착수하지 않음, 대안 후보 유지 |
+| 픽셀 베이스 RFN | Neo둥근모 RFN(`Neo둥근모`, `NeoDunggeunmo Code`)을 이름 검사 목록에 추가해 CI가 막음 |
 | 게임 쪽 폰트 교체 방식이 버전마다 바뀜 | 지원 버전을 명시하고 예제 팩에 버전 표기 |
 | 혼자 진행하는 일정 | 마일스톤마다 릴리스 가능한 결과물을 두어 중간에 멈춰도 쓸 수 있게 함 |

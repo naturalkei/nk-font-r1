@@ -19,10 +19,11 @@ make patch          # Docker로 Nerd Fonts 패치 (nerdfonts/patcher)
 make check proof    # 터미널 호환 검사 + 교정 시트
 make tune           # 한글 스케일 비교 시트
 make test lint
+make qa             # 테스트 자동화: 린트·테스트·빌드·검사·재현성·골든 이미지 (docs/TESTING.md)
 ```
 VS Code/Codespaces는 `.devcontainer/`를 쓰면 FontForge, ttfautohint, Docker까지 준비됩니다.
 
 ## 라이선스
 폰트: SIL Open Font License 1.1 ([OFL.txt](OFL.txt)). 업스트림 Reserved Font Name(`Source` 등)은
-이름에 쓰지 않습니다. Nerd Fonts 아이콘은 세트별 라이선스를 따릅니다. 빌드 도구(`src/nkfont`) 코드의 라이선스는 아직 정하지
-않았습니다(MIT 제안).
+이름에 쓰지 않습니다. Nerd Fonts 아이콘은 세트별 라이선스를 따릅니다. 빌드 도구 코드(`src/`, `tests/`)는 MIT
+([LICENSE](LICENSE))입니다.

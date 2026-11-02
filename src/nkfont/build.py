@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from fontTools.ttLib import TTFont
@@ -11,11 +12,34 @@ from .flags import enforce_terminal_flags, fit_terminal_widths
 from .merge import HangulParams, half_width, merge_hangul
 from .names import set_names
 
+# Seconds between 1904-01-01 (OpenType epoch) and 1970-01-01 (Unix epoch).
+MAC_EPOCH_OFFSET = 2082844800
+
+
+def save_reproducible(font: TTFont, path: Path) -> None:
+    """Save with fixed timestamps so identical inputs give byte-identical fonts.
+
+    Uses SOURCE_DATE_EPOCH when set (reproducible-builds convention), otherwise keeps the Latin
+    base's `head.created`.
+    """
+    head = font["head"]
+    epoch = os.environ.get("SOURCE_DATE_EPOCH")
+    if epoch is not None:
+        stamp = int(epoch) + MAC_EPOCH_OFFSET
+        head.created = head.modified = stamp
+    else:
+        head.modified = head.created
+    font.recalcTimestamp = False
+    font.save(path)
+
 
 def hangul_params(fam: dict, **override) -> HangulParams:
     h = {**fam.get("hangul", {}), **override}
     return HangulParams(
-        scale=h.get("scale", 0.96), dy=h.get("dy", 0), center=h.get("center", "advance")
+        scale=h.get("scale", 0.96),
+        dy=h.get("dy", 0),
+        center=h.get("center", "advance"),
+        fit=h.get("fit", 0.92),
     )
 
 
@@ -44,6 +68,6 @@ def build_family(name: str, out_dir: Path | None = None, only: str | None = None
             continue
         font = build_master(fam, weight)
         path = out_dir / f"{fam['file_prefix']}-{weight['name'].replace(' ', '')}.ttf"
-        font.save(path)
+        save_reproducible(font, path)
         outputs.append(path)
     return outputs
