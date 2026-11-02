@@ -16,7 +16,14 @@ LICENSE_URL = "https://openfontlicense.org"
 RIBBI = {"Regular", "Bold", "Italic", "Bold Italic"}
 
 
-def set_names(font: TTFont, family: str, style: str, version: str, weight_class: int) -> None:
+def set_names(
+    font: TTFont,
+    family: str,
+    style: str,
+    version: str,
+    weight_class: int,
+    copyright: str = COPYRIGHT,
+) -> None:
     for word in RESERVED_NAMES:
         if word.lower() in family.lower():
             raise ValueError(f"family name contains reserved font name {word!r}")
@@ -29,7 +36,7 @@ def set_names(font: TTFont, family: str, style: str, version: str, weight_class:
         legacy_family, legacy_style = f"{family} {style}", "Regular"
 
     names = {
-        0: COPYRIGHT,
+        0: copyright,
         1: legacy_family,
         2: legacy_style,
         3: f"{version};NK;{ps_family}-{ps_style}",

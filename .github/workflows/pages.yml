@@ -1,0 +1,65 @@
+name: pages
+
+# Builds all three families, Nerd-patches them, assembles the prototype site and deploys it to
+# GitHub Pages. Repository setting needed once: Settings -> Pages -> Source: "GitHub Actions".
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_DATE_EPOCH: "1798761600"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e .
+      - uses: actions/cache@v4
+        with:
+          path: sources
+          key: sources-${{ hashFiles('sources.lock') }}
+      - run: nkfont fetch
+      - name: Build masters (sans, serif, pixel)
+        run: |
+          nkfont build sans
+          nkfont build serif
+          nkfont build pixel
+      - name: Nerd Fonts patch (nf + nfm)
+        run: nkfont patch
+      - name: Check every shipped font
+        run: |
+          nkfont check build/master/NKSans-*.ttf dist/NKSans*.ttf --base sources/JetBrainsMono-Regular.ttf --master build/master/NKSans-Regular.ttf
+          nkfont check build/master/NKSerif-*.ttf dist/NKSerif*.ttf --base sources/IBMPlexMono-Regular.ttf --master build/master/NKSerif-Regular.ttf
+          nkfont check build/master/NKPixel-*.ttf dist/NKPixel*.ttf --base sources/neodgm_code.ttf --master build/master/NKPixel-Regular.ttf
+      - name: Assemble site
+        run: nkfont site
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
