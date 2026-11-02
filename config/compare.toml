@@ -2,6 +2,11 @@
 # `nkfont site` measures every font listed here from its real outlines and writes compare.json.
 # Reference fonts are served unmodified (WOFF2 re-wrap) with their license; never merged.
 
+# NK families compared, first = shown by default. Only terminal (fixed-width) families are
+# measured; proportional reading faces (kind = "text") are skipped. NK Mono is the terminal face,
+# so it leads; NK Sans stays listed only while it is still a fixed-width prototype.
+nk_order = ["mono", "sans", "serif", "pixel"]
+
 [[reference]]
 id = "jetbrains-mono"
 name = "JetBrains Mono"

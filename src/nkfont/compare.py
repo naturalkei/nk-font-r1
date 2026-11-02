@@ -403,8 +403,10 @@ def build_compare(out: Path, nk_fonts: dict[str, dict], root: Path = config.ROOT
     cfg = load_compare_config(root)
     mcfg, groups = cfg["metrics"], cfg["group"]
     srcs = config.sources(root)
+    order = cfg.get("nk_order", [])
+    rank = {fid: i for i, fid in enumerate(order)}
     fonts = []
-    for fid, info in nk_fonts.items():
+    for fid, info in sorted(nk_fonts.items(), key=lambda kv: rank.get(kv[0], len(order))):
         entry = {"id": fid, "name": info["family"], "role": "nk", "css": info["family"]}
         entry.update(measure_font(TTFont(info["path"]), mcfg, groups))
         fonts.append(entry)

@@ -148,8 +148,8 @@ class Runner:
         from .compare import improvement_notes, load_compare_config, measure_font
 
         regular = [m for m in self.masters if m.stem.endswith("-Regular")] or self.masters
-        if not regular:
-            st.status = "skip"
+        if not regular or config.family(self.report.family).get("kind") == "text":
+            st.status = "skip"  # proportional reading faces are not benchmarked against mono
             return
         cfg = load_compare_config()
         mcfg, groups = cfg["metrics"], cfg["group"]

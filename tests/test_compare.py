@@ -77,3 +77,28 @@ def test_improvement_notes_are_honest(latin, hangul):
     assert any("Ref Mono와 같습니다" in n for n in notes)  # same Latin outlines
     assert any("기호" in n and "①" in n for n in notes)  # Korean symbols missing
     assert sum("겹침" in n for n in notes) == 1  # A/I identical in two groups, reported once
+
+
+def test_build_compare_orders_nk_families_and_writes_json(tmp_path, latin, hangul):
+    import json
+
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config" / "compare.toml").write_text(
+        'nk_order = ["mono", "sans"]\n'
+        '[[group]]\nid = "ai"\ntitle = "A I"\nnote = ""\nchars = ["A", "I"]\n'
+        '[metrics]\nlatin_sample = "AIM0"\nhangul_sample = "가"\nhangul_probe = "가"\n'
+        "raster_px = 32\n"
+    )
+    (tmp_path / "sources.lock").write_text(
+        '[[font]]\nid = "x"\nurl = "https://example.invalid/x.ttf"\nsha256 = "0"\nlicense = "OFL"\n'
+    )
+    sans, mono = tmp_path / "sans.ttf", tmp_path / "mono.ttf"
+    merged(latin, hangul).save(sans)
+    merged(make_latin(), hangul).save(mono)
+    out = tmp_path / "site"
+    out.mkdir()
+    nk = {"sans": {"family": "NK Sans", "path": sans}, "mono": {"family": "NK Mono", "path": mono}}
+    compare.build_compare(out, nk, root=tmp_path)
+    data = json.loads((out / "compare.json").read_text())
+    assert [f["id"] for f in data["fonts"]] == ["mono", "sans"]  # nk_order, default first
+    assert all("todo" in f for f in data["fonts"])

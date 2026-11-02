@@ -5,7 +5,6 @@ initTheme();
 const [manifest, data] = await Promise.all([getJSON("fonts.json"), getJSON("compare.json")]);
 loadFonts(manifest, data);
 
-const NK_NAMES = { sans: "NK Sans", serif: "NK Serif", pixel: "NK Pixel" };
 const fonts = data?.fonts?.length
   ? data.fonts
   : (manifest?.families || []).map((f) => ({ id: f.id, name: f.family, role: "nk", css: f.family, features: [] }));
@@ -120,7 +119,7 @@ function highlight(src, lang) {
   return out + esc(src.slice(last));
 }
 
-const st = { font: fonts.find((f) => f.id === "sans") || fonts[0], weight: 400, lang: "TypeScript", theme: "NK 다크", on: new Set() };
+const st = { font: fonts[0], weight: 400, lang: "TypeScript", theme: "NK 다크", on: new Set() };
 try { const t = localStorage.getItem("nk-ed-theme"); if (THEMES[t]) st.theme = t; } catch {}
 
 function applyStyle() {
@@ -171,7 +170,7 @@ function pickFont(id) {
   applyStyle();
 }
 
-seg($("#tFam"), fonts.map((f) => [f.id, NK_NAMES[f.id] || f.name]), st.font.id, pickFont);
+seg($("#tFam"), fonts.map((f) => [f.id, f.name]), st.font.id, pickFont);
 seg($("#tLang"), Object.keys(CODE).map((k) => [k, k]), st.lang, (v) => { st.lang = v; setCode(); }, "tab");
 const themeEl = $("#tTheme");
 themeEl.innerHTML = Object.entries(THEMES).map(([name, t]) => `<button type="button" role="radio" aria-checked="${name === st.theme}" data-v="${esc(name)}"><i style="background:linear-gradient(135deg,${t.bg} 50%,${t.k} 50%)"></i>${esc(name)}</button>`).join("");

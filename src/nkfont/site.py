@@ -152,6 +152,8 @@ def build_site(
 
         nk = {}
         for entry in manifest["families"]:
+            if entry.get("kind") == "text":
+                continue  # proportional reading faces are not compared with coding fonts
             files = _family_files(config.family(entry["id"]))
             web = files["nf"] or files["master"]
             regular = [f for f in web if f.stem.endswith("-Regular")] or web

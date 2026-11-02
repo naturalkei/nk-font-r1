@@ -9,10 +9,10 @@ if (!data) {
 }
 loadFonts(manifest, data);
 
-const NK_NAMES = { sans: "NK Sans", serif: "NK Serif", pixel: "NK Pixel" };
+// compare.json lists NK terminal families in config/compare.toml order; the first is the default.
 const nkFonts = data.fonts.filter((f) => f.role === "nk");
 const refs = data.fonts.filter((f) => f.role === "reference");
-let fam = (nkFonts.find((f) => f.id === "sans") || nkFonts[0]).id;
+let fam = nkFonts[0].id;
 const lineup = () => [nkFonts.find((f) => f.id === fam), ...refs];
 const fmt = (v, d = 0) => (v == null ? "–" : Number(v).toLocaleString("ko-KR", { maximumFractionDigits: d, minimumFractionDigits: d }));
 const COLORS = ["var(--acc)", "var(--warm)", "var(--rose)", "var(--violet)"];
@@ -245,6 +245,6 @@ function refInfo() {
 }
 
 function render() { legend(); verdict(); terminal(); specimens(); balance(); features(); numbers(); todo(); }
-seg($("#famSeg"), nkFonts.map((f) => [f.id, NK_NAMES[f.id] || f.name]), fam, (v) => { fam = v; render(); });
+seg($("#famSeg"), nkFonts.map((f) => [f.id, f.name]), fam, (v) => { fam = v; render(); });
 refInfo();
 render();
