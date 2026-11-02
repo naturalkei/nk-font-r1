@@ -62,3 +62,22 @@ id = "neodgm-code"
 url = "https://raw.githubusercontent.com/neodgm/neodgm-webfont/v1.601/neodgm_code/neodgm_code.ttf"
 sha256 = "0d19cda34cba2c68137d4328820b743141279f8533b5624521f7b325e270a265"
 license = "OFL-1.1 (RFN 'Neo둥근모', 'NeoDunggeunmo')"
+
+# Comparison references for the site's benchmark page and the stroke-compare tool. Never merged
+# into NK fonts; served unmodified (WOFF2 re-wrap only) next to their license.
+# D2Coding 1.3.2 (NAVER), OFL-1.1, no Reserved Font Name. Released only as a zip.
+[[font]]
+id = "d2coding-regular"
+url = "https://github.com/naver/d2codingfont/releases/download/VER1.3.2/D2Coding-Ver1.3.2-20180524.zip"
+member = "D2Coding/D2Coding-Ver1.3.2-20180524.ttf"
+archive_sha256 = "0f1c9192eac7d56329dddc620f9f1666b707e9c8ed38fe1f988d0ae3e30b24e6"
+sha256 = "8b1b23e5de4dff652fb0b938528150d2f531edfda281d3944618b655711aba84"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "d2coding-bold"
+url = "https://github.com/naver/d2codingfont/releases/download/VER1.3.2/D2Coding-Ver1.3.2-20180524.zip"
+member = "D2Coding/D2CodingBold-Ver1.3.2-20180524.ttf"
+archive_sha256 = "0f1c9192eac7d56329dddc620f9f1666b707e9c8ed38fe1f988d0ae3e30b24e6"
+sha256 = "dde75df435f061eaa0f6db84b1c30866aaa442d7038aaa62ea3c2be92f15d87d"
+license = "OFL-1.1 (no RFN)"

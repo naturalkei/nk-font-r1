@@ -26,10 +26,14 @@ class SourceFont:
     url: str
     sha256: str
     license: str
+    # Upstreams that only ship archives: `member` is the file inside the zip at `url`, `sha256`
+    # is the extracted file's hash and `archive_sha256` pins the zip itself.
+    member: str | None = None
+    archive_sha256: str | None = None
 
     @property
     def path(self) -> Path:
-        return SOURCES_DIR / Path(self.url).name
+        return SOURCES_DIR / Path(self.member or self.url).name
 
 
 def sources(root: Path = ROOT) -> dict[str, SourceFont]:
