@@ -139,6 +139,40 @@ class Runner:
             if warnings:
                 st.details.append(f"{f.name} overflow warnings (inherited/PUA): {len(warnings)}")
 
+    def benchmark(self, st: Stage) -> None:
+        """Measure the Regular master against the reference fonts (config/compare.toml).
+
+        Fails if NK loses its core claims (zero terminal-width mismatches, full Hangul);
+        warns with the honest to-do list the benchmark page shows.
+        """
+        from .compare import improvement_notes, load_compare_config, measure_font
+
+        regular = [m for m in self.masters if m.stem.endswith("-Regular")] or self.masters
+        if not regular:
+            st.status = "skip"
+            return
+        cfg = load_compare_config()
+        mcfg, groups = cfg["metrics"], cfg["group"]
+        nk = measure_font(TTFont(regular[0]), mcfg, groups)
+        refs = {}
+        srcs = config.sources()
+        for ref in cfg.get("reference", []):
+            path = srcs[ref["weights"]["400"]].path
+            if path.exists():
+                refs[ref["name"]] = measure_font(TTFont(path), mcfg, groups)
+        for name, r in [(regular[0].stem, nk), *refs.items()]:
+            m, c, g = r["metrics"], r["coverage"], r["grid"]
+            st.details.append(
+                f"{name}: width mismatches {g['mismatches']}, hangul {c['hangul_syllables']}, "
+                f"stem ratio {m['stem_ratio']}, colour ratio {m['density_ratio']}"
+            )
+        if nk["grid"]["mismatches"] or nk["coverage"]["hangul_syllables"] < 11172:
+            st.status = "fail"
+        notes = improvement_notes(nk, refs)
+        st.details += [f"todo: {n}" for n in notes]
+        if notes and st.status != "fail":
+            st.status = "warn"
+
     def reproducible(self, st: Stage) -> None:
         from .build import build_family
 
@@ -205,6 +239,7 @@ class Runner:
         )
         self.stage("build masters", lambda st: self.build(st, None if thorough else "Regular"))
         self.stage("font checks (masters)", lambda st: self.font_checks(st, self.masters))
+        self.stage("benchmark vs reference fonts", self.benchmark)
         self.stage("reproducible build", self.reproducible)
         self.stage("golden images (masters)", lambda st: self.golden(st, self.masters))
         if thorough:

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nk-font 테스터 — 코드에 직접 써 보기</title>
+<meta name="description" content="NK 폰트를 코드에 직접 써 보는 테스터. 크기, 굵기, 줄 간격, OpenType 기능, 에디터 색상 테마를 바꿔 봅니다.">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="pages.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23141513'/%3E%3Cpath d='M8 9h3v14H8zM13 9h3l5 8V9h3v14h-3l-5-8v8h-3z' fill='%2353d3bd'/%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip" href="#main">본문으로</a>
+<header class="nav">
+  <a class="logo" href="index.html" aria-label="nk-font 처음으로"><span class="logo-mark">nk</span><span class="logo-word">font</span></a>
+  <nav aria-label="주요 메뉴">
+    <a href="index.html">소개</a><a href="compare.html">비교</a><a href="tester.html" aria-current="page">테스터</a><a href="index.html#glyphs">글리프</a><a href="index.html#download">내려받기</a>
+  </nav>
+  <div class="nav-right">
+    <button class="icon-btn" id="themeBtn" aria-label="밝기 전환" title="밝기 전환">◐</button>
+    <a class="btn btn-small" href="index.html#download">내려받기</a>
+  </div>
+</header>
+
+<main id="main">
+<section class="page-hero">
+  <p class="eyebrow"><span class="badge">Tester</span> 글자를 직접 고쳐 써 볼 수 있습니다</p>
+  <h1>내 코드에<br>놓아 보세요.</h1>
+  <p class="lede">가족과 굵기, 크기, 줄 간격을 바꾸고 OpenType 기능을 하나씩 켜 보세요. 에디터 색상 테마도 고를 수 있습니다. 비교용으로 JetBrains Mono와 D2Coding도 같은 자리에서 볼 수 있습니다.</p>
+</section>
+<section id="tester">
+  <div class="tester">
+    <aside class="tside" aria-label="테스터 설정">
+      <div class="tgroup"><h3>글꼴</h3><div class="seg" id="tFam" role="radiogroup" aria-label="글꼴"></div></div>
+      <div class="tgroup"><h3>굵기</h3><div class="seg" id="tWeight" role="radiogroup" aria-label="굵기"></div></div>
+      <div class="tgroup"><h3>크기와 줄 간격</h3>
+        <label class="range">크기 <input type="range" id="tSize" min="10" max="36" value="16"><span><output id="tSizeV">16</output>px</span></label>
+        <label class="range">줄 간격 <input type="range" id="tLh" min="100" max="200" step="5" value="150"><span><output id="tLhV">1.50</output></span></label>
+        <label class="switch"><input type="checkbox" id="tGrid"> 칸 격자 보기</label>
+      </div>
+      <div class="tgroup"><h3>에디터 테마</h3><div class="themes" id="tTheme" role="radiogroup" aria-label="에디터 테마"></div></div>
+      <div class="tgroup"><h3>OpenType 기능 <small id="tFeatN"></small></h3><div class="tfeat" id="tFeat"></div>
+        <p class="tester-note" id="tFeatNote"></p></div>
+    </aside>
+    <div>
+      <div class="editor" id="editor">
+        <div class="tabs" id="tLang" role="tablist" aria-label="언어"></div>
+        <div class="ed-body"><div class="ed-gutter" id="tGutter" aria-hidden="true"></div><pre class="ed-code" id="tCode" contenteditable="true" spellcheck="false" aria-label="코드, 편집 가능"></pre></div>
+      </div>
+      <p class="tester-note">코드는 직접 고칠 수 있습니다. 언어를 바꾸면 예제로 돌아갑니다.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div>
+    <div class="logo"><span class="logo-mark">nk</span><span class="logo-word">font</span></div>
+    <p>Copyright 2026 naturalk (nk-font). 폰트는 <a href="https://openfontlicense.org">SIL Open Font License 1.1</a>, 빌드 도구 코드는 MIT.</p>
+  </div>
+  <div><h4>측정 데이터</h4><p><a href="compare.json">compare.json</a> · <a href="fonts.json">빌드 정보</a></p></div>
+  <div><h4>프로젝트</h4><p><a href="https://github.com/naturalkei/nk-font-r1">GitHub</a> · <a href="https://github.com/naturalkei/nk-font-r1/blob/main/docs/ROADMAP.md">로드맵</a></p></div>
+</footer>
+<script src="tester.js" type="module"></script>
+</body>
+</html>

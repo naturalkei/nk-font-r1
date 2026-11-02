@@ -1,6 +1,7 @@
 """Assemble the static prototype site: copy site/, convert fonts to WOFF2, zip downloads.
 
-`nkfont site` -> build/site/ (deployable to GitHub Pages as is).
+`nkfont site` -> build/site/ (deployable to GitHub Pages as is), including compare.json and the
+reference web fonts for the benchmark page (nkfont.compare).
 """
 
 from __future__ import annotations
@@ -83,7 +84,9 @@ def glyph_index(font: TTFont) -> dict:
     return {"half": half, "runs": runs, "icons": icons}
 
 
-def build_site(out: Path | None = None, families=("sans", "serif", "pixel")) -> Path:
+def build_site(
+    out: Path | None = None, families=("sans", "serif", "pixel"), compare: bool = True
+) -> Path:
     out = out or config.BUILD_DIR / "site"
     shutil.rmtree(out, ignore_errors=True)
     shutil.copytree(config.ROOT / "site", out)
@@ -144,6 +147,16 @@ def build_site(out: Path | None = None, families=("sans", "serif", "pixel")) -> 
             "nerd": bool(files["nf"]),
         }
         manifest["families"].append(entry)
+    if compare:
+        from .compare import build_compare
+
+        nk = {}
+        for entry in manifest["families"]:
+            files = _family_files(config.family(entry["id"]))
+            web = files["nf"] or files["master"]
+            regular = [f for f in web if f.stem.endswith("-Regular")] or web
+            nk[entry["id"]] = {"family": entry["family"], "path": regular[0]}
+        build_compare(out, nk)
     sans_nf = _family_files(config.family("sans"))["nf"]
     if sans_nf:
         idx = glyph_index(TTFont(sans_nf[0]))
