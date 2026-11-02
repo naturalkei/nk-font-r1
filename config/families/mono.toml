@@ -1,0 +1,30 @@
+# NK Mono: the terminal flagship. JetBrains Mono (ligatures and cv/ss features kept, switchable with
+# calt) + D2Coding Hangul (RFN "D2Coding"), based on Nanum Barun Gothic and drawn for a 1:2 grid,
+# so it fills the two-cell box more than a proportional Hangul squeezed into it. Prototype.
+status = "active"
+family = "NK Mono"
+file_prefix = "NKMono"
+version = "0.1.0"
+copyright = """Copyright 2026 naturalk (nk-font). \
+Copyright 2020 The JetBrains Mono Project Authors. \
+Copyright (c) 2015, NAVER Corporation (https://www.navercorp.com), \
+with Reserved Font Names 'D2Coding' and 'D2Coding-Bold'."""
+
+[hangul]
+# D2Coding Hangul is 1000 wide on a 1000 em and sits low (가 y -133..780).
+scale = 1.08
+dy = 40
+center = "advance"
+fit = 0.92
+
+[[weight]]
+name = "Regular"
+latin = "jetbrains-mono-regular"
+hangul = "d2coding-regular"
+weight_class = 400
+
+[[weight]]
+name = "Bold"
+latin = "jetbrains-mono-bold"
+hangul = "d2coding-bold"
+weight_class = 700

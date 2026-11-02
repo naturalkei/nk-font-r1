@@ -84,15 +84,13 @@ class Studio:
 
     def families(self) -> list[dict]:
         out = []
-        order = {"sans": 0, "serif": 1, "pixel": 2}
-        paths = (self.root / "config" / "families").glob("*.toml")
-        for path in sorted(paths, key=lambda p: (order.get(p.stem, 9), p.stem)):
-            fam = config.family(path.stem, self.root)
+        for fid in config.family_ids(self.root):
+            fam = config.family(fid, self.root)
             if fam.get("status") != "active":
                 continue
             out.append(
                 {
-                    "id": path.stem,
+                    "id": fid,
                     "family": fam["family"],
                     "kind": fam.get("kind", "merge"),
                     "weights": [w["name"] for w in fam["weight"]],

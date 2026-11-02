@@ -44,6 +44,31 @@ def enforce_terminal_flags(font: TTFont, half: int, ascent: int, descent: int) -
     os2.usWinDescent = max(-descent, -y_min)
 
 
+def enforce_text_flags(font: TTFont, ascent: int, descent: int, line_gap: int = 0) -> None:
+    """Flags for proportional reading faces (NK Novel, NK Comics); not used for terminal fonts.
+
+    They are never fixed pitch. Line metrics come from the Latin base (or the family config) and
+    stay identical across hhea and typo with USE_TYPO_METRICS, so every platform gets the same
+    line height; usWin* still covers the real bbox so nothing is clipped on Windows.
+    """
+    os2, hhea, hmtx = font["OS/2"], font["hhea"], font["hmtx"]
+    font["post"].isFixedPitch = 0
+    if os2.panose.bFamilyType == 2 and os2.panose.bProportion == 9:
+        os2.panose.bProportion = 0  # "any": no longer claims to be monospaced
+    advances = [hmtx[n][0] for n in font.getGlyphOrder() if hmtx[n][0]]
+    os2.xAvgCharWidth = round(sum(advances) / len(advances)) if advances else 0
+
+    hhea.ascent, hhea.descent, hhea.lineGap = ascent, descent, line_gap
+    os2.sTypoAscender, os2.sTypoDescender, os2.sTypoLineGap = ascent, descent, line_gap
+    if os2.version < 4:
+        os2.version = 4
+    os2.fsSelection |= USE_TYPO_METRICS
+
+    y_min, y_max = glyph_y_extent(font)
+    os2.usWinAscent = max(ascent, y_max)
+    os2.usWinDescent = max(-descent, -y_min)
+
+
 def fit_terminal_widths(font: TTFont, half: int) -> list[int]:
     """Make advances agree with terminal cell counts (wcwidth); returns changed code points.
 

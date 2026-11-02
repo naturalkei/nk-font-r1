@@ -1,8 +1,9 @@
-"""Inject Hangul glyphs into a Latin monospace TrueType font.
+"""Inject Hangul glyphs into a Latin TrueType font.
 
-The Latin font is kept as the main context: its GSUB/GPOS (calt, cvXX, ssXX) stay untouched.
-Hangul outlines are scaled uniformly, converted from cubic (CFF) to quadratic, and placed in a
-cell twice as wide as the Latin advance.
+The Latin font is kept as the main context: its GSUB/GPOS (calt, cvXX, ssXX, kern) stay untouched.
+Hangul outlines are scaled uniformly and converted from cubic (CFF) to quadratic when needed.
+Terminal families (`advance = "cell"`) place them in a cell twice as wide as the Latin advance;
+reading families (`advance = "proportional"`) keep the source's own spacing, scaled.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from dataclasses import dataclass
 
 from fontTools.pens.boundsPen import BoundsPen
 from fontTools.pens.cu2quPen import Cu2QuPen
+from fontTools.pens.filterPen import DecomposingFilterPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import TTFont
@@ -28,6 +30,13 @@ class HangulParams:
     dy: float = 0.0  # target units, after scaling
     center: str = "advance"  # "advance" or "bbox"
     fit: float = 0.92  # imported ink may use at most this share of its cell width
+    advance: str = "cell"  # "cell" (terminal grid) or "proportional" (reading faces)
+    tracking: float = 0.0  # proportional only: target units added to each Hangul advance
+
+
+def is_cubic(font: TTFont) -> bool:
+    """CFF/CFF2 outlines are cubic with the opposite contour direction to TrueType."""
+    return "CFF " in font or "CFF2" in font
 
 
 def half_width(font: TTFont) -> int:
@@ -66,6 +75,12 @@ def merge_hangul(latin: TTFont, hangul: TTFont, ranges, params: HangulParams) ->
     """Mutates `latin` in place and returns the number of glyphs added."""
     if "glyf" not in latin:
         raise ValueError("Latin base must have TrueType (glyf) outlines")
+    if params.advance not in ("cell", "proportional"):
+        raise ValueError(f"advance must be 'cell' or 'proportional', not {params.advance!r}")
+    proportional = params.advance == "proportional"
+    # Only cubic (PostScript) sources need their contours reversed; reversing TrueType sources
+    # would flip them to the wrong direction and break non-zero filling and hinting.
+    reverse = is_cubic(hangul)
 
     half = half_width(latin)
     upm_ratio = latin["head"].unitsPerEm / hangul["head"].unitsPerEm
@@ -81,24 +96,31 @@ def merge_hangul(latin: TTFont, hangul: TTFont, ranges, params: HangulParams) ->
     new_cmap: dict[int, str] = {}
 
     for cp in select_codepoints(latin, hangul, ranges):
-        target = cell_width(cp, half)
         src_name = src_cmap[cp]
         bp = BoundsPen(src_glyphs)
         src_glyphs[src_name].draw(bp)
         x0, _, x1, _ = bp.bounds or (0, 0, 0, 0)
         gs = s
-        if (x1 - x0) * gs > target * params.fit:
-            # Source glyph is wider than its cell (e.g. Source Han Sans "halfwidth" jamo are 920
-            # wide): shrink uniformly so the ink stays inside the cell, then centre the bbox.
-            gs = target * params.fit / (x1 - x0)
-        if params.center == "bbox" or gs != s:
-            dx = (target - (x1 - x0) * gs) / 2 - x0 * gs
+        if proportional:
+            target = round(src_hmtx[src_name][0] * gs + params.tracking)
+            dx = params.tracking / 2  # keep the source side bearings, split the tracking
         else:
-            dx = (target - src_hmtx[src_name][0] * gs) / 2
+            target = cell_width(cp, half)
+            if (x1 - x0) * gs > target * params.fit:
+                # Source glyph is wider than its cell (e.g. Source Han Sans "halfwidth" jamo are
+                # 920 wide): shrink uniformly so the ink stays inside the cell, then centre it.
+                gs = target * params.fit / (x1 - x0)
+            if params.center == "bbox" or gs != s:
+                dx = (target - (x1 - x0) * gs) / 2 - x0 * gs
+            else:
+                dx = (target - src_hmtx[src_name][0] * gs) / 2
 
         tt_pen = TTGlyphPen(None)
-        cu2qu = Cu2QuPen(tt_pen, max_err=1.0, reverse_direction=True)
-        src_glyphs[src_name].draw(TransformPen(cu2qu, (gs, 0, 0, gs, dx, params.dy)))
+        cu2qu = Cu2QuPen(tt_pen, max_err=1.0, reverse_direction=reverse)
+        # TrueType sources (D2Coding, Gowun Batang) use composite glyphs; decompose them,
+        # since their component glyphs are not copied into the Latin font.
+        out = TransformPen(cu2qu, (gs, 0, 0, gs, dx, params.dy))
+        src_glyphs[src_name].draw(DecomposingFilterPen(out, src_glyphs))
         glyph = tt_pen.glyph()
         glyph.program = ttProgram.Program()
         glyph.program.fromBytecode(b"")

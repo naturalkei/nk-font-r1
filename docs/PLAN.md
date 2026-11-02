@@ -48,9 +48,14 @@ Starship, zsh(Oh My Zsh / Powerlevel10k), iTerm2, Linux 터미널(GNOME Terminal
 
 | 가족 | 베이스 패밀리명 | 패치 결과 (실제 빌드 확인) |
 | --- | --- | --- |
-| Sans | `NK Sans` | `NKSans Nerd Font`, `NKSans Nerd Font Mono` |
+| Sans | `NK Sans` | 2026-11-02부터 문서용 비례폭, 패치하지 않음 (이전: `NKSans Nerd Font`) |
 | Serif | `NK Serif` | `NKSerif Nerd Font`, `NKSerif Nerd Font Mono` |
 | Pixel | `NK Pixel` | `NKPixel Nerd Font`, `NKPixel Nerd Font Mono` + 게임용 비트맵 포맷 |
+| Mono | `NK Mono` | `NKMono Nerd Font`, `NKMono Nerd Font Mono` (터미널 대표) |
+| Novel | `NK Novel` | 패치하지 않음 (읽기용 비례폭) |
+| Comics | `NK Comics` | 패치하지 않음 (읽기용 비례폭) |
+
+Mono·Novel·Comics의 용도, 베이스, 황금비 규칙, 굵기·기능 계획은 [FAMILIES.md](FAMILIES.md)에 있습니다.
 
 저작권 표기는 `Copyright 2026 naturalk (nk-font)`, 레포·패키지명은 `nk-nerd-font`(예: `font-nk-sans-nerd-font`)입니다.
 
@@ -294,6 +299,7 @@ Pixel 가족 단계에서 `pixel-src/`(픽셀 마스터)와 `examples/`(마인�
 | 패밀리명 | NK Sans / NK Serif / NK Pixel, 저작권 `Copyright 2026 naturalk (nk-font)` |
 | Sans 한글 베이스 | 본고딕 KR (Source Han Sans KR) |
 | Pixel 베이스 | Neo둥근모 Code (OFL 1.1, RFN 확인: 이름에 `Neo둥근모`·`NeoDunggeunmo` 사용 금지) |
+| 가족 재편 (2026-11-02 요청) | NK Mono(JetBrains Mono + D2Coding 한글)가 터미널 대표, NK Sans는 문서용 비례폭(IBM Plex Sans + 본고딕), NK Novel·NK Comics 추가, mono-pixel 터미널은 NK Pixel에 통합 ([FAMILIES.md](FAMILIES.md)). 아래 §2.2·§3의 Sans 터미널 명세는 NK Mono에 적용 |
 | 로드맵 순서 | M3 Pixel → M4 Serif |
 | 업스트림 폰트 | 레포에 커밋하지 않고 `sources.lock`으로 고정해 내려받음 |
 | 라이선스 | 폰트 OFL 1.1, 빌드 도구 코드(`src/`, `tests/`) MIT |

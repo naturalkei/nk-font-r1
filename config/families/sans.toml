@@ -1,29 +1,38 @@
-# NK Sans: JetBrains Mono (Latin) + Source Han Sans KR (Hangul).
-# Every tunable lives here so builds are reproducible and the tuning tool can edit one file.
+# NK Sans: proportional document sans for general documents, UI and slides (not a terminal font;
+# the terminal family is NK Mono). IBM Plex Sans (RFN "Plex") + Source Han Sans KR (RFN "Source").
+# kind = "text": no terminal grid, no Nerd Fonts icons; Hangul keeps its own spacing.
 status = "active"
+kind = "text"
 family = "NK Sans"
 file_prefix = "NKSans"
-version = "0.1.0"
+version = "0.2.0"
+copyright = """Copyright 2026 naturalk (nk-font). \
+Copyright 2017 IBM Corp., with Reserved Font Name 'Plex'. \
+Copyright 2014-2025 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'."""
 
 [hangul]
-# Uniform scale applied to Hangul outlines, expressed for a 1000-UPM source (rescaled automatically).
-scale = 0.96
-# Vertical offset in target units after scaling (positive moves up).
-dy = -10
-# Horizontal placement inside the full-width cell: "advance" keeps the source spacing centered.
+# For a 1000-UPM source. Source Han Sans Hangul (가 ~900 tall) set a little under Plex Sans's
+# cap-to-descender span so mixed Korean/English lines keep an even colour.
+scale = 0.9
+dy = 0
 center = "advance"
-# Imported ink may use at most this share of its cell width; wider source glyphs (Source Han
-# Sans "halfwidth" jamo are 920 wide) are shrunk uniformly to fit.
-fit = 0.92
+# Target units added to every Hangul advance: Source Han Sans's 920 advance is roomy for text.
+tracking = -20
+
+[metrics]
+# Default line = φ^(5/6) = 1.493 em, a document line height (phi.py, shared modular scale step 5).
+ascent = 1025
+descent = -275
+line_height = "phi^5/6"
 
 [[weight]]
 name = "Regular"
-latin = "jetbrains-mono-regular"
+latin = "plex-sans-regular"
 hangul = "source-han-sans-kr-regular"
 weight_class = 400
 
 [[weight]]
 name = "Bold"
-latin = "jetbrains-mono-bold"
+latin = "plex-sans-bold"
 hangul = "source-han-sans-kr-bold"
 weight_class = 700
