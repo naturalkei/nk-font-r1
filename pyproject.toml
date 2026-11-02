@@ -1,0 +1,35 @@
+[project]
+name = "nkfont"
+version = "0.1.0"
+description = "Build pipeline for nk-nerd-font (NK Sans / NK Serif / NK Pixel)"
+requires-python = ">=3.11"
+license = "OFL-1.1"
+dependencies = [
+  "fonttools[woff]>=4.53",
+  "wcwidth>=0.2.13",
+  "pillow>=10.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+nkfont = "nkfont.cli:main"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: needs downloaded upstream fonts (run `nkfont fetch` first)"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

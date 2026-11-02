@@ -1,6 +1,6 @@
 # [기획서] nk-nerd-font: 터미널 완벽 호환 한글 Nerd Font (Sans · Serif · Pixel)
 
-> 문서 상태: v0.2 초안 (2026-11-02) · 원본: `nerd_font.md`(가칭 K-Mono Nerd Font) 개정판
+> 문서 상태: v0.3 (2026-11-02) · 패밀리명 NK 확정, 빌드 도구·조절 도구 반영 · 원본: `nerd_font.md`(가칭 K-Mono Nerd Font) 개정판
 > 레포: `naturalkei/nk-font-r1` · 라이선스: SIL OFL 1.1 (아이콘 세트는 별도 고지, §7 참고)
 
 ---
@@ -43,16 +43,16 @@ Starship, zsh(Oh My Zsh / Powerlevel10k), iTerm2, Linux 터미널(GNOME Terminal
 
 ## 2. 폰트 가족 구성과 베이스 폰트
 
-### 2.1 명명 (결정 필요)
-업스트림 RFN(`Source`, `Pretendard`, `Plex`)을 피하고, Nerd Fonts 패처가 이름 뒤에 `Nerd Font` / `Nerd Font Mono`를 자동으로 붙인다는 점을 고려해 **베이스 패밀리명에는 "Nerd"를 넣지 않습니다.**
+### 2.1 명명 (확정: 패밀리명 NK)
+업스트림 RFN(`Source`, `Pretendard`, `Plex`)을 피하고, Nerd Fonts 패처가 이름 뒤에 `Nerd Font` / `Nerd Font Mono`를 자동으로 붙인다는 점을 고려해 **베이스 패밀리명에는 "Nerd"를 넣지 않습니다.** 패처는 Nerd Fonts 관례대로 패밀리명의 공백을 없앱니다("JetBrainsMono Nerd Font"와 같은 방식).
 
-| 가족 | 베이스 패밀리명(안) | 패치 결과 |
+| 가족 | 베이스 패밀리명 | 패치 결과 (실제 빌드 확인) |
 | --- | --- | --- |
-| Sans | `NK Mono` | `NK Mono Nerd Font`, `NK Mono Nerd Font Mono` |
-| Serif | `NK Mono Serif` | `NK Mono Serif Nerd Font`, `… Nerd Font Mono` |
-| Pixel | `NK Pixel` | `NK Pixel Nerd Font`, `… Nerd Font Mono` + 게임용 비트맵 포맷 |
+| Sans | `NK Sans` | `NKSans Nerd Font`, `NKSans Nerd Font Mono` |
+| Serif | `NK Serif` | `NKSerif Nerd Font`, `NKSerif Nerd Font Mono` |
+| Pixel | `NK Pixel` | `NKPixel Nerd Font`, `NKPixel Nerd Font Mono` + 게임용 비트맵 포맷 |
 
-레포·패키지명은 `nk-nerd-font`로 통일합니다 (예: `font-nk-mono-nerd-font`).
+저작권 표기는 `Copyright 2026 naturalk (nk-font)`, 레포·패키지명은 `nk-nerd-font`(예: `font-nk-sans-nerd-font`)입니다.
 
 ### 2.2 베이스 폰트 후보 (실측 기준)
 
@@ -151,8 +151,7 @@ def enforce_terminal_flags(path: str) -> None:
 
 ## 4. Nerd Fonts 패치
 
-* 도구: `nerdfonts/patcher` Docker 이미지, **버전 태그 고정** (확인한 최신 패처: v3.5.1)
-  `docker run --rm -v $PWD/build/master:/in -v $PWD/build/patched:/out nerdfonts/patcher:<tag> <옵션>`
+* 도구: `nerdfonts/patcher:4.27.3` Docker 이미지(내장 font-patcher 3.5.1), 태그와 digest를 `sources.lock`에 고정. 실행은 `nkfont patch`가 담당합니다.
 * 배포 변형 2종:
 
 | 변형 | 옵션 | 용도 |
@@ -164,6 +163,7 @@ def enforce_terminal_flags(path: str) -> None:
 * 패처는 영문(`I M W a i m .`)만 보고 고정폭 여부를 판정하므로 한글 1200 폭이 있어도 경고 없이 동작합니다.
 * `--careful`은 기존 글리프를 덮어쓰지 않으므로 영문 베이스의 박스 드로잉이 유지됩니다(`--boxdrawing`은 쓰지 않음).
 * 패처가 Panose·xAvgCharWidth·이름 테이블을 건드리므로 패치 뒤에 §3.4 스크립트와 이름 검증을 다시 실행합니다.
+* 실제 빌드에서 확인된 폭 예외: JetBrains Mono가 `U+26A1 ⚡`, `U+FE62`, `U+FF5B/FF5D`를 1칸으로, 패처가 `U+2630 ☰`을 1칸으로, `U+200B`(ZWSP)를 600 폭으로 넣습니다. 터미널은 이 문자들을 2칸·0칸으로 계산하므로 `fit_terminal_widths`가 2칸 중앙 정렬 또는 폭 0으로 맞춥니다.
 
 ---
 
@@ -228,7 +228,7 @@ def enforce_terminal_flags(path: str) -> None:
 
 ### 7.2 준수 사항
 * 패밀리명·파일명·PostScript명에 RFN 단어를 쓰지 않습니다. RFN이 없는 폰트도 혼동을 피하려고 이름을 바꿉니다("JetBrains"는 상표이기도 함).
-* `OFL.txt`에 사용한 모든 업스트림의 Copyright 줄(RFN 문구 포함)을 원문 그대로 남기고, 맨 위에 `Copyright 2026 naturalk (nk-nerd-font)` 를 추가합니다. 포크를 쉽게 하기 위해 본 프로젝트 자체 RFN은 선언하지 않는 것을 권장합니다.
+* `OFL.txt`에 사용한 모든 업스트림의 Copyright 줄(RFN 문구 포함)을 원문 그대로 남기고, 맨 위에 `Copyright 2026 naturalk (nk-font)` 를 추가합니다. 포크를 쉽게 하기 위해 본 프로젝트 자체 RFN은 선언하지 않는 것을 권장합니다.
 * 폰트 단독 판매 금지, 파생물도 OFL 유지 조건을 README에 명시합니다.
 * **Nerd Fonts 아이콘은 세트마다 라이선스가 다릅니다**(OFL, MIT, Apache-2.0, CC BY 4.0 등). Nerd Fonts 레포의 라이선스 목록을 근거로 `LICENSES/` 폴더와 `NOTICE`에 세트별 고지를 넣습니다. "100% OFL"이라고 표기하지 않습니다.
 * 업스트림 원본 폰트는 레포에 커밋하지 않고, 버전과 SHA256을 `sources.lock`에 고정해 CI에서 내려받는 방식을 권장합니다(레포 크기와 라이선스 관리 단순화).
@@ -249,39 +249,29 @@ def enforce_terminal_flags(path: str) -> None:
 8. **QA:** §6.1 자동 검사, 교정 시트 렌더링
 9. **release (태그 푸시 시):** GitHub Releases 업로드(zip에 `OFL.txt`, `NOTICE`, `LICENSES/` 포함), Homebrew tap·Scoop bucket 해시 갱신 PR 자동 생성
 
-### 8.1 디렉터리 구조
+### 8.1 디렉터리 구조 (현재 레포)
 
 ```text
 nk-font-r1/
-├── .github/workflows/
-│   ├── build.yml                 # PR마다 빌드 + QA + 교정 시트
-│   └── release.yml               # 태그 푸시 시 릴리스·패키지 갱신
+├── .claude/                      # Claude Code 설정: 세션 시작 훅, 프로젝트 스킬
+│   └── skills/{font-build,font-qa,font-tune}/SKILL.md
+├── .devcontainer/                # Python 3.12 + FontForge + ttfautohint + Docker-in-Docker
+├── .github/workflows/ci.yml      # 린트·테스트 → 빌드·패치·QA·교정 시트 아티팩트
 ├── config/
-│   ├── families/
-│   │   ├── sans.toml             # 베이스 폰트, weight 매핑, s/dy, 이름
-│   │   ├── serif.toml
-│   │   └── pixel.toml            # 격자, 출력 포맷, 배율
-│   └── ranges.toml               # 주입 코드포인트 범위 (W/F 영역)
-├── sources.lock                  # 업스트림 폰트 URL·버전·SHA256, 패처 이미지 태그
-├── pixel-src/                    # 픽셀 마스터 (비트맵 원본/수정분)
-├── scripts/
-│   ├── fetch_sources.py
-│   ├── merge_hangul.py           # subset·cu2qu·스케일·주입
-│   ├── set_names_metrics.py
-│   ├── fix_flags.py              # §3.4
-│   ├── export_pixel.py           # BDF/PCF, unihex, BMFont, 마인크래프트 팩
-│   └── build.sh                  # 전체 파이프라인 (Docker 패처 호출 포함)
-├── tests/
-│   ├── test_widths.py            # wcwidth 전수 검사
-│   ├── test_metrics.py
-│   └── proofs/                   # 교정 시트 텍스트
-├── examples/                     # 마인크래프트 리소스팩, 테라리아 예제, 터미널 설정 예시
-├── docs/
-├── LICENSES/                     # 업스트림·아이콘 세트별 라이선스 원문
-├── OFL.txt
-├── NOTICE
-└── README.md
+│   ├── families/{sans,serif,pixel}.toml   # 모든 조절값 (스케일, dy, weight 매핑, 이름)
+│   └── ranges.toml               # 주입 코드포인트 범위
+├── sources.lock                  # 업스트림 폰트 URL·SHA256, 패처 이미지 태그·digest
+├── src/nkfont/                   # 빌드 도구 (Python)
+│   ├── merge.py  names.py  flags.py  checks.py
+│   ├── build.py  patch.py  proof.py  fetch.py  config.py
+│   └── cli.py                    # nkfont fetch|build|patch|check|proof|tune
+├── tests/                        # 합성 폰트 단위 테스트 + 실제 폰트 통합 테스트
+├── docs/{PLAN,ROADMAP}.md
+├── Makefile  pyproject.toml  CLAUDE.md  OFL.txt  README.md
+└── (git 제외) sources/ build/ dist/ proofs/
 ```
+
+Pixel 가족 단계에서 `pixel-src/`(픽셀 마스터)와 `examples/`(마인크래프트·테라리아 예제 팩)를 추가합니다.
 
 ### 8.2 배포
 * **macOS:** `brew install --cask naturalkei/tap/font-nk-mono-nerd-font` (자체 tap `naturalkei/homebrew-tap`)
@@ -293,23 +283,37 @@ nk-font-r1/
 
 ## 9. 로드맵
 
-| 단계 | 산출물 |
-| --- | --- |
-| **M0 기반** | 파이프라인 골격, `sources.lock`, 폭·메트릭 자동 검사, 교정 시트 |
-| **M1 Sans MVP** | NK Mono Regular/Bold, Nerd Font + Nerd Font Mono, 호환성 매트릭스 1회 통과, GitHub Release |
-| **M2 Sans 정식** | 전체 weight + Italic, 힌팅 결정, Homebrew·Scoop |
-| **M3 Pixel** | 16px 마스터, TTF/BDF/PCF, 마인크래프트 리소스팩, BMFont, 테라리아 XNB |
-| **M4 Serif** | NK Mono Serif (Plex Mono + 본명조), 작은 크기 weight 보정 |
-| **M5 확장** | 조합형 자모(NFD) 지원, 한자 KS X 1001, 픽셀 아이콘 리드로잉, 11px 픽셀 변형, 가변 폰트 검토 |
-
-Pixel을 Serif보다 앞에 둔 이유: Serif는 Sans 파이프라인을 거의 그대로 재사용하는 반면, Pixel은 출력 포맷이 완전히 달라 일찍 검증할수록 위험이 줄어듭니다. 순서는 바꿀 수 있습니다.
+단계별 목표, 완료 기준, 소개 사이트 계획은 [ROADMAP.md](ROADMAP.md)로 옮겼습니다. 요약하면 M0 기반(완료) → M1 NK Sans 알파 → M2 NK Sans 1.0 + 소개 사이트 → M3 NK Pixel → M4 NK Serif → M5 확장 순서입니다.
 
 ---
 
 ## 10. 결정이 필요한 사항
 
-1. 패밀리명: `NK Mono` / `NK Mono Serif` / `NK Pixel` 안으로 갈지
+1. ~~패밀리명~~ → **NK Sans / NK Serif / NK Pixel로 확정** (2026-11-02)
 2. Sans 한글 베이스: 본고딕 KR(추천) vs Pretendard
 3. Pixel 베이스: Neo둥근모 Code(16px, Unifont·마인크래프트 격자와 일치) vs 갈무리(11px 중심)
 4. 로드맵 순서: Pixel(M3) → Serif(M4) 순서 유지 여부
 5. 업스트림 폰트를 레포에 커밋하지 않고 CI에서 내려받는 방식 동의 여부
+
+---
+
+## 11. 미세 조절 관리 도구 (nk-tune)
+
+폰트를 규칙성 있게 미세 조절할 수 있도록, **모든 조절값을 설정 파일 하나에 모으고 같은 Python 코어로 CLI와 GUI를 모두 구동**하는 구조로 갑니다.
+
+### 11.1 원칙
+* 조절값의 단일 출처는 `config/families/*.toml`입니다. 도구는 이 파일만 읽고 쓰며, 코드에 수치를 박지 않습니다. 그래서 GUI에서 바꾼 값도 Git diff로 리뷰되고 CI에서 그대로 재현됩니다.
+* 조절은 "규칙"으로 표현합니다. 글자마다 손으로 옮기는 대신 스케일, 오프셋, weight 매핑, 그룹 규칙(예: 받침 있는 글자만 dy −8, 특정 자모 조합만 폭 보정)을 선언하고 빌드가 일괄 적용합니다. 개별 글리프 예외는 마지막 수단으로 `overrides` 표에 사유와 함께 남깁니다.
+* 모든 변경은 교정 시트와 QA 검사를 자동으로 동반합니다. 화면에서 좋아 보여도 `nkfont check`를 통과하지 못하면 저장되지 않습니다.
+
+### 11.2 단계
+| 단계 | 형태 | 내용 |
+| --- | --- | --- |
+| T1 (구현됨) | CLI | `nkfont tune --scale a:b:step --dy a:b:step`로 매개변수 격자를 메모리에서 빌드해 비교 시트 PNG 생성 |
+| T2 | 로컬 웹 UI (Python) | FastAPI 같은 경량 서버 + 브라우저 미리보기. 슬라이더로 값 조절 → 즉시 재빌드(한글 1.1만 자 병합 약 5초, 미리보기는 샘플 글자만 부분 빌드) → 터미널 모양 미리보기, 폭 격자 오버레이, 전후 비교, TOML 저장 |
+| T3 | 데스크톱 앱 (Tauri) | T2의 웹 UI를 Tauri로 감싸고 Python 코어는 사이드카 프로세스(JSON-RPC)로 실행. 로컬 폰트 설치·제거, 실제 터미널(iTerm2, WezTerm)로 미리보기 실행, 프리셋 관리 |
+
+Tauri를 처음부터 쓰지 않고 T2를 먼저 두는 이유는, 폰트 처리 코어가 Python(fontTools)이라 웹 UI가 같은 코드를 그대로 재사용하고, T3로 갈 때 UI 코드를 버리지 않기 때문입니다.
+
+### 11.3 조절 대상 (초기 목록)
+한글 전체 스케일·dy, 받침 유무별 dy, weight 매핑(영문 weight ↔ 한글 weight), 한글 획 굵기 보정(stem darkening, 2단계), 영문 대비 한글 높이 비율 목표값, Pixel 가족의 격자 크기와 출력 배율.

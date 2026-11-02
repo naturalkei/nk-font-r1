@@ -1,0 +1,26 @@
+# NK Sans: JetBrains Mono (Latin) + Source Han Sans KR (Hangul).
+# Every tunable lives here so builds are reproducible and the tuning tool can edit one file.
+status = "active"
+family = "NK Sans"
+file_prefix = "NKSans"
+version = "0.1.0"
+
+[hangul]
+# Uniform scale applied to Hangul outlines, expressed for a 1000-UPM source (rescaled automatically).
+scale = 0.96
+# Vertical offset in target units after scaling (positive moves up).
+dy = -10
+# Horizontal placement inside the full-width cell: "advance" keeps the source spacing centered.
+center = "advance"
+
+[[weight]]
+name = "Regular"
+latin = "jetbrains-mono-regular"
+hangul = "source-han-sans-kr-regular"
+weight_class = 400
+
+[[weight]]
+name = "Bold"
+latin = "jetbrains-mono-bold"
+hangul = "source-han-sans-kr-bold"
+weight_class = 700
