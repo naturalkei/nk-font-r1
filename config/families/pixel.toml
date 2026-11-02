@@ -1,14 +1,35 @@
-# NK Pixel: single pixel master on an 8x16 / 16x16 grid (Unifont-compatible). Milestone M3.
-status = "planned"
+# NK Pixel: Neo Dunggeunmo Code (16 px grid, Unifont/Minecraft compatible). Milestone M3 prototype.
+# The source already has Latin + Hangul on one pixel grid, so it is renamed and terminal-flagged
+# instead of merged. UPM 1024 = 16 px, 64 units per pixel; half cell 512, full cell 1024.
+status = "active"
+kind = "pixel"
 family = "NK Pixel"
 file_prefix = "NKPixel"
-version = "0.0.0"
+version = "0.1.0"
+copyright = """Copyright 2026 naturalk (nk-font). \
+Copyright 2017-2021 Eunbin Jeong (Dalgona.), with Reserved Font Names 'Neo둥근모', \
+'Neo둥근모 Code', 'NeoDunggeunmo' and 'NeoDunggeunmo Code'. \
+Original Dunggeunmo bitmap font by Jungtae Kim, released into the public domain."""
 
 [grid]
 half = [8, 16]
 full = [16, 16]
 units_per_pixel = 64          # UPM 1024 at 16 px
 
+[[weight]]
+name = "Regular"
+source = "neodgm-code"
+weight_class = 400
+
+[terminal]
+# Neo Dunggeunmo draws East Asian Ambiguous symbols (①, ■, ▶) two cells wide; terminals use one.
+# They are unmapped so terminals fall back instead of overlapping the next cell.
+unmap_width_conflicts = true
+# Conjoining jamo are phase 2 (see CLAUDE.md); unmapped even though the source composes them.
+unmap = [[0x1100, 0x11FF], [0xA960, 0xA97F], [0xD7B0, 0xD7FF]]
+
 [outputs]
-formats = ["ttf", "bdf", "pcf", "minecraft-unihex", "bmfont", "terraria-xnb", "woff2"]
+# Prototype ships ttf + woff2; bitmap/game formats follow in M3.
+formats = ["ttf", "woff2"]
+planned = ["bdf", "pcf", "minecraft-unihex", "bmfont", "terraria-xnb"]
 scales = [1, 2, 3]

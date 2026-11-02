@@ -1,12 +1,28 @@
-# NK Serif: IBM Plex Mono (RFN "Plex") + Source Han Serif KR (RFN "Source"). Milestone M4.
-status = "planned"
+# NK Serif: IBM Plex Mono (RFN "Plex") + Source Han Serif KR (RFN "Source"). Milestone M4 prototype.
+status = "active"
 family = "NK Serif"
 file_prefix = "NKSerif"
-version = "0.0.0"
+version = "0.1.0"
+copyright = """Copyright 2026 naturalk (nk-font). \
+Copyright 2017 IBM Corp., with Reserved Font Name 'Plex'. \
+Copyright 2017-2024 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'."""
 
 [hangul]
-scale = 0.96
-dy = -10
+# Plex Mono has a lower x-height than JetBrains Mono, so Hangul is set slightly smaller.
+scale = 0.94
+dy = -20
 center = "advance"
 # Myeongjo hairlines vanish at small sizes; map Hangul one weight heavier than Latin.
 weight_bias = 1
+
+[[weight]]
+name = "Regular"
+latin = "plex-mono-regular"
+hangul = "source-han-serif-kr-medium"   # weight_bias: Regular -> Medium
+weight_class = 400
+
+[[weight]]
+name = "Bold"
+latin = "plex-mono-bold"
+hangul = "source-han-serif-kr-bold"
+weight_class = 700

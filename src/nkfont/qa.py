@@ -120,7 +120,9 @@ class Runner:
     def font_checks(self, st: Stage, files: list[Path]) -> None:
         from .checks import check_overflow, inherited_codepoints, run_all
 
-        base = TTFont(config.sources()["jetbrains-mono-regular"].path)
+        # The family's own Latin base (or the single pixel source) is the comparison point.
+        first = config.family(self.report.family)["weight"][0]
+        base = TTFont(config.sources()[first.get("latin") or first["source"]].path)
         own = None
         if self.masters:  # code points our merge added; patcher additions are not ours
             own = set(TTFont(self.masters[0]).getBestCmap()) - set(base.getBestCmap())

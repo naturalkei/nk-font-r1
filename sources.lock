@@ -28,3 +28,37 @@ id = "source-han-sans-kr-bold"
 url = "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/SubsetOTF/KR/SourceHanSansKR-Bold.otf"
 sha256 = "f678def86be3d973e85fb0e34513b93b9ec7d6a478380d93fe79d43d1ad9f797"
 license = "OFL-1.1 (RFN 'Source')"
+
+# NK Serif (M4 prototype): IBM Plex Mono from google/fonts pinned by commit, Source Han Serif KR.
+[[font]]
+id = "plex-mono-regular"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/ibmplexmono/IBMPlexMono-Regular.ttf"
+sha256 = "6a3412f058c7d8dfd9170c41e85ade48e5156ecb89356110ca57a0a27734af46"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-mono-bold"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/ibmplexmono/IBMPlexMono-Bold.ttf"
+sha256 = "ac27abd6450a64dd94467580a02fe6235156d5b92f2926ebbc8e7489df64e0be"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "source-han-serif-kr-medium"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-serif/2.003R/SubsetOTF/KR/SourceHanSerifKR-Medium.otf"
+sha256 = "2566ac21d17079d05d967eddc4130c9b39603c0b264eef61315daa6eda8c00b6"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-serif-kr-bold"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-serif/2.003R/SubsetOTF/KR/SourceHanSerifKR-Bold.otf"
+sha256 = "2856453de29abbc2f1fdffc6b45fec88167ed204e8ae9bc8c4bd0475b4d9a7dc"
+license = "OFL-1.1 (RFN 'Source')"
+
+# NK Pixel (M3 prototype): Neo Dunggeunmo Code 1.601, from the official web font kit.
+# License verified 2026-11-02 (github.com/neodgm/neodgm LICENSE.txt): OFL-1.1 with RFN
+# "Neo둥근모", "Neo둥근모 Code", "NeoDunggeunmo", "NeoDunggeunmo Code".
+[[font]]
+id = "neodgm-code"
+url = "https://raw.githubusercontent.com/neodgm/neodgm-webfont/v1.601/neodgm_code/neodgm_code.ttf"
+sha256 = "0d19cda34cba2c68137d4328820b743141279f8533b5624521f7b325e270a265"
+license = "OFL-1.1 (RFN 'Neo둥근모', 'NeoDunggeunmo')"

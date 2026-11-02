@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NK Studio</title>
+<style>
+:root{--bg:#f6f5f1;--panel:#fff;--ink:#1c1b19;--mute:#6d6a63;--line:#e4e1d9;--grid:rgba(40,120,110,.13);--acc:#1f7a6d;--acc2:#c2571a;--guide:rgba(194,87,26,.55);--guide2:rgba(31,122,109,.6)}
+@media (prefers-color-scheme:dark){:root{--bg:#121311;--panel:#1b1c1a;--ink:#ecebe6;--mute:#9a978f;--line:#2d2e2b;--grid:rgba(90,200,180,.12);--acc:#5cc6b4;--acc2:#f08a4b;--guide:rgba(240,138,75,.6);--guide2:rgba(92,198,180,.6)}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+header{display:flex;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line)}
+header b{font-size:16px;letter-spacing:.02em}header span{color:var(--mute)}
+main{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 53px)}
+aside{border-right:1px solid var(--line);padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+section{padding:16px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+label{display:block;font-size:12px;color:var(--mute);margin-bottom:4px}
+select,textarea,button,input[type=number]{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+select{width:100%}textarea{width:100%;min-height:110px;font-family:ui-monospace,monospace;font-size:12px}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.val{font-variant-numeric:tabular-nums;font-family:ui-monospace,monospace;min-width:56px;text-align:right;flex:0 0 auto}
+button{cursor:pointer}button.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+button:disabled{opacity:.45;cursor:default}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow:auto}
+.card h3{margin:0 0 10px;font-size:12px;font-weight:600;color:var(--mute);text-transform:uppercase;letter-spacing:.08em}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+pre.spec{margin:0;white-space:pre;background-image:linear-gradient(to right,var(--grid) 1px,transparent 1px);background-size:1ch 100%;background-position:0 0;width:max-content;min-width:100%}
+pre.spec.nogrid{background-image:none}
+pre.spec .ln{display:block;box-shadow:inset 0 -1px 0 var(--grid)}
+.insp{position:relative;white-space:pre;width:max-content}
+.guide{position:absolute;left:0;right:0;height:0;border-top:1px dashed var(--guide)}
+.guide.g2{border-top-color:var(--guide2)}
+.guide i{position:absolute;right:100%;margin-right:6px;transform:translateY(-50%);font:10px ui-monospace,monospace;color:var(--mute);font-style:normal;white-space:nowrap}
+.inspwrap{padding:4px 0 14px 90px;overflow:auto}
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.metric{border:1px solid var(--line);border-radius:8px;padding:8px 10px}.metric b{display:block;font:600 18px ui-monospace,monospace}.metric span{font-size:11px;color:var(--mute)}
+.hint{font-size:12px;color:var(--mute)}.err{color:#c0392b;font-size:12px;white-space:pre-wrap}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute)}
+@media (max-width:900px){main{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line)}.pair{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><b>NK Studio</b><span>한글 미세 조절 · 저장하면 config/families/*.toml 에 기록</span><span id="status" class="pill" style="margin-left:auto">준비</span></header>
+<main>
+<aside>
+  <div><label>가족</label><select id="family"></select></div>
+  <div><label>굵기</label><select id="weight"></select></div>
+  <div>
+    <label>한글 크기 scale</label>
+    <div class="row"><input id="scale" type="range" min="0.84" max="1.10" step="0.005"><span class="val" id="scaleV"></span></div>
+  </div>
+  <div>
+    <label>세로 이동 dy (font units)</label>
+    <div class="row"><input id="dy" type="range" min="-100" max="80" step="1"><span class="val" id="dyV"></span></div>
+  </div>
+  <div><label>가로 배치 center</label>
+    <select id="center"><option value="advance">advance (원본 여백 유지)</option><option value="bbox">bbox (외곽 중앙)</option></select></div>
+  <div class="row">
+    <button id="ruleCenter" title="한글 중심을 영문 대문자 중심에 맞춥니다">규칙: 중심 맞춤</button>
+    <button id="ruleCap" title="한글 높이를 대문자 높이의 비율로 맞춥니다">규칙: 높이 비율</button>
+  </div>
+  <div><label>목표 한글/대문자 높이 비율</label><input id="capTarget" type="number" step="0.01" value="1.16" style="width:100%"></div>
+  <div class="row"><button id="reset">저장값으로</button><button class="primary" id="save">설정 저장</button></div>
+  <div><label>크기 (px)</label><select id="size"><option>12</option><option>14</option><option selected>16</option><option>20</option><option>28</option><option>40</option></select></div>
+  <div class="row"><label style="margin:0"><input type="checkbox" id="grid" checked> 셀 격자</label><label style="margin:0"><input type="checkbox" id="liga" checked> 합자(calt)</label></div>
+  <div><label>미리보기 문장</label><textarea id="text"></textarea></div>
+  <div class="hint">미리보기는 화면의 글자만 담은 작은 폰트를 <code>nkfont build</code>와 같은 코드로 매번 다시 빌드합니다.</div>
+  <div id="err" class="err"></div>
+</aside>
+<section>
+  <div class="pair">
+    <div class="card"><h3>저장된 값 <span id="savedLbl"></span></h3><pre class="spec" id="specA"></pre></div>
+    <div class="card"><h3>편집 중 <span id="editLbl"></span></h3><pre class="spec" id="specB"></pre></div>
+  </div>
+  <div class="card"><h3>측정 (편집 중)</h3><div class="metrics" id="metrics"></div></div>
+  <div class="card"><h3>가이드라인</h3><div class="inspwrap"><div class="insp" id="insp"></div></div></div>
+</section>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+let families = [], saved = {}, metricsB = null, seq = 0, timer = null;
+
+function fam() { return families.find(f => f.id === $("family").value); }
+function params() { return { scale: +$("scale").value, dy: +$("dy").value, center: $("center").value }; }
+function setStatus(t) { $("status").textContent = t; }
+
+async function api(path, body) {
+  const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+
+async function loadFace(name, b64) {
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const face = new FontFace(name, bytes.buffer);
+  await face.load();
+  for (const f of [...document.fonts]) if (f.family === name || f.family === `"${name}"`) document.fonts.delete(f);
+  document.fonts.add(face);
+}
+
+function renderSpec(el, faceName, m) {
+  const size = +$("size").value;
+  el.style.fontFamily = `"${faceName}", monospace`;
+  el.style.fontSize = size + "px";
+  el.style.lineHeight = ((m.ascent - m.descent) / m.upm).toFixed(4);
+  el.style.fontFeatureSettings = $("liga").checked ? "normal" : '"calt" 0, "liga" 0';
+  el.classList.toggle("nogrid", !$("grid").checked);
+  el.innerHTML = "";
+  for (const line of $("text").value.split("\n")) {
+    const s = document.createElement("span"); s.className = "ln"; s.textContent = line || " "; el.appendChild(s);
+  }
+}
+
+function renderInspector(faceName, m) {
+  const el = $("insp"), fs = 160, k = fs / m.upm;
+  el.innerHTML = "";
+  el.style.fontFamily = `"${faceName}", monospace`;
+  el.style.fontSize = fs + "px";
+  el.style.lineHeight = ((m.ascent - m.descent) / m.upm).toFixed(4);
+  el.style.height = ((m.ascent - m.descent) * k) + "px";
+  el.appendChild(document.createTextNode("Hx한를가"));
+  const base = m.ascent * k;
+  const lines = [["ascent", m.ascent, 0], ["cap", m.cap_top, 0], ["x-height", m.x_top, 0], ["baseline", 0, 0], ["descent", m.descent, 0],
+                 ["한 top", m.han_mid_top, 1], ["한 bottom", m.han_mid_bottom, 1]];
+  for (const [label, v, g2] of lines) {
+    if (v === undefined) continue;
+    const d = document.createElement("div"); d.className = "guide" + (g2 ? " g2" : "");
+    d.style.top = (base - v * k) + "px"; d.innerHTML = `<i>${label} ${v}</i>`; el.appendChild(d);
+  }
+}
+
+function renderMetrics(m, ms) {
+  const items = [["한글/대문자 높이", m.hangul_to_cap], ["중심 차이 (units)", m.center_offset], ["한 top / bottom", `${m.han_mid_top} / ${m.han_mid_bottom}`],
+                 ["대문자 / x높이", `${m.cap_top} / ${m.x_top}`], ["셀 폭 half", m.half], ["빌드 시간", ms + " ms"]];
+  $("metrics").innerHTML = items.map(([k, v]) => `<div class="metric"><b>${v ?? "–"}</b><span>${k}</span></div>`).join("");
+}
+
+async function refresh(which = "both") {
+  const f = fam(); if (!f) return;
+  const my = ++seq; $("err").textContent = ""; setStatus("빌드 중…");
+  const text = $("text").value, weight = $("weight").value;
+  try {
+    const jobs = [];
+    if (which !== "edit") jobs.push(api("/api/preview", { family: f.id, weight, text, ...saved }).then(async r => { if (my !== seq && which === "both") return; await loadFace("NKSaved", r.font); renderSpec($("specA"), "NKSaved", r.metrics); }));
+    jobs.push(api("/api/preview", { family: f.id, weight, text, ...params() }).then(async r => {
+      if (my !== seq) return;
+      await loadFace("NKEdit", r.font); metricsB = r.metrics;
+      renderSpec($("specB"), "NKEdit", r.metrics); renderInspector("NKEdit", r.metrics); renderMetrics(r.metrics, r.ms);
+    }));
+    await Promise.all(jobs);
+    if (my === seq) setStatus("완료");
+  } catch (e) { $("err").textContent = e.message; setStatus("오류"); }
+}
+
+function syncLabels() {
+  const p = params();
+  $("scaleV").textContent = p.scale.toFixed(3); $("dyV").textContent = p.dy;
+  $("savedLbl").textContent = saved.scale !== undefined ? `scale ${saved.scale} · dy ${saved.dy}` : "";
+  $("editLbl").textContent = `scale ${p.scale.toFixed(3)} · dy ${p.dy}`;
+}
+
+function onFamily() {
+  const f = fam();
+  $("weight").innerHTML = f.weights.map(w => `<option>${w}</option>`).join("");
+  saved = f.kind === "pixel" ? {} : { scale: f.hangul.scale ?? 0.96, dy: f.hangul.dy ?? 0, center: f.hangul.center ?? "advance" };
+  const pixel = f.kind === "pixel";
+  for (const id of ["scale", "dy", "center", "ruleCenter", "ruleCap", "save", "reset"]) $(id).disabled = pixel;
+  if (pixel) { $("size").innerHTML = [16, 32, 48, 64].map(s => `<option>${s}</option>`).join(""); }
+  else if ($("size").options.length !== 6) { $("size").innerHTML = [12, 14, 16, 20, 28, 40].map(s => `<option ${s === 16 ? "selected" : ""}>${s}</option>`).join(""); }
+  resetEdit(); refresh();
+}
+
+function resetEdit() {
+  if (saved.scale !== undefined) { $("scale").value = saved.scale; $("dy").value = saved.dy; $("center").value = saved.center; }
+  syncLabels();
+}
+
+function schedule() { syncLabels(); clearTimeout(timer); timer = setTimeout(() => refresh("edit"), 120); }
+
+$("family").onchange = onFamily;
+$("weight").onchange = () => refresh();
+for (const id of ["scale", "dy", "center"]) $(id).oninput = schedule;
+$("text").oninput = () => { clearTimeout(timer); timer = setTimeout(() => refresh(), 300); };
+for (const id of ["size", "grid", "liga"]) $(id).onchange = () => refresh();
+$("reset").onclick = () => { resetEdit(); refresh("edit"); };
+$("ruleCenter").onclick = () => { if (!metricsB) return; $("dy").value = Math.round(+$("dy").value - metricsB.center_offset); schedule(); };
+$("ruleCap").onclick = () => {
+  if (!metricsB) return;
+  const target = +$("capTarget").value, cur = metricsB.hangul_to_cap;
+  $("scale").value = (+$("scale").value * target / cur).toFixed(3); schedule();
+};
+$("save").onclick = async () => {
+  const f = fam();
+  try {
+    const r = await api("/api/save", { family: f.id, ...params() });
+    saved = params(); f.hangul = { ...f.hangul, ...saved }; syncLabels(); refresh("saved");
+    setStatus("저장됨 → " + r.saved);
+  } catch (e) { $("err").textContent = e.message; }
+};
+
+(async () => {
+  const r = await api("/api/families");
+  families = r.families; $("text").value = r.text;
+  $("family").innerHTML = families.map(f => `<option value="${f.id}">${f.family}</option>`).join("");
+  onFamily();
+})();
+</script>
+</body>
+</html>

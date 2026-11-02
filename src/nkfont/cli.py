@@ -60,6 +60,18 @@ def main(argv: list[str] | None = None) -> int:
     d.add_argument("old", type=Path)
     d.add_argument("new", type=Path)
 
+    st = sub.add_parser("studio", help="local web UI for Hangul tuning (writes config/families)")
+    st.add_argument("--host", default="127.0.0.1")
+    st.add_argument("--port", type=int, default=8765)
+    st.add_argument("--no-browser", action="store_true")
+
+    w = sub.add_parser("webfont", help="convert TTF files to WOFF2")
+    w.add_argument("fonts", nargs="+", type=Path)
+    w.add_argument("-o", "--out-dir", type=Path, default=Path("build/webfonts"))
+
+    si = sub.add_parser("site", help="assemble the prototype site into build/site")
+    si.add_argument("-o", "--out", type=Path, default=None)
+
     args = ap.parse_args(argv)
 
     if args.cmd == "qa":
@@ -73,6 +85,25 @@ def main(argv: list[str] | None = None) -> int:
         from .diff import diff_fonts, format_diff
 
         print(format_diff(diff_fonts(TTFont(args.old), TTFont(args.new))))
+        return 0
+
+    if args.cmd == "studio":
+        from .studio.server import serve
+
+        serve(args.host, args.port, open_browser=not args.no_browser)
+        return 0
+
+    if args.cmd == "webfont":
+        from .site import to_woff2
+
+        for f in args.fonts:
+            print(to_woff2(f, args.out_dir / f"{f.stem}.woff2"))
+        return 0
+
+    if args.cmd == "site":
+        from .site import build_site
+
+        print(build_site(args.out))
         return 0
 
     if args.cmd == "fetch":

@@ -18,6 +18,8 @@ nkfont qa [--profile quick|ci|release]   # full automated pipeline + report (doc
 nkfont diff OLD.ttf NEW.ttf              # what a change actually did
 nkfont proof FILES -o proofs/proof.png
 nkfont tune sans --scale 0.92:1.04:0.04 --dy -30:10:20
+nkfont studio         # NK Studio web UI: live Hangul tuning, saves [hangul] in config/families
+nkfont site           # build/site: prototype site (WOFF2 + zips); deployed by .github/workflows/pages.yml
 python -m pytest -q   # unit tests use synthetic fonts; real-font tests skip without sources/
 ruff check src tests && ruff format --check src tests
 ```
@@ -33,6 +35,8 @@ ruff check src tests && ruff format --check src tests
 - U+1100–11FF conjoining jamo are out of scope until phase 2 (needs ljmo/vjmo/tjmo).
 - Merge with fontTools into the Latin TTF so GSUB/GPOS survive; don't round-trip through FontForge.
 - Reserved Font Names `Source`, `Pretendard`, `Plex`, `Neo둥근모`, `NeoDunggeunmo` must not appear in our names.
+- NK Pixel (`kind = "pixel"`) is one source font renamed, not merged: width conflicts (Ambiguous
+  symbols drawn two cells) are unmapped, never squeezed.
 - All tunables live in `config/families/*.toml`; code reads them, never hard-codes them.
 - Pin every upstream input in `sources.lock` (URL + SHA256, patcher image tag + digest).
 

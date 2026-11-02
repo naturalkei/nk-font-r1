@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nk-font — 한글도 칸에 맞게</title>
+<meta name="description" content="터미널을 위한 OFL 한글 고정폭 Nerd Font. NK Sans, NK Serif, NK Pixel 프로토타입.">
+<meta property="og:title" content="nk-font — 한글도 칸에 맞게">
+<meta property="og:description" content="Starship, zsh, iTerm2, Linux 터미널에서 한글·영문·아이콘이 셀 격자에 정확히 맞는 한글 Nerd Font.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23141513'/%3E%3Cpath d='M8 9h3v14H8zM13 9h3l5 8V9h3v14h-3l-5-8v8h-3z' fill='%2353d3bd'/%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip" href="#main">본문으로</a>
+<header class="nav">
+  <a class="logo" href="#top" aria-label="nk-font 처음으로"><span class="logo-mark">nk</span><span class="logo-word">font</span></a>
+  <nav aria-label="주요 메뉴">
+    <a href="#play">체험</a><a href="#why">특징</a><a href="#families">가족</a><a href="#glyphs">글리프</a><a href="#pixel">픽셀</a><a href="#install">설치</a>
+  </nav>
+  <div class="nav-right">
+    <button class="icon-btn" id="themeBtn" aria-label="밝기 전환" title="밝기 전환">◐</button>
+    <a class="btn btn-small" href="#download">내려받기</a>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" id="top">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="badge">Prototype</span> <span id="buildInfo" class="nk-sans">v0.1.0</span></p>
+    <h1 class="grid-title"><span>한글도</span><span>칸에 맞게.</span></h1>
+    <p class="lede">터미널을 위한 한글 고정폭 Nerd Font. 영문 한 칸, 한글 두 칸, 아이콘까지 셀 격자에 정확히 떨어지도록 만들었습니다. <b>NK Sans</b> · <b>NK Serif</b> · <b>NK Pixel</b>, SIL OFL 1.1.</p>
+    <div class="cta"><a class="btn" href="#download">무료로 내려받기</a><a class="btn btn-ghost" href="#play">직접 입력해 보기</a></div>
+  </div>
+  <figure class="term" aria-label="nk-font로 표시한 터미널 예시">
+    <div class="term-bar"><i></i><i></i><i></i><span>~/문서/프로젝트 — zsh</span>
+      <label class="switch"><input type="checkbox" id="heroGrid"> 격자</label></div>
+    <pre class="term-body nk-sans" id="heroTerm"></pre>
+  </figure>
+</section>
+
+<section class="band" id="play">
+  <div class="section-head"><h2>직접 입력해 보기</h2><p>글자를 고치고, 가족과 굵기를 바꿔 보세요. 격자를 켜면 한글이 정확히 두 칸을 차지하는지 볼 수 있습니다.</p></div>
+  <div class="play">
+    <div class="controls" role="group" aria-label="미리보기 설정">
+      <div class="seg" id="famSeg" role="radiogroup" aria-label="가족"></div>
+      <div class="seg" id="wSeg" role="radiogroup" aria-label="굵기"></div>
+      <label class="range">크기 <input type="range" id="sizeR" min="12" max="96" value="40"><output id="sizeV">40px</output></label>
+      <label class="switch"><input type="checkbox" id="playGrid" checked> 격자</label>
+      <label class="switch"><input type="checkbox" id="playLiga" checked> 합자</label>
+    </div>
+    <div class="play-area" id="playArea" contenteditable="true" spellcheck="false" aria-label="미리보기 문장, 편집 가능">다람쥐 헌 쳇바퀴에 타고파
+The quick brown fox → 0O1lI
+if (값 != null) { return a <= b; }</div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="section-head"><h2>왜 nk-font인가</h2><p>예쁜 글꼴보다 먼저, 칸이 맞는 글꼴이어야 합니다.</p></div>
+  <div class="features">
+    <article class="feat">
+      <div class="feat-demo nk-sans grid-on"><span class="cells"><b>a</b><b>b</b><b class="w2">한</b><b class="w2">글</b><b>c</b></span></div>
+      <h3>1 : 2 격자</h3><p>영문 600, 한글 1200 단위(UPM 1000). 폭은 이 두 값과 0만 씁니다. 다른 폭이 하나라도 있으면 빌드가 실패합니다.</p>
+    </article>
+    <article class="feat">
+      <div class="feat-demo mono-num"><span>wcwidth(<q>한</q>) = 2</span><span>advance = 1200</span><span class="ok">✓ 일치</span></div>
+      <h3>터미널과 같은 계산</h3><p>터미널이 쓰는 wcwidth와 글리프 폭을 코드포인트마다 대조합니다. 애매한 폭(Ambiguous) 문자는 한글 폰트에서 가져오지 않습니다.</p>
+    </article>
+    <article class="feat">
+      <div class="feat-demo nk-sans icons" aria-hidden="true">&#xF07B; &#xE725; &#xF113; &#xE7A8; &#xF308; &#xF179; &#xE718; &#xF0E7;</div>
+      <h3>Nerd Fonts 내장</h3><p>Powerline, Font Awesome, Devicons, Material 등 아이콘 1만여 개. 아이콘을 한 칸으로 고정한 Mono 변형도 함께 제공합니다.</p>
+    </article>
+    <article class="feat">
+      <div class="feat-demo nk-sans pl" aria-hidden="true"><span class="pl1">&nbsp;~/문서 </span><span class="pl1e">&#xE0B0;</span><span class="pl2">&nbsp;&#xE725; main </span><span class="pl2e">&#xE0B0;</span></div>
+      <h3>이음새 없는 줄 높이</h3><p>영문 원본의 줄 높이(1020 / −300)를 그대로 지키고 lineGap은 0. Powerline 화살표와 박스 문자가 위아래로 끊기지 않습니다.</p>
+    </article>
+  </div>
+  <div class="stats" id="stats"></div>
+</section>
+
+<section class="band" id="families">
+  <div class="section-head"><h2>세 가족</h2><p>같은 격자 규칙, 다른 목소리.</p></div>
+  <div class="fam-grid" id="famGrid"></div>
+</section>
+
+<section id="code">
+  <div class="section-head"><h2>코드에서</h2><p>주석과 문자열에 한글이 섞여도 열이 흐트러지지 않습니다.</p></div>
+  <div class="code-wrap">
+    <div class="tabs" id="codeTabs" role="tablist"></div>
+    <pre class="code nk-sans" id="codeBox"></pre>
+  </div>
+</section>
+
+<section class="band" id="glyphs">
+  <div class="section-head"><h2>글리프 탐색기</h2><p>글자를 누르면 코드포인트와 터미널 칸 수를 보여 줍니다.</p></div>
+  <div class="gx">
+    <div class="gx-bar">
+      <div class="seg" id="gxSeg" role="tablist"></div>
+      <input id="gxSearch" type="search" placeholder="글자 또는 U+AC00" aria-label="글자 검색">
+    </div>
+    <div class="gx-main">
+      <div class="gx-grid nk-sans" id="gxGrid"></div>
+      <aside class="gx-info" id="gxInfo" aria-live="polite"><div class="gx-big nk-sans" id="gxBig">한</div><dl id="gxDl"></dl></aside>
+    </div>
+    <button class="btn btn-ghost btn-small" id="gxMore">더 보기</button>
+  </div>
+</section>
+
+<section id="pixel">
+  <div class="section-head"><h2>NK Pixel</h2><p>16 px 격자의 비트맵 감성. 정수 배율(16 · 32 · 48 px)에서 픽셀이 정확히 떨어집니다. 터미널은 물론 픽셀아트 게임용 포맷(마인크래프트 리소스팩, 테라리아, BMFont)을 준비 중입니다.</p></div>
+  <div class="pixel-wrap">
+    <div class="dialog nk-pixel">
+      <div class="dialog-name">상인</div>
+      <p id="pixelLine">어서 오게, 모험가여! 오늘은 HP 포션이 3개에 120G라네.</p>
+      <div class="dialog-opts"><span>▶ 산다</span><span>&nbsp; 그만둔다</span></div>
+    </div>
+    <div class="pixel-scales nk-pixel">
+      <div style="font-size:16px">16px 가나다 ABC 123</div>
+      <div style="font-size:32px">32px 가나다 ABC</div>
+      <div style="font-size:48px">48px 한글</div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="install">
+  <div class="section-head"><h2>설치와 설정</h2><p>압축을 풀고 폰트를 설치한 뒤, 터미널에서 <code>NKSans Nerd Font</code>를 고르세요.</p></div>
+  <div class="install">
+    <div class="tabs" id="osTabs" role="tablist"></div>
+    <div class="snip"><pre id="osBox"></pre><button class="copy" data-target="osBox">복사</button></div>
+    <div class="tabs" id="appTabs" role="tablist"></div>
+    <div class="snip"><pre id="appBox"></pre><button class="copy" data-target="appBox">복사</button></div>
+    <p class="note">아이콘을 항상 한 칸으로 쓰려면 <code>NKSans Nerd Font Mono</code>를 고르세요. 한글은 Mono에서도 두 칸입니다.</p>
+  </div>
+</section>
+
+<section id="download">
+  <div class="section-head"><h2>내려받기</h2><p>프로토타입입니다. 각 압축 파일에 Nerd Font, Nerd Font Mono, 아이콘 없는 마스터와 라이선스가 들어 있습니다.</p></div>
+  <div class="dl-grid" id="dlGrid"></div>
+</section>
+</main>
+
+<footer class="foot">
+  <div>
+    <div class="logo"><span class="logo-mark">nk</span><span class="logo-word">font</span></div>
+    <p>Copyright 2026 naturalk (nk-font). 폰트는 <a href="https://openfontlicense.org">SIL Open Font License 1.1</a>, 빌드 도구 코드는 MIT.</p>
+  </div>
+  <div>
+    <h4>업스트림</h4>
+    <p>JetBrains Mono · Source Han Sans KR · IBM Plex Mono · Source Han Serif KR · Neo둥근모 Code · Nerd Fonts. 각 원본의 예약 글꼴 이름은 nk-font 이름에 쓰지 않습니다.</p>
+  </div>
+  <div>
+    <h4>프로젝트</h4>
+    <p><a href="https://github.com/naturalkei/nk-font-r1">GitHub</a> · <a href="https://github.com/naturalkei/nk-font-r1/blob/main/docs/ROADMAP.md">로드맵</a> · <a href="fonts.json">빌드 정보</a></p>
+  </div>
+</footer>
+<script src="app.js" type="module"></script>
+</body>
+</html>
