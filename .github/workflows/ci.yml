@@ -7,8 +7,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  qa:
     runs-on: ubuntu-latest
+    env:
+      SOURCE_DATE_EPOCH: "1798761600"  # fixed font timestamps (reproducible builds)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -16,41 +18,17 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -e ".[dev]"
-      - run: ruff check src tests && ruff format --check src tests
       - uses: actions/cache@v4
         with:
           path: sources
           key: sources-${{ hashFiles('sources.lock') }}
-      - run: nkfont fetch
-      - run: pytest -q
-
-  fonts:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-      - run: pip install -e .
-      - uses: actions/cache@v4
-        with:
-          path: sources
-          key: sources-${{ hashFiles('sources.lock') }}
-      - run: nkfont fetch
-      - name: Build masters
-        run: nkfont build sans
-      - name: Nerd Fonts patch (nf + nfm)
-        run: nkfont patch
-      - name: QA
-        run: nkfont check build/master/*.ttf dist/*.ttf --base sources/JetBrainsMono-Regular.ttf
-      - name: Proof sheet
-        run: nkfont proof build/master/*.ttf dist/*.ttf -o proofs/proof.png
+      - name: nkfont qa --profile ci
+        run: nkfont qa --profile ci --report-dir reports
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: nk-sans-${{ github.sha }}
           path: |
             dist/*.ttf
-            proofs/*.png
+            reports/
           retention-days: 14

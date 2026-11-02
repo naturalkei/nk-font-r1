@@ -36,6 +36,7 @@ def main(argv: list[str] | None = None) -> int:
     c = sub.add_parser("check", help="run QA checks on font files")
     c.add_argument("fonts", nargs="+", type=Path)
     c.add_argument("--base", type=Path, help="Latin base font, for feature/width comparison")
+    c.add_argument("--master", type=Path, help="our unpatched master, to tell our glyphs apart")
 
     pr = sub.add_parser("proof", help="render a proof sheet PNG")
     pr.add_argument("fonts", nargs="+", type=Path)
@@ -49,7 +50,30 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--dy", default=None, help="start:stop:step in font units")
     t.add_argument("-o", "--output", type=Path, default=Path("proofs/tune.png"))
 
+    q = sub.add_parser("qa", help="run the automated test pipeline and write a report")
+    q.add_argument("--profile", choices=["quick", "ci", "release"], default="quick")
+    q.add_argument("--family", default="sans")
+    q.add_argument("--report-dir", type=Path, default=Path("reports"))
+    q.add_argument("--update-golden", action="store_true", help="accept current renders")
+
+    d = sub.add_parser("diff", help="structural diff of two font files")
+    d.add_argument("old", type=Path)
+    d.add_argument("new", type=Path)
+
     args = ap.parse_args(argv)
+
+    if args.cmd == "qa":
+        from .qa import run
+
+        report = run(args.profile, args.family, args.report_dir, args.update_golden)
+        print(f"\nreport: {args.report_dir / 'qa.md'}  result: {'PASS' if report.ok else 'FAIL'}")
+        return 0 if report.ok else 1
+
+    if args.cmd == "diff":
+        from .diff import diff_fonts, format_diff
+
+        print(format_diff(diff_fonts(TTFont(args.old), TTFont(args.new))))
+        return 0
 
     if args.cmd == "fetch":
         from .fetch import fetch_all
@@ -77,10 +101,13 @@ def main(argv: list[str] | None = None) -> int:
         from .checks import run_all
 
         base = TTFont(args.base) if args.base else None
+        own = None
+        if args.master and base is not None:
+            own = set(TTFont(args.master).getBestCmap()) - set(base.getBestCmap())
         failed = False
         for f in args.fonts:
             print(f"== {f}")
-            for name, problems in run_all(TTFont(f), base).items():
+            for name, problems in run_all(TTFont(f), base, own).items():
                 status = "ok " if not problems else "FAIL"
                 print(f"  {status} {name} ({len(problems)})")
                 for line in problems[:20]:

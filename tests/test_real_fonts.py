@@ -22,7 +22,9 @@ def sans():
 
 def test_sans_regular_passes_all_checks(sans):
     font, base = sans
-    assert run_all(font, base) == {"widths": [], "metrics": [], "names": [], "features": []}
+    result = run_all(font, base)
+    assert set(result) == {"widths", "overflow", "metrics", "names", "features"}
+    assert {k: v for k, v in result.items() if v} == {}
 
 
 def test_sans_regular_has_all_hangul_syllables(sans):

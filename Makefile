@@ -3,7 +3,7 @@ PY ?= .venv/bin/python
 NK ?= .venv/bin/nkfont
 FAMILY ?= sans
 
-.PHONY: setup fetch build patch check proof tune test lint all clean
+.PHONY: setup fetch build patch check proof tune test lint qa qa-ci all clean
 
 setup:
 	python3 -m venv .venv
@@ -34,7 +34,13 @@ lint:
 	$(PY) -m ruff check src tests
 	$(PY) -m ruff format --check src tests
 
+qa:
+	$(NK) qa
+
+qa-ci:
+	$(NK) qa --profile ci
+
 all: build check patch check
 
 clean:
-	rm -rf build dist proofs
+	rm -rf build dist proofs reports
