@@ -12,7 +12,16 @@ BUILD_DIR = ROOT / "build"
 DIST_DIR = ROOT / "dist"
 
 # Reserved Font Names of upstream fonts; they must never appear in our names.
-RESERVED_NAMES = ("Source", "Pretendard", "Plex", "NeoDunggeunmo", "둥근모", "Nanum", "나눔")
+RESERVED_NAMES = (
+    "Source",
+    "Pretendard",
+    "Plex",
+    "NeoDunggeunmo",
+    "둥근모",
+    "Nanum",
+    "나눔",
+    "D2Coding",
+)
 
 
 def _load(path: Path) -> dict:
@@ -46,7 +55,7 @@ def family(name: str, root: Path = ROOT) -> dict:
 
 
 # Display/build order of the families; config/families/<id>.toml.
-FAMILY_ORDER = ("sans", "serif", "mono", "pixel", "novel", "comics")
+FAMILY_ORDER = ("mono", "serif", "pixel", "sans", "novel", "comics")
 
 
 def family_ids(root: Path = ROOT) -> list[str]:

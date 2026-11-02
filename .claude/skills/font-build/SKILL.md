@@ -1,6 +1,6 @@
 ---
 name: font-build
-description: Build, patch and package NK fonts (NK Sans/Serif/Pixel) with the nkfont pipeline. Use when asked to build fonts, add a weight or family, bump an upstream font, or change the Nerd Fonts patch step.
+description: Build, patch and package NK fonts (NK Mono/Serif/Pixel terminal fonts, NK Sans/Novel/Comics proportional) with the nkfont pipeline. Use when asked to build fonts, add a weight or family, bump an upstream font, or change the Nerd Fonts patch step.
 ---
 
 # Building NK fonts

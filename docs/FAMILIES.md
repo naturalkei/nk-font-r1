@@ -1,4 +1,4 @@
-# NK 가족 확장 기획: Mono · Novel · Comics (+ 차별화·굵기·기능 체계)
+# NK 가족 기획: Mono · Sans · Novel · Comics (+ 차별화·굵기·기능 체계)
 
 > 2026-11-02 · 기준 문서: [PLAN.md](PLAN.md), [ROADMAP.md](ROADMAP.md)
 > 요청: NK Mono, NK Novel(책·소설·뉴스/신문 읽기 전용), NK Comics 추가. 대중적인 폰트와 뚜렷이 다른 특색,
@@ -9,34 +9,34 @@
 
 ## 1. 여섯 가족 한눈에
 
-NK는 두 갈래입니다. **터미널 갈래**는 1 : 2 셀 격자(0 / 600 / 1200)와 Nerd 아이콘을 지키는 고정폭, **읽기 갈래**는 격자 없이 사람이 길게 읽는 비례폭입니다. MonoLisa가 Code와 Text를 나눈 것과 같은 방향이지만, NK의 읽기 갈래는 "한글 본문"이 주인공입니다.
+> 2026-11-02 재편(사용자 결정): **NK Sans는 처음부터 고정폭일 이유가 없는 문서용 비례폭 고딕**으로 바꾸고, 터미널 대표 역할은 **NK Mono**가 맡습니다. NK Mono 한글은 사용자가 좋아하는 D2Coding의 한글을 씁니다. NK Comics는 "더 과장되고 만화다운" 레터링으로 다시 짰습니다.
 
-| 가족 | 갈래 (`kind`) | 용도 | 영문 베이스 | 한글 베이스 | 상태 |
+NK는 두 갈래입니다. **터미널 갈래**는 1 : 2 셀 격자(0 / 600 / 1200)와 Nerd 아이콘을 지키는 고정폭, **문서·읽기 갈래**는 격자 없이 사람이 읽는 비례폭입니다. MonoLisa 3.0이 Code와 Text를 나눈 것과 같은 방향이지만, NK의 비례폭 갈래는 한글 본문이 주인공입니다.
+
+| 가족 | 갈래 (`kind`) | 용도 | 영문 베이스 | 한글 베이스 | 기본 줄 높이 |
 | --- | --- | --- | --- | --- | --- |
-| NK Sans | 터미널 (`merge`) | 기본 코딩·터미널 | JetBrains Mono | 본고딕 KR | 프로토타입 |
-| NK Serif | 터미널 (`merge`) | 세리프 코딩 | IBM Plex Mono | 본명조 KR | 프로토타입 |
-| **NK Mono** | 터미널 (`merge`) | 합자 없는 순수 터미널 | **JetBrains Mono NL** | **나눔고딕코딩** | **이번 PR** |
-| NK Pixel | 터미널 (`pixel`) | 픽셀 터미널 + 게임 | Neo둥근모 Code | Neo둥근모 Code | 프로토타입 |
-| **NK Novel** | 읽기 (`text`) | 책·소설·뉴스·신문 본문 | **Crimson Text** | **고운바탕** | **이번 PR** |
-| **NK Comics** | 읽기 (`text`) | 만화·웹툰 말풍선 | **Comic Neue** | **동글** | **이번 PR** |
+| **NK Mono** | 터미널 (`merge`) | 터미널·코딩 대표 | JetBrains Mono | **D2Coding 한글** (RFN `D2Coding`) | 영문 베이스 1.32 (불변) |
+| NK Serif | 터미널 (`merge`) | 세리프 코딩 | IBM Plex Mono | 본명조 KR | 영문 베이스 |
+| NK Pixel | 터미널 (`pixel`) | 픽셀 터미널 + 게임 | Neo둥근모 Code | Neo둥근모 Code | 픽셀 격자 |
+| **NK Sans** | 문서 (`text`) | 일반 문서·UI·발표 자료 | **IBM Plex Sans** | 본고딕 KR | φ^5/6 = 1.493 |
+| **NK Novel** | 읽기 (`text`) | 책·소설·뉴스·신문 본문 | Crimson Text | 고운바탕 | φ = 1.618 |
+| **NK Comics** | 읽기 (`text`) | 만화·웹툰 말풍선·효과음 | **Bagel Fat One / Gasoek One** | 같은 소스 + 본고딕 Heavy 보충 | √φ = 1.272 |
 
-라이선스는 모두 2026-11-02에 google/fonts·업스트림 원문으로 확인했습니다. 나눔고딕코딩만 RFN(`Nanum`, `NanumGothic` 등)이 있어 `RESERVED_NAMES`에 `Nanum`, `나눔`을 추가했고 CI가 이름을 막습니다. Crimson Text, 고운바탕, Comic Neue, 동글, JetBrains Mono NL은 RFN이 없습니다.
+라이선스는 모두 2026-11-02에 업스트림 원문으로 확인해 `sources.lock`에 고정했습니다. RFN이 있는 소스(`D2Coding`, `Plex`, `Source`, `Neo둥근모`)는 `RESERVED_NAMES`가 이름 사용을 막습니다. Crimson Text, 고운바탕, Bagel Fat One, Gasoek One, JetBrains Mono는 RFN이 없습니다.
 
-### 1.1 NK Mono: 정체성
-NK Sans와 같은 터미널 규칙을 쓰지만 성격이 다릅니다.
-* **글자가 생긴 그대로**: 합자가 없는 JetBrains Mono NL을 씁니다. `!=`, `<=`, `->`가 늘 두 글자로 보여야 하는 사람(교육, 문서, 공유 화면, 로그 분석)을 위한 가족입니다.
-* **고정폭용으로 그린 한글**: 나눔고딕코딩의 한글은 처음부터 1 : 2 고정폭에 맞춰 그려져, 비례폭 본고딕을 줄여 넣는 NK Sans보다 두 칸을 꽉 채웁니다(스케일 1.08, 잉크 폭 약 1,000/1,200).
-* 결정 대기: 사용자 확인 카드로 정체성을 물었습니다. 다른 해석을 고르면 이 절을 갱신합니다.
+### 1.1 NK Mono: 터미널 대표
+* **영문**: JetBrains Mono. 합자와 cv/ss 기능을 그대로 두고, 합자를 싫어하는 사용자는 `calt`를 끄면 됩니다.
+* **한글**: D2Coding 한글(나눔바른고딕 기반, 1 : 2 고정폭용). 비례폭 본고딕을 줄여 넣던 이전 Sans보다 두 칸을 꽉 채우고 획이 단정합니다(스케일 1.08, dy +40).
+* D2Coding에서 참고할 점: 비슷한 글자(`0 O ㅇ`, `1 l I |`, `ㅡ -`)의 구별을 최우선으로 한 설계 원칙. NK 제로·문장부호 기능(§2)이 이 원칙을 이어받습니다. D2Coding 영문은 쓰지 않으므로 NK Mono가 D2Coding의 이름 바꾼 복제가 되지 않습니다.
 
-### 1.2 NK Novel: 읽기용 바탕
-* 고운바탕은 긴 글을 위한 바탕체(현대 한글 11,172자)이고, Crimson Text는 올드스타일 북 세리프라 한·영이 함께 "책" 질감을 냅니다.
-* 한글 스케일 0.92, 자간 −10(긴 글에서 고운바탕의 넉넉한 기본 간격을 살짝 조임).
-* **기본 줄 높이 φ = 1.618 em**: 별도 CSS 없이도 본문 행간이 황금비가 됩니다(§3).
+### 1.2 NK Sans: 문서용 고딕
+* IBM Plex Sans(정적 100–700, 인쇄용 굵기 확장에 유리) + 본고딕 KR(7단계). 한글 스케일 0.90, 자간 −20.
+* 기본 줄 높이 φ^5/6 = 1.493: 문서 본문에 흔히 쓰는 1.5와 거의 같으면서 공용 φ 스케일(step 5)에 맞습니다.
+* 소개 사이트의 UI 글꼴로도 직접 씁니다.
 
-### 1.3 NK Comics: 말풍선 레터링
-* 동글은 탈네모꼴의 둥근 한글(11,172자, Light/Regular/Bold)이라 말풍선의 손글씨 느낌을, Comic Neue는 만화 레터링의 영문을 맡습니다.
-* 동글은 em 안에서 작게 그려져 있어 1.55배로 키워 Comic Neue 대문자 높이에 맞췄고, Regular에는 동글 Light를 짝지어 획 굵기를 맞췄습니다(Comic Neue Regular가 가늘어서).
-* **기본 줄 높이 √φ = 1.272 em**: 말풍선은 행간이 촘촘해야 해서 φ의 제곱근을 씁니다.
+### 1.3 NK Novel과 NK Comics
+* **Novel**: 고운바탕(11,172자) + Crimson Text. 한글 스케일 0.92, 자간 −10, 줄 높이 φ.
+* **Comics**: 통통 튀는 **Bagel Fat One**(Regular)과 굵게 외치는 **Gasoek One**(Black). 둘 다 같은 디자이너(JAMO Typeface)가 영문과 한글을 함께 그려 과장된 만화 레터링이 한 몸으로 맞습니다. 원본은 2,780음절이라 나머지 8,389음절은 본고딕 Heavy를 크기 맞춰 보충해 글자가 빠지지 않게 했습니다(드문 글자만 해당, 이후 원본 스타일로 다시 그리기 과제). 줄 높이 √φ.
 
 ### 1.4 NK Pixel과 "mono-pixel" 터미널 스타일
 요청하신 게임 개발자용 mono-pixel 터미널 스타일은 **NK Pixel에 통합**합니다. NK Pixel은 이미 반각 8×16 / 전각 16×16 격자의 터미널 폰트이고 Nerd Font / Nerd Font Mono로 패치됩니다. 별도 가족을 만들면 같은 픽셀 마스터를 두 번 관리하게 되므로, 대신 NK Pixel 안에서 터미널 완성도를 높입니다.
@@ -106,11 +106,11 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 
 | 가족 | 영문 소스 굵기 | 한글 소스 굵기 | 1.0 목표 | 메모 |
 | --- | --- | --- | --- | --- |
-| NK Sans | JetBrains Mono 100–800 (8) + 이탤릭 | 본고딕 7단계 (ExtraLight–Heavy) | 100–900, 이탤릭, 가변 | 한글 Heavy를 900, 영문 800을 900에 짝 |
+| NK Sans | IBM Plex Sans 100–700 + 이탤릭 | 본고딕 7단계 (ExtraLight–Heavy) | 100–900, 이탤릭, 가변 | 인쇄용 대표. Plex 7단계와 본고딕 7단계를 1:1로 짝짓고 800–900은 본고딕 Bold/Heavy + 영문 보간 |
 | NK Serif | Plex Mono 100–700 (7) + 이탤릭 | 본명조 7단계 | 100–900 | 명조는 한 단계 올려 매핑 |
-| NK Mono | JetBrains Mono NL 100–800 | 나눔고딕코딩 2단계 | **Regular·Bold** (소스 한계) | 굵기를 늘리려면 한글을 다른 고정폭 한글로 바꾸거나 직접 굵기 보간 필요 → M5 검토 |
+| NK Mono | JetBrains Mono 100–800 + 이탤릭 | D2Coding 2단계 | Regular·Bold → 4단계 이상 | D2Coding 한글이 2단계뿐이라 Light·ExtraBold는 획 굵기 보간(조정 도구의 grade) 필요 → M5 |
 | NK Novel | Crimson Text 400/600/700 + 이탤릭 (가변 Crimson Pro 200–900) | 고운바탕 2단계 | 300–800 | 한글 굵기 확장이 병목: 고운바탕 가변화 또는 본명조 계열 대체 검토 |
-| NK Comics | Comic Neue 300/400/700 + 이탤릭 | 동글 300/400/700 | **Light·Regular·Bold + 이탤릭** | 소스 3단계가 일치, 다음 단계에서 바로 추가 가능 |
+| NK Comics | Bagel Fat One / Gasoek One | 같은 소스 | Regular·Black (+ 기울임 효과음) | 레터링 글꼴이라 굵기보다 "목소리"(대사·외침·속삭임)로 나눔 |
 | NK Pixel | 단일 | 단일 | Regular (+ 픽셀 Bold) | 픽셀은 1 px 두께 증가로 Bold 생성 |
 
 인쇄용 출력 형식: 정적 OTF(CFF, 인쇄 RIP 호환) + TTF + 가변 TTF + WOFF2. PDF 임베딩 허용(`fsType` = 0, 설치 가능)을 QA에서 검사합니다.
@@ -133,6 +133,7 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 ## 6. 빌드 파이프라인 변경 (이번 PR)
 
 * `kind = "text"`: 영문 텍스트 폰트에 한글을 병합하되 한글은 **원본 간격을 비례 축소**해 넣습니다(`HangulParams.advance = "proportional"`, `tracking`). 터미널 폭 보정과 Nerd 패치는 하지 않고 `enforce_text_flags`가 고정폭 표시를 끄고 줄 메트릭을 맞춥니다.
-* TrueType 한글 소스(나눔고딕코딩·고운바탕·동글) 지원: CFF 소스만 윤곽 방향을 뒤집고, 합성 글리프는 분해합니다. 이전에는 모든 소스를 뒤집어 TrueType 소스가 들어오면 윤곽 방향이 거꾸로 됐을 것입니다(합성 폰트 회귀 테스트 추가).
+* TrueType 한글 소스(D2Coding·고운바탕·Bagel Fat One) 지원: CFF 소스만 윤곽 방향을 뒤집고, 합성 글리프는 분해합니다. 이전에는 모든 소스를 뒤집어 TrueType 소스가 들어오면 윤곽 방향이 거꾸로 됐을 것입니다(합성 폰트 회귀 테스트 추가).
+* 보충 병합: 영문 소스에 이미 한글이 있으면(NK Comics) 병합은 없는 음절만 한글 소스에서 채웁니다.
 * QA: 읽기 갈래는 폭·잉크 넘침 대신 `text-metrics`(고정폭 표시 금지, hhea = typo, usWin이 bbox 포함), `hangul-coverage`(11,172자), 이름·기능 검사를 돌리고, 골든 이미지는 본문 샘플로 렌더합니다. `nkfont patch`는 터미널 가족만 패치합니다.
-* 명령: `nkfont build all`, `nkfont check --kind text`, `nkfont qa --family novel`.
+* 명령: `nkfont build all`, `nkfont check --kind text`, `nkfont qa --family novel`. `nkfont qa`·`build`·`tune`의 기본 가족은 이제 `mono`입니다.

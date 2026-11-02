@@ -33,7 +33,7 @@ def _box(pen, x0, y0, x1, y1):
 
 
 def make_tt_hangul() -> TTFont:
-    """TrueType Hangul source like NanumGothicCoding / Gowun Batang, with a composite glyph."""
+    """TrueType Hangul source like D2Coding / Gowun Batang, with a composite glyph."""
     cmap = {0xAC00: "uniAC00", 0x3131: "uni3131", 0x00B7: "uni00B7"}
     names = [".notdef", "base", *cmap.values()]
     fb = FontBuilder(1000, isTTF=True)
@@ -135,7 +135,7 @@ def test_text_metrics_catch_monospace_claims(latin):
     assert "post.isFixedPitch is set on a proportional face" in check_text_metrics(latin)
 
 
-@pytest.mark.parametrize("name", ["Nanum Mono", "NK 나눔", "NeoDunggeunmo Pixel"])
+@pytest.mark.parametrize("name", ["Nanum Mono", "NK 나눔", "NeoDunggeunmo Pixel", "D2Coding NK"])
 def test_new_reserved_names_are_rejected(latin, name):
     with pytest.raises(ValueError):
         set_names(latin, name, "Regular", "0.1.0", 400)

@@ -1,6 +1,7 @@
 # nk-font 개발 로드맵
 
 > 2026-11-02 작성 · 기준 문서: [PLAN.md](PLAN.md)
+> 2026-11-02 재편: 터미널 대표 가족은 **NK Mono**(JetBrains Mono + D2Coding 한글), **NK Sans는 문서용 비례폭 고딕**입니다. 아래 M1·M2의 터미널 일정은 NK Mono 기준입니다. 상세는 [FAMILIES.md](FAMILIES.md).
 > 목표 수준: MonoLisa(monolisa.dev)처럼 **포트폴리오로 내세울 수 있는 완성도**의 폰트와 소개 사이트
 
 MonoLisa는 구성과 완성도의 기준으로만 참고합니다. 사이트 디자인, 문구, 브랜딩은 nk-font 고유의 것으로 만들고 MonoLisa의 디자인이나 자산을 가져오지 않습니다.
@@ -15,7 +16,7 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 | --- | --- |
 | **정렬** | 자동 폭 검사 0건, 호환성 매트릭스 10개 환경(§5) 전부 통과, 스크린샷으로 증명 |
 | **한글 품질** | 영문 대비 높이·굵기·중심이 맞도록 조절값 확정, 12~16px에서 획 뭉개짐 없음, 받침 유무에 따른 시각 정렬 규칙 적용 |
-| **패밀리 완성도** | NK Sans 9 weight(Thin~Black) × (정체 + 이탤릭) = 18종, 각각 Nerd Font / Nerd Font Mono, 인쇄용 정적 OTF와 가변 폰트 |
+| **패밀리 완성도** | NK Mono 터미널 굵기 4종 이상 × (정체 + 이탤릭), 각각 Nerd Font / Nerd Font Mono. 문서용 NK Sans 9 weight(Thin~Black) × (정체 + 이탤릭), 인쇄용 정적 OTF와 가변 폰트 |
 | **차별화** | φ 비례 체계 리포트, NK 제로, 한글 문장부호·받침 기준선 기능 등 NK 고유 시그니처(FAMILIES.md §2) |
 | **기능** | 영문 합자(`calt`) 끄고 켜기, 스타일 세트(`ss01~`, `cv01~`) 문서화, `0` 점/사선 변형 |
 | **렌더링** | macOS, Windows(ClearType 12~14px), Linux(FreeType) 세 환경 교정 시트 공개 |
@@ -31,9 +32,9 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 ### M0 기반 구축 (완료, 2026-11)
 * 기획안, 빌드 도구 `nkfont`(fetch / build / patch / check / proof / tune), CI, 개발 컨테이너, Claude 스킬
 * 테스트 자동화 CLI `nkfont qa`(프로필 quick / ci / release), 재현 빌드, 골든 이미지 회귀 검사, `nkfont diff` ([TESTING.md](TESTING.md))
-* NK Sans Regular·Bold 빌드와 Nerd Font·Nerd Font Mono 패치가 QA 전 항목 통과
+* NK Sans(당시 터미널 가족) Regular·Bold 빌드와 Nerd Font·Nerd Font Mono 패치가 QA 전 항목 통과
 
-### M1 NK Sans 알파 (약 3주)
+### M1 NK Mono 알파 (약 3주, 2026-11-02 이전 계획의 NK Sans 터미널 일정을 승계)
 * `nkfont tune`으로 한글 스케일·dy 확정, 결정 근거를 교정 시트와 함께 기록
 * 8 weight 확장과 weight 매핑표 확정 (JetBrains Mono 8단계 ↔ 본고딕 7단계)
 * 이탤릭: 정체 한글 사용 vs 한글 기울임(약 9°, 이탤릭 각도에 맞춤) 비교 후 결정
@@ -41,7 +42,7 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 * 첫 GitHub Pre-release (`v0.1.0-alpha`), 지인·커뮤니티 피드백 수집
 * **완료 기준:** 호환성 매트릭스 중 macOS(iTerm2, Terminal.app), Linux(GNOME Terminal, kitty, WezTerm) 통과
 
-### M2 NK Sans 1.0 + 소개 사이트 (약 6주)
+### M2 NK Mono 1.0 + 소개 사이트 (약 6주)
 * 조절 도구 T2(로컬 웹 UI) 완성 후 받침 유무별 dy 같은 규칙 기반 미세 조절
 * 렌더링 교정: Windows ClearType 12~14px, Linux FreeType 가벼운 힌팅
 * 소개 사이트 1차 공개 (§3)
@@ -58,12 +59,13 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 ### M4 NK Serif (약 4주)
 * IBM Plex Mono + 본명조 KR, 작은 크기를 위한 weight 한 단계 올림 매핑
 * 사이트에 세 가족 비교 화면
-* **완료 기준:** NK Sans와 같은 QA 기준 통과
+* **완료 기준:** NK Mono와 같은 QA 기준 통과
 
-### M4.5 NK Mono · Novel · Comics (프로토타입 완료 2026-11-02, 상세: [FAMILIES.md](FAMILIES.md))
-* NK Mono: JetBrains Mono NL + 나눔고딕코딩, 합자 없는 순수 터미널 고정폭 (터미널 QA 동일 기준)
-* NK Novel·NK Comics: 읽기용 비례폭 갈래(`kind = "text"`), 황금비 줄 높이(φ, √φ), 전용 QA(`text-metrics`, `hangul-coverage`, 본문 골든)
-* 다음: Comics Light·이탤릭, Novel 굵기 확장(한글 소스 병목), NK OpenType 기능(`dlig`, `zero`, `ss11`~ 한글 기능), 사이트 읽기·만화 섹션 고도화
+### M4.5 가족 재편과 Mono · Novel · Comics (프로토타입 완료 2026-11-02, 상세: [FAMILIES.md](FAMILIES.md))
+* NK Mono: JetBrains Mono + D2Coding 한글, 터미널 대표 가족 (Nerd Font, 터미널 QA)
+* NK Sans: 문서용 비례폭 고딕으로 전환 (IBM Plex Sans + 본고딕, 줄 높이 φ^5/6)
+* NK Novel·NK Comics: 읽기용 비례폭 갈래(`kind = "text"`), 황금비 줄 높이(φ, √φ), 전용 QA(`text-metrics`, `hangul-coverage`, 본문 골든). Comics는 Bagel Fat One / Gasoek One의 과장된 레터링
+* 다음: NK Sans 9 weight(Plex Sans 7 + 본고딕 7 매핑), Novel 굵기 확장(한글 소스 병목), Comics 보충 음절을 원본 스타일로 다시 그리기, NK OpenType 기능(`dlig`, `zero`, `ss11`~ 한글 기능)
 * **완료 기준:** 각 가족 Regular·Bold가 `nkfont qa --profile ci` 통과, 사이트에서 미리보기·내려받기
 
 ### M5 확장 (이후)

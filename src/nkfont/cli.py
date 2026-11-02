@@ -27,7 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("fetch", help="download pinned upstream fonts into sources/")
 
     b = sub.add_parser("build", help="build master TTFs (Latin + Hangul)")
-    b.add_argument("family", nargs="?", default="sans", help="family id, or 'all'")
+    b.add_argument("family", nargs="?", default="mono", help="family id, or 'all'")
     b.add_argument("--weight", help="build only this weight, e.g. Regular")
 
     p = sub.add_parser("patch", help="Nerd Fonts patch masters with Docker (nf + nfm variants)")
@@ -50,7 +50,7 @@ def main(argv: list[str] | None = None) -> int:
     pr.add_argument("--size", type=int, default=28)
 
     t = sub.add_parser("tune", help="render a parameter sweep of Hangul scale/dy for one weight")
-    t.add_argument("family", nargs="?", default="sans")
+    t.add_argument("family", nargs="?", default="mono")
     t.add_argument("--weight", default="Regular")
     t.add_argument("--scale", default=None, help="start:stop:step, e.g. 0.92:1.0:0.04")
     t.add_argument("--dy", default=None, help="start:stop:step in font units")
@@ -58,7 +58,7 @@ def main(argv: list[str] | None = None) -> int:
 
     q = sub.add_parser("qa", help="run the automated test pipeline and write a report")
     q.add_argument("--profile", choices=["quick", "ci", "release"], default="quick")
-    q.add_argument("--family", default="sans")
+    q.add_argument("--family", default="mono")
     q.add_argument("--report-dir", type=Path, default=Path("reports"))
     q.add_argument("--update-golden", action="store_true", help="accept current renders")
 

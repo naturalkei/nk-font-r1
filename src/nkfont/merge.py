@@ -117,7 +117,7 @@ def merge_hangul(latin: TTFont, hangul: TTFont, ranges, params: HangulParams) ->
 
         tt_pen = TTGlyphPen(None)
         cu2qu = Cu2QuPen(tt_pen, max_err=1.0, reverse_direction=reverse)
-        # TrueType sources (NanumGothicCoding, Gowun Batang) use composite glyphs; decompose them,
+        # TrueType sources (D2Coding, Gowun Batang) use composite glyphs; decompose them,
         # since their component glyphs are not copied into the Latin font.
         out = TransformPen(cu2qu, (gs, 0, 0, gs, dx, params.dy))
         src_glyphs[src_name].draw(DecomposingFilterPen(out, src_glyphs))

@@ -3,12 +3,12 @@ const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
 
 const FAMILY_INFO = {
-  sans: { css: "NK Sans", cls: "nk-sans", latin: "JetBrains Mono", hangul: "Source Han Sans KR (본고딕)", note: "기본 가족. 담백한 고딕으로 어떤 테마에도 어울립니다." },
+  mono: { css: "NK Mono", cls: "nk-mono", latin: "JetBrains Mono", hangul: "D2Coding 한글", note: "터미널 대표 가족. 고정폭용으로 그린 한글이 두 칸을 꽉 채우고, 합자는 켜고 끌 수 있습니다." },
   serif: { css: "NK Serif", cls: "nk-serif", latin: "IBM Plex Mono", hangul: "Source Han Serif KR (본명조)", note: "명조 한글은 한 단계 굵게 짝지어 작은 크기에서도 획이 살아 있습니다." },
-  mono: { css: "NK Mono", cls: "nk-mono", latin: "JetBrains Mono NL", hangul: "나눔고딕코딩 한글", note: "합자 없는 순수 터미널 고정폭. 고정폭용으로 그린 한글이 두 칸을 꽉 채웁니다." },
   pixel: { css: "NK Pixel", cls: "nk-pixel", latin: "Neo둥근모 Code", hangul: "Neo둥근모 Code", note: "16 px 비트맵 격자의 픽셀 터미널 글꼴. Nerd 아이콘 포함, 게임용 포맷도 준비 중입니다." },
+  sans: { css: "NK Sans", cls: "nk-sans", text: true, latin: "IBM Plex Sans", hangul: "Source Han Sans KR (본고딕)", note: "일반 문서·UI·발표 자료용 비례폭 고딕. 기본 줄 높이 φ^5/6 = 1.493.", spec: "한글 Aa 2026", spec2: "회의록, 보고서, 슬라이드에\n어울리는 담백한 고딕." },
   novel: { css: "NK Novel", cls: "nk-novel", text: true, latin: "Crimson Text", hangul: "고운바탕", note: "책·소설·신문 본문용 비례폭 바탕. 기본 줄 높이 φ = 1.618.", spec: "한글 Aa 1987", spec2: "“그래, 다시 시작하자.” 그녀가\n창밖을 보며 말했다." },
-  comics: { css: "NK Comics", cls: "nk-comics", text: true, latin: "Comic Neue", hangul: "동글", note: "만화·웹툰 말풍선용 비례폭. 기본 줄 높이 √φ = 1.272.", spec: "으악! Aa ?!", spec2: "빨리 도망쳐!! WHAT?!\n잠깐만, 같이 가!" },
+  comics: { css: "NK Comics", cls: "nk-comics", text: true, latin: "Bagel Fat One · Gasoek One", hangul: "Bagel Fat One · Gasoek One (+ 본고딕 Heavy 보충)", note: "만화·웹툰 말풍선과 효과음용. 통통 튀는 Regular, 외치는 Black. 기본 줄 높이 √φ = 1.272.", spec: "쾅!! Aa ?!", spec2: "빨리 도망쳐!! WHAT?!\n잠깐만, 같이 가!" },
 };
 const isText = (id) => !!FAMILY_INFO[id]?.text;
 
@@ -71,7 +71,7 @@ async function loadManifest() {
 }
 
 /* ---------- playground ---------- */
-const play = { fam: "sans", weight: 400 };
+const play = { fam: "mono", weight: 400 };
 function seg(el, items, current, onPick, role = "radio") {
   el.innerHTML = items.map(([v, label]) => `<button role="${role}" aria-${role === "radio" ? "checked" : "selected"}="${v === current}" data-v="${v}">${label}</button>`).join("");
   el.onclick = (e) => {
@@ -82,14 +82,14 @@ function seg(el, items, current, onPick, role = "radio") {
 }
 function applyPlay() {
   const a = $("#playArea"), info = FAMILY_INFO[play.fam];
-  a.style.fontFamily = `"${info.css}", var(--sans)`;
+  a.style.fontFamily = `"${info.css}", var(--term)`;
   a.style.fontWeight = play.weight;
   a.classList.toggle("nk-pixel", play.fam === "pixel");
   let size = +$("#sizeR").value;
   if (play.fam === "pixel") size = Math.max(16, Math.round(size / 16) * 16); // integer pixel scale
   a.style.fontSize = size + "px"; $("#sizeV").textContent = size + "px";
   a.classList.toggle("grid-on", $("#playGrid").checked && !isText(play.fam));  // no cells in reading faces
-  a.style.lineHeight = play.fam === "novel" ? "1.618" : play.fam === "comics" ? "1.272" : "";
+  a.style.lineHeight = { novel: "1.618", comics: "1.272", sans: "1.493" }[play.fam] || "";
   a.style.fontFeatureSettings = $("#playLiga").checked ? "normal" : '"calt" 0, "liga" 0';
 }
 function initPlay() {
@@ -111,7 +111,7 @@ function initPlay() {
 const fmtMB = (b) => (b / 1048576).toFixed(1) + " MB";
 function renderData() {
   const stats = [
-    [manifest.glyph_count?.toLocaleString() ?? "24,000+", "NK Sans Nerd Font 글자 수"],
+    [manifest.glyph_count?.toLocaleString() ?? "24,000+", "NK Mono Nerd Font 글자 수"],
     [manifest.icon_count?.toLocaleString() ?? "10,000+", "Nerd Fonts 아이콘"],
     ["11,172", "현대 한글 음절 전부"],
     ["0", "폭 검사 오류 (빌드마다)"],
@@ -170,8 +170,8 @@ const 프롬프트: 세그먼트[] = [
 ];
 console.log(프롬프트.map((s) => \`\${s.아이콘} \${s.글}\`).join("  "));`,
   Shell: `#!/usr/bin/env bash
-# 설치 확인: 폰트 목록에 NKSans가 보여야 합니다
-fc-list | grep -i "NKSans" || echo "설치되지 않았습니다"
+# 설치 확인: 폰트 목록에 NKMono가 보여야 합니다
+fc-list | grep -i "NKMono" || echo "설치되지 않았습니다"
 
 for 파일 in ~/문서/*.md; do
   printf "%-20s %s\\n" "$(basename "$파일")" "$(wc -l < "$파일")줄"
@@ -264,41 +264,41 @@ function initPixel() {
 /* ---------- install snippets ---------- */
 const OS = {
   macOS: `# 압축을 푼 폴더에서
-cp NKSans-0.1.0/NKSansNerdFont*.ttf ~/Library/Fonts/
+cp NKMono-0.1.0/NKMonoNerdFont*.ttf ~/Library/Fonts/
 # 또는 서체 관리자(Font Book)로 .ttf 파일을 드래그`,
   Linux: `mkdir -p ~/.local/share/fonts/nk-font
-cp NKSans-0.1.0/NKSansNerdFont*.ttf ~/.local/share/fonts/nk-font/
-fc-cache -f && fc-list | grep NKSans`,
+cp NKMono-0.1.0/NKMonoNerdFont*.ttf ~/.local/share/fonts/nk-font/
+fc-cache -f && fc-list | grep NKMono`,
   Windows: `# PowerShell: .ttf를 선택하고 마우스 오른쪽 → "모든 사용자용으로 설치"
 # 또는
-Get-ChildItem .\\NKSans-0.1.0\\NKSansNerdFont*.ttf | ForEach-Object {
+Get-ChildItem .\\NKMono-0.1.0\\NKMonoNerdFont*.ttf | ForEach-Object {
   Copy-Item $_ "$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\\" }`,
 };
 const APPS = {
-  iTerm2: `Settings → Profiles → Text → Font: "NKSans Nerd Font" 14
+  iTerm2: `Settings → Profiles → Text → Font: "NKMono Nerd Font" 14
 ☐ Use built-in Powerline glyphs   (끄면 폰트의 이음새를 그대로 씁니다)
 Settings → Profiles → Text → Unicode: Ambiguous characters are double-width 끄기`,
   WezTerm: `-- ~/.wezterm.lua
 local wezterm = require 'wezterm'
 return {
-  font = wezterm.font 'NKSans Nerd Font',
+  font = wezterm.font 'NKMono Nerd Font',
   font_size = 14.0,
   treat_east_asian_ambiguous_width_as_wide = false,
 }`,
   kitty: `# ~/.config/kitty/kitty.conf
-font_family      NKSans Nerd Font
+font_family      NKMono Nerd Font
 bold_font        auto
 font_size        14.0`,
   Alacritty: `# ~/.config/alacritty/alacritty.toml
 [font]
-normal = { family = "NKSans Nerd Font", style = "Regular" }
+normal = { family = "NKMono Nerd Font", style = "Regular" }
 size = 14.0`,
   "VS Code": `// settings.json
-"editor.fontFamily": "'NKSans Nerd Font', monospace",
-"terminal.integrated.fontFamily": "'NKSans Nerd Font Mono'",
+"editor.fontFamily": "'NKMono Nerd Font', monospace",
+"terminal.integrated.fontFamily": "'NKMono Nerd Font Mono'",
 "editor.fontLigatures": true`,
   "Windows Terminal": `// settings.json → profiles.defaults
-"font": { "face": "NKSans Nerd Font", "size": 13 }`,
+"font": { "face": "NKMono Nerd Font", "size": 13 }`,
   Starship: `# ~/.config/starship.toml — Nerd Font 기호 프리셋
 # starship preset nerd-font-symbols -o ~/.config/starship.toml
 format = "$os$directory$git_branch$git_status$character"`,

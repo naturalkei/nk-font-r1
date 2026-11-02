@@ -123,13 +123,18 @@ class Runner:
         fam = config.family(self.report.family)
         kind = fam.get("kind", "merge")
         # The family's own Latin base (or the single pixel source) is the comparison point.
-        first = fam["weight"][0]
-        base = TTFont(config.sources()[first.get("latin") or first["source"]].path)
+        srcs = config.sources()
+        bases = {}
+        for w in fam["weight"]:  # weights may use different Latin sources (NK Comics Black)
+            sid = w.get("latin") or w["source"]
+            bases[w["name"].replace(" ", "")] = TTFont(srcs[sid].path)
+        first = next(iter(bases.values()))
         own = None
         if self.masters:  # code points our merge added; patcher additions are not ours
-            own = set(TTFont(self.masters[0]).getBestCmap()) - set(base.getBestCmap())
+            own = set(TTFont(self.masters[0]).getBestCmap()) - set(first.getBestCmap())
         for f in files:
             font = TTFont(f)
+            base = bases.get(f.stem.split("-")[-1], first)
             for name, problems in run_all(font, base, own, kind=kind).items():
                 for p in problems[:5]:
                     st.details.append(f"{f.name} {name}: {p}")

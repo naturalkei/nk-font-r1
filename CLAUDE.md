@@ -1,7 +1,8 @@
 # nk-nerd-font (nk-font)
 
-OFL 1.1 Korean monospace Nerd Font. Terminal families **NK Sans**, **NK Serif**, **NK Mono**, **NK Pixel**;
-proportional reading families (`kind = "text"`) **NK Novel** (books/news) and **NK Comics** (speech bubbles).
+OFL 1.1 Korean fonts. Terminal Nerd Font families **NK Mono** (flagship: JetBrains Mono + D2Coding Hangul),
+**NK Serif**, **NK Pixel**; proportional families (`kind = "text"`) **NK Sans** (documents),
+**NK Novel** (books/news) and **NK Comics** (comic lettering).
 Families, φ rules, weights and feature plans: `docs/FAMILIES.md`.
 Primary goal: perfect grid alignment in terminals (Starship, zsh/Powerlevel10k, iTerm2, Linux
 terminals). NK Pixel must also work in pixel-art games (Minecraft, Terraria) and game engines.
@@ -13,13 +14,13 @@ terminals). NK Pixel must also work in pixel-art games (Minecraft, Terraria) and
 ```bash
 make setup            # .venv + nkfont CLI (the cloud session hook does this automatically)
 nkfont fetch          # pinned upstream fonts -> sources/ (SHA256 checked, never committed)
-nkfont build sans     # build/master/NKSans-*.ttf  (sans|serif|mono|pixel|novel|comics|all)
-nkfont patch          # Docker Nerd Fonts patcher -> dist/NKSansNerdFont*.ttf
-nkfont check FILES --base sources/JetBrainsMono-Regular.ttf [--master build/master/NKSans-Regular.ttf]
+nkfont build mono     # build/master/NKMono-*.ttf  (mono|serif|pixel|sans|novel|comics|all)
+nkfont patch          # Docker Nerd Fonts patcher -> dist/NK*NerdFont*.ttf (terminal families only)
+nkfont check FILES --base sources/JetBrainsMono-Regular.ttf [--master build/master/NKMono-Regular.ttf] [--kind text]
 nkfont qa [--profile quick|ci|release]   # full automated pipeline + report (docs/TESTING.md)
 nkfont diff OLD.ttf NEW.ttf              # what a change actually did
 nkfont proof FILES -o proofs/proof.png
-nkfont tune sans --scale 0.92:1.04:0.04 --dy -30:10:20
+nkfont tune mono --scale 0.92:1.04:0.04 --dy -30:10:20
 nkfont studio         # NK Studio web UI: live Hangul tuning, saves [hangul] in config/families
 nkfont site           # build/site: prototype site (WOFF2 + zips); deployed by .github/workflows/pages.yml
 python -m pytest -q   # unit tests use synthetic fonts; real-font tests skip without sources/
@@ -38,7 +39,7 @@ ruff check src tests && ruff format --check src tests
 - Never import East Asian *Ambiguous* characters from the Hangul font; never overwrite Latin glyphs.
 - U+1100–11FF conjoining jamo are out of scope until phase 2 (needs ljmo/vjmo/tjmo).
 - Merge with fontTools into the Latin TTF so GSUB/GPOS survive; don't round-trip through FontForge.
-- Reserved Font Names `Source`, `Pretendard`, `Plex`, `Neo둥근모`, `NeoDunggeunmo`, `Nanum`/`나눔` must not appear in our names.
+- Reserved Font Names `Source`, `Pretendard`, `Plex`, `Neo둥근모`, `NeoDunggeunmo`, `Nanum`/`나눔`, `D2Coding` must not appear in our names.
 - Only reverse contours of cubic (CFF) Hangul sources; TrueType sources keep their direction.
 - NK Pixel (`kind = "pixel"`) is one source font renamed, not merged: width conflicts (Ambiguous
   symbols drawn two cells) are unmapped, never squeezed.

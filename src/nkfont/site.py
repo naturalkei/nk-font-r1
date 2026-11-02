@@ -175,9 +175,10 @@ def build_site(out: Path | None = None, families=None) -> Path:
             "nerd": bool(files["nf"]),
         }
         manifest["families"].append(entry)
-    sans_nf = _family_files(config.family("sans"))["nf"]
-    if sans_nf:
-        idx = glyph_index(TTFont(sans_nf[0]))
+    # The glyph explorer shows the terminal flagship with its Nerd icons.
+    mono_nf = _family_files(config.family("mono"))["nf"]
+    if mono_nf:
+        idx = glyph_index(TTFont(mono_nf[0]))
         (out / "glyphs.json").write_text(json.dumps(idx, separators=(",", ":")))
         manifest["glyph_count"] = sum(r[1] - r[0] + 1 for r in idx["runs"])
         manifest["icon_count"] = sum(

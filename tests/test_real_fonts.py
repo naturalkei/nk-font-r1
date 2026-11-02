@@ -11,28 +11,28 @@ pytestmark = pytest.mark.slow
 
 
 @pytest.fixture(scope="module")
-def sans():
+def mono():
     srcs = config.sources()
     if not all(s.path.exists() for s in srcs.values()):
         pytest.skip("upstream fonts not downloaded (run `nkfont fetch`)")
-    fam = config.family("sans")
+    fam = config.family("mono")
     weight = next(w for w in fam["weight"] if w["name"] == "Regular")
     return build_master(fam, weight), TTFont(srcs[weight["latin"]].path)
 
 
-def test_sans_regular_passes_all_checks(sans):
-    font, base = sans
+def test_mono_regular_passes_all_checks(mono):
+    font, base = mono
     result = run_all(font, base)
     assert set(result) == {"widths", "overflow", "metrics", "names", "features"}
     assert {k: v for k, v in result.items() if v} == {}
 
 
-def test_sans_regular_has_all_hangul_syllables(sans):
-    cmap = sans[0].getBestCmap()
+def test_mono_regular_has_all_hangul_syllables(mono):
+    cmap = mono[0].getBestCmap()
     assert all(cp in cmap for cp in range(0xAC00, 0xD7A4))
 
 
-@pytest.mark.parametrize("fid", ["mono", "novel", "comics"])
+@pytest.mark.parametrize("fid", ["sans", "novel", "comics"])
 def test_new_families_pass_their_checks(fid):
     srcs = config.sources()
     if not all(s.path.exists() for s in srcs.values()):

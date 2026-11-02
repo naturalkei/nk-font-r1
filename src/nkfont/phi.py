@@ -3,6 +3,7 @@
 Every ratio NK derives on purpose is a power of φ, so the families share one proportion system:
 
   φ^1   = 1.618  line height of NK Novel (long-form reading)
+  φ^5/6 = 1.493  line height of NK Sans (documents, UI text)
   φ^0.5 = 1.272  line height of NK Comics (tight speech-bubble lettering)
   φ^-1  = 0.618  reserved for the tuning rules (e.g. Hangul optical-centre offsets)
 
@@ -18,17 +19,21 @@ import re
 
 PHI = (1 + math.sqrt(5)) / 2
 
-_TOKEN = re.compile(r"^phi(?:\^(-?\d+(?:\.\d+)?))?$")
+_TOKEN = re.compile(r"^phi(?:\^\(?(-?\d+(?:\.\d+)?)(?:/(\d+))?\)?)?$")
 
 
 def ratio(value: float | int | str) -> float:
-    """`1.5` -> 1.5, `"phi"` -> φ, `"phi^0.5"` -> √φ, `"phi^-1"` -> 1/φ."""
+    """`1.5` -> 1.5, `"phi"` -> φ, `"phi^0.5"` -> √φ, `"phi^-1"` -> 1/φ, `"phi^5/6"` -> φ^(5/6).
+
+    Fractions match the shared modular scale φ^(step/6) of config/proportions.toml.
+    """
     if isinstance(value, (int, float)):
         return float(value)
     m = _TOKEN.match(value.strip().lower().replace("φ", "phi"))
     if not m:
         raise ValueError(f"not a ratio: {value!r} (use a number, 'phi' or 'phi^N')")
-    return PHI ** float(m.group(1) or 1)
+    exp = float(m.group(1) or 1) / float(m.group(2) or 1)
+    return PHI**exp
 
 
 def line_metrics(
