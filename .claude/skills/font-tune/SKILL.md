@@ -1,6 +1,6 @@
 ---
 name: font-tune
-description: Fine-tune NK font parameters (Hangul scale, vertical offset, weight mapping) systematically with sweeps and proof sheets. Use when asked to adjust Hangul size/position/weight or compare design variants.
+description: Fine-tune NK font parameters (Hangul scale, offset, width, slant, grade, weight mapping) with the Glyph Lab, golden-ratio rules, sweeps and proof sheets. Use when asked to adjust Hangul size/position/weight/slant or compare against JetBrains Mono, D2Coding and other fonts.
 ---
 
 # Tuning NK fonts
@@ -8,6 +8,12 @@ description: Fine-tune NK font parameters (Hangul scale, vertical offset, weight
 All tunables live in `config/families/<family>.toml` under `[hangul]` (and per `[[weight]]`).
 Never hard-code a tuned number in Python.
 
+0. Measure first: `nkfont phi` (golden-ratio rules from `config/proportions.toml`, shared by every
+   family) and the Glyph Lab (`nkfont studio` -> http://127.0.0.1:8765/lab): overlay NK glyphs on
+   JetBrains Mono / D2Coding, read stems on scanlines, stroke slant, side bearings, ink coverage,
+   and toggle OpenType features. `[hangul]` knobs: `scale`, `dy`, `center`, `width` (horizontal
+   ratio), `slant` (degrees, italics), `grade` (stroke weight in units, advances unchanged).
+   The grid wins over phi: locked rules are only reported.
 1. Sweep: `nkfont tune <family> --weight Regular --scale 0.92:1.04:0.04 --dy -30:10:20 -o proofs/tune.png`
    (builds in memory, nothing is written to build/).
 2. Read the PNG and compare: Hangul height vs Latin cap height (target ~1.15–1.25×), optical

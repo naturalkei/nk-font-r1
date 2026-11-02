@@ -1,7 +1,8 @@
 """Test automation: one command that runs every check a change needs and writes a report.
 
 Profiles grow from fast to thorough:
-  quick    lint, unit tests, Regular master build, font checks, reproducibility, golden images
+  quick    lint, unit tests, Regular master build, font checks, reproducibility, golden images,
+           golden-ratio proportion report (advisory)
   ci       quick + all weights, real-font tests, Nerd Fonts patch (Docker), checks on patched fonts
   release  ci + manual terminal-matrix checklist in the report
 """
@@ -170,6 +171,23 @@ class Runner:
             elif res.status in ("new", "updated") and st.status == "pending":
                 st.status = "warn"
 
+    def proportions(self, st: Stage) -> None:
+        """Golden-ratio rules (config/proportions.toml). Advisory: off-target is a warning."""
+        from .proportions import report_files
+
+        if not self.masters:
+            st.status = "skip"
+            return
+        for name, results in report_files(self.masters):
+            for r in results:
+                if r["actual"] is None or r["locked"] or r["ok"]:
+                    continue
+                st.status = "warn"
+                st.details.append(
+                    f"{name} {r['id']}: {r['actual']:.3f} vs {r['expr']}={r['target']:.3f} "
+                    f"({r['deviation']:+.1%}) -> {r['drives'] or 'source design'}"
+                )
+
     def patch(self, st: Stage) -> None:
         if not shutil.which("docker") or _run(["docker", "info"]).returncode:
             st.status = "skip"
@@ -207,6 +225,7 @@ class Runner:
         self.stage("font checks (masters)", lambda st: self.font_checks(st, self.masters))
         self.stage("reproducible build", self.reproducible)
         self.stage("golden images (masters)", lambda st: self.golden(st, self.masters))
+        self.stage("golden-ratio proportions", self.proportions)
         if thorough:
             self.stage("nerd fonts patch", self.patch)
             if self.patched:

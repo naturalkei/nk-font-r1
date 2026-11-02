@@ -65,6 +65,9 @@ def main(argv: list[str] | None = None) -> int:
     st.add_argument("--port", type=int, default=8765)
     st.add_argument("--no-browser", action="store_true")
 
+    ph = sub.add_parser("phi", help="golden-ratio proportion report (config/proportions.toml)")
+    ph.add_argument("fonts", nargs="*", type=Path, help="font files; default build/master/*.ttf")
+
     w = sub.add_parser("webfont", help="convert TTF files to WOFF2")
     w.add_argument("fonts", nargs="+", type=Path)
     w.add_argument("-o", "--out-dir", type=Path, default=Path("build/webfonts"))
@@ -91,6 +94,16 @@ def main(argv: list[str] | None = None) -> int:
         from .studio.server import serve
 
         serve(args.host, args.port, open_browser=not args.no_browser)
+        return 0
+
+    if args.cmd == "phi":
+        from .proportions import format_report, report_files
+
+        files = args.fonts or sorted((config.BUILD_DIR / "master").glob("*.ttf"))
+        if not files:
+            print("no fonts: run `nkfont build` first or pass font files")
+            return 1
+        print(format_report(report_files(files)))
         return 0
 
     if args.cmd == "webfont":

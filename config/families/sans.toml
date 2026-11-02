@@ -15,6 +15,13 @@ center = "advance"
 # Imported ink may use at most this share of its cell width; wider source glyphs (Source Han
 # Sans "halfwidth" jamo are 920 wide) are shrunk uniformly to fit.
 fit = 0.92
+# Fine tuning from the Glyph Lab (`nkfont studio` -> /lab). Defaults leave outlines untouched.
+# Extra horizontal scale on top of `scale` (Hangul proportions next to Latin).
+width = 1.0
+# Skew in degrees, positive leans right; reserved for italics (match the Latin italic angle).
+slant = 0.0
+# Stem weight change in font units without moving advances, like a GRAD axis (+ is darker).
+grade = 0.0
 
 [[weight]]
 name = "Regular"
