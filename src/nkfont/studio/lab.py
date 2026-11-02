@@ -177,6 +177,7 @@ class Lab:
         scan_x_rel = req.get("scan_x")  # share of each glyph's ink width, 0..1
         probes = lab_config(self.root).get("harmony", {})
         rules = load_rules(self.root)
+        fam = config.family(family, self.root)
         out = {}
         for fid in req.get("fonts", ["nk-edit"]):
             try:
@@ -205,7 +206,7 @@ class Lab:
             out[fid] = {
                 "guides": guides,
                 "harmony": harm,
-                "proportions": evaluate(proportion_metrics(guides, harm), rules),
+                "proportions": evaluate(proportion_metrics(guides, harm), rules, fam),
                 "glyphs": items,
             }
         return out

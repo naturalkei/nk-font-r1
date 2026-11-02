@@ -274,3 +274,23 @@ def test_lab_measures_real_fonts():
     assert nk["harmony"]["hangul_stem"] == pytest.approx(nk["harmony"]["latin_stem"], abs=2)
     assert out["ref:d2coding"]["guides"]["half"] == 500
     assert {r["id"] for r in nk["proportions"]} >= {"hangul_height", "hangul_stem"}
+
+
+def test_proportional_family_skips_grid_rules():
+    from nkfont.proportions import on_grid
+
+    rules = load_rules()
+    m = {
+        "cap_height": 730,
+        "x_height": 550,
+        "line_height": 1320,
+        "upm": 1000,
+        "han_cell": 1200,
+        "han_width": 800,
+        "han_height": 850,
+    }
+    grid = {r["id"]: r for r in evaluate(m, rules, {"family": "NK Mono"})}
+    text = {r["id"]: r for r in evaluate(m, rules, {"family": "NK Sans", "grid": False})}
+    assert on_grid({"kind": "text"}) is False and on_grid(None) is True
+    assert "hangul_cell" in grid and "hangul_cell" not in text
+    assert grid["line_height"]["locked"] is True and text["line_height"]["locked"] is False

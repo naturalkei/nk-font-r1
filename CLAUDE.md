@@ -40,8 +40,8 @@ ruff check src tests && ruff format --check src tests
 - NK Pixel (`kind = "pixel"`) is one source font renamed, not merged: width conflicts (Ambiguous
   symbols drawn two cells) are unmapped, never squeezed.
 - All tunables live in `config/families/*.toml`; code reads them, never hard-codes them.
-  Golden-ratio (φ) targets live in `config/proportions.toml`; the terminal grid and Latin metrics
-  always win over φ (those rules are `locked`, reported only). New `[hangul]` knobs must default
+  Golden-ratio (φ) targets live in `config/proportions.toml`; on grid families the grid and Latin metrics
+  win over φ (`locked`, reported only); proportional families (`grid = false`) skip `grid_only` rules. New `[hangul]` knobs must default
   to the identity so existing builds stay byte-identical.
 - Pin every upstream input in `sources.lock` (URL + SHA256, patcher image tag + digest).
 

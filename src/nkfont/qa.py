@@ -178,7 +178,8 @@ class Runner:
         if not self.masters:
             st.status = "skip"
             return
-        for name, results in report_files(self.masters):
+        fam = config.family(self.report.family)
+        for name, results in report_files(self.masters, fam=fam):
             for r in results:
                 if r["actual"] is None or r["locked"] or r["ok"]:
                     continue

@@ -5,8 +5,10 @@
 # With divisions = 6 the scale reads ... 0.852, 0.923, 1, 1.084, 1.174, 1.272, 1.378, 1.493, phi.
 # Each rule compares one measured ratio (numerator / denominator, in 1000-UPM units) with its step.
 #
-# The terminal grid always wins: advances stay 0/600/1200 and the Latin base's metrics stay as
-# they are, so rules on those are `locked` (reported, never applied). Rules with `drives` can be
+# On terminal (grid) families the grid always wins: advances stay 0/600/1200 and the Latin base's
+# metrics stay as they are, so rules on those are `locked` (reported, never applied).
+# Proportional document families (`grid = false` in the family TOML) skip `grid_only` rules, and
+# `locked = "grid"` rules become plain targets for them. Rules with `drives` can be
 # snapped in the Glyph Lab by changing that [hangul] parameter in config/families/<family>.toml.
 #
 # Measurements available as numerator/denominator:
@@ -58,21 +60,22 @@ numerator = "han_width"
 denominator = "han_cell"
 step = -5           # phi^(-5/6) = 0.670: the white around Hangul matches Latin side bearings
 tolerance = 0.02
+grid_only = true    # proportional families have no fixed two-cell slot
 
 [[rule]]
 id = "x_to_cap"
-label = "x높이 / 대문자 높이 (영문 고정)"
+label = "x높이 / 대문자 높이"
 numerator = "x_height"
 denominator = "cap_height"
 step = -3           # phi^(-3/6) = 0.786
-locked = true
+locked = "grid"
 tolerance = 0.05
 
 [[rule]]
 id = "line_height"
-label = "줄 높이 / UPM (영문 고정)"
+label = "줄 높이 / UPM"
 numerator = "line_height"
 denominator = "upm"
 step = 4            # phi^(4/6) = 1.378
-locked = true
+locked = "grid"
 tolerance = 0.05

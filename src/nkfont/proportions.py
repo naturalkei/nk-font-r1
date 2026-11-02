@@ -56,11 +56,31 @@ def font_metrics(font: TTFont, probes: dict | None = None) -> dict:
     return proportion_metrics(font_guides(font, k), harmony(font, probes or DEFAULT_PROBES))
 
 
-def evaluate(metrics: dict, rules: dict) -> list[dict]:
+def on_grid(fam: dict | None) -> bool:
+    """True for terminal (cell-grid) families. Proportional text families such as a document
+    Sans set `grid = false` (or `kind = "text"`, or [hangul] advance = "proportional")."""
+    if not fam:
+        return True
+    if "grid" in fam:
+        return bool(fam["grid"])
+    return fam.get("kind") != "text" and fam.get("hangul", {}).get("advance") != "proportional"
+
+
+def evaluate(metrics: dict, rules: dict, fam: dict | None = None) -> list[dict]:
+    """Compare metrics with every rule that applies to the family.
+
+    Rules marked `grid_only` are skipped for proportional families; `locked = "grid"` locks a
+    rule only on grid families (elsewhere it is reported as a plain, non-driving target).
+    """
     sc = rules.get("scale", {})
     div = sc.get("divisions", 6)
+    grid = on_grid(fam)
     out = []
     for r in rules.get("rule", []):
+        if r.get("grid_only") and not grid:
+            continue
+        locked = r.get("locked", False)
+        locked = grid if locked == "grid" else bool(locked)
         num, den = metrics.get(r["numerator"]), metrics.get(r["denominator"])
         target = phi_target(r["step"], div)
         tol = r.get("tolerance", sc.get("tolerance", 0.015))
@@ -71,7 +91,7 @@ def evaluate(metrics: dict, rules: dict) -> list[dict]:
             "target": round(target, 4),
             "tolerance": tol,
             "drives": r.get("drives"),
-            "locked": bool(r.get("locked")),
+            "locked": locked,
             "actual": None,
             "deviation": None,
             "ok": None,
@@ -109,10 +129,12 @@ def snap(params: dict, results: list[dict], only: str | None = None) -> dict:
     return p
 
 
-def report_files(paths: list[Path], root: Path = config.ROOT) -> list[tuple[str, list[dict]]]:
+def report_files(
+    paths: list[Path], root: Path = config.ROOT, fam: dict | None = None
+) -> list[tuple[str, list[dict]]]:
     """Evaluate built font files, e.g. the masters `nkfont qa` just built."""
     rules = load_rules(root)
-    return [(Path(p).name, evaluate(font_metrics(TTFont(p)), rules)) for p in paths]
+    return [(Path(p).name, evaluate(font_metrics(TTFont(p)), rules, fam)) for p in paths]
 
 
 def format_report(rows: list[tuple[str, list[dict]]]) -> str:
