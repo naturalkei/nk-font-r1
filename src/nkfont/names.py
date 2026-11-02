@@ -49,7 +49,9 @@ def set_names(
         17: style,
     }
     table = font["name"]
-    table.names = []
+    # nameID >= 256 are labels GSUB feature params (ssXX/cvXX UI names), STAT or fvar point at;
+    # dropping them leaves dangling references, so keep them (Windows records only).
+    table.names = [r for r in table.names if r.nameID >= 256 and r.platformID == 3]
     for name_id, value in names.items():
         table.setName(value, name_id, 3, 1, 0x409)
 
