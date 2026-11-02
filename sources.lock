@@ -62,3 +62,83 @@ id = "neodgm-code"
 url = "https://raw.githubusercontent.com/neodgm/neodgm-webfont/v1.601/neodgm_code/neodgm_code.ttf"
 sha256 = "0d19cda34cba2c68137d4328820b743141279f8533b5624521f7b325e270a265"
 license = "OFL-1.1 (RFN 'Neo둥근모', 'NeoDunggeunmo')"
+
+# NK Mono (prototype): JetBrains Mono NL (no ligatures, same metrics as JetBrains Mono) and
+# NanumGothicCoding, whose Hangul is drawn for a 1:2 fixed-width grid.
+# License verified 2026-11-02 (google/fonts ofl/nanumgothiccoding/OFL.txt): OFL-1.1 with RFN
+# "Nanum", "Naver Nanum", "NanumGothic", "NanumMyeongjo", "NanumBrush", "NanumPen" (+ Naver ...).
+[[font]]
+id = "jetbrains-mono-nl-regular"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMonoNL-Regular.ttf"
+sha256 = "fb3b2575d7b0657359707993288f12a7360344d39387bb26050e276d61f6bd2a"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "jetbrains-mono-nl-bold"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMonoNL-Bold.ttf"
+sha256 = "0198e841824025f8876e5c297f0b9b497ee8d6eb9969710a3328e1303f996ec3"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "nanum-gothic-coding-regular"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/nanumgothiccoding/NanumGothicCoding-Regular.ttf"
+sha256 = "787effd7efed2abca88ade231faa8191f4e9fcf85b1805a13ee1dc3724b72089"
+license = "OFL-1.1 (RFN 'Nanum', 'NanumGothic', ...)"
+
+[[font]]
+id = "nanum-gothic-coding-bold"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/nanumgothiccoding/NanumGothicCoding-Bold.ttf"
+sha256 = "77a6de97c176b76ef9a683b565a1e6f4ce40b499c72a2972c4b5bdf7c6b8e7a0"
+license = "OFL-1.1 (RFN 'Nanum', 'NanumGothic', ...)"
+
+# NK Novel (prototype, proportional reading face): Crimson Text (Latin book face) and
+# Gowun Batang (Hangul batang for long-form reading). Both OFL-1.1 without RFN (verified 2026-11-02).
+[[font]]
+id = "crimson-text-regular"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/crimsontext/CrimsonText-Regular.ttf"
+sha256 = "48e6c5d5ad1d01599d374ecb817e15890d1feb3b8a3a88e527d44c90389e1f06"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "crimson-text-bold"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/crimsontext/CrimsonText-Bold.ttf"
+sha256 = "a3a0765fc5e8d0b49b540a23aefe0184887dd79f06a0bdf4db7035cea6befa93"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "gowun-batang-regular"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gowunbatang/GowunBatang-Regular.ttf"
+sha256 = "466c593e7147412e748af4856d5ad14709b5a860bdf62b9c2546f2c5874e9849"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "gowun-batang-bold"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gowunbatang/GowunBatang-Bold.ttf"
+sha256 = "dbfcaa646e5831e7478524924f02906f550285a5050699b4e38c9950b3ec4b94"
+license = "OFL-1.1 (no RFN)"
+
+# NK Comics (prototype, proportional lettering face): Comic Neue (Latin) and Dongle (rounded
+# Hangul, all 11,172 syllables). Both OFL-1.1 without RFN (verified 2026-11-02).
+[[font]]
+id = "comic-neue-regular"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/comicneue/ComicNeue-Regular.ttf"
+sha256 = "a0ee5a37c8b27c4db0700137d928598b1e23b0089e1546a8961909176b779360"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "comic-neue-bold"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/comicneue/ComicNeue-Bold.ttf"
+sha256 = "3e7e5fccfd7e0788f317b43312151c1bd5cf058c9697a8d83eac3939050bd61e"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "dongle-light"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/dongle/Dongle-Light.ttf"
+sha256 = "bb04e03dbe44fb0c619434f31565e62b5bac67229d5ed72eeac69c2e74e9a45c"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "dongle-bold"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/dongle/Dongle-Bold.ttf"
+sha256 = "944c498c0d1a1832ab36f173b1b3aa5ae77b2a914e00c4d79e05338fae36472d"
+license = "OFL-1.1 (no RFN)"

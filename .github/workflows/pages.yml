@@ -1,6 +1,6 @@
 name: pages
 
-# Builds all three families, Nerd-patches them, assembles the prototype site and deploys it to
+# Builds every family, Nerd-patches them, assembles the prototype site and deploys it to
 # GitHub Pages. Repository setting needed once: Settings -> Pages -> Source: "GitHub Actions".
 on:
   push:
@@ -33,18 +33,18 @@ jobs:
           path: sources
           key: sources-${{ hashFiles('sources.lock') }}
       - run: nkfont fetch
-      - name: Build masters (sans, serif, pixel)
-        run: |
-          nkfont build sans
-          nkfont build serif
-          nkfont build pixel
-      - name: Nerd Fonts patch (nf + nfm)
+      - name: Build masters (sans, serif, mono, pixel, novel, comics)
+        run: nkfont build all
+      - name: Nerd Fonts patch (nf + nfm, terminal families only)
         run: nkfont patch
       - name: Check every shipped font
         run: |
           nkfont check build/master/NKSans-*.ttf dist/NKSans*.ttf --base sources/JetBrainsMono-Regular.ttf --master build/master/NKSans-Regular.ttf
           nkfont check build/master/NKSerif-*.ttf dist/NKSerif*.ttf --base sources/IBMPlexMono-Regular.ttf --master build/master/NKSerif-Regular.ttf
           nkfont check build/master/NKPixel-*.ttf dist/NKPixel*.ttf --base sources/neodgm_code.ttf --master build/master/NKPixel-Regular.ttf
+          nkfont check build/master/NKMono-*.ttf dist/NKMono*.ttf --base sources/JetBrainsMonoNL-Regular.ttf --master build/master/NKMono-Regular.ttf
+          nkfont check build/master/NKNovel-*.ttf --kind text --base sources/CrimsonText-Regular.ttf
+          nkfont check build/master/NKComics-*.ttf --kind text --base sources/ComicNeue-Regular.ttf
       - name: Assemble site
         run: nkfont site
       - uses: actions/configure-pages@v5

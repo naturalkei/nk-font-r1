@@ -5,8 +5,12 @@ const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">":
 const FAMILY_INFO = {
   sans: { css: "NK Sans", cls: "nk-sans", latin: "JetBrains Mono", hangul: "Source Han Sans KR (본고딕)", note: "기본 가족. 담백한 고딕으로 어떤 테마에도 어울립니다." },
   serif: { css: "NK Serif", cls: "nk-serif", latin: "IBM Plex Mono", hangul: "Source Han Serif KR (본명조)", note: "명조 한글은 한 단계 굵게 짝지어 작은 크기에서도 획이 살아 있습니다." },
-  pixel: { css: "NK Pixel", cls: "nk-pixel", latin: "Neo둥근모 Code", hangul: "Neo둥근모 Code", note: "16 px 비트맵 격자. 정수 배율에서 가장 선명합니다." },
+  mono: { css: "NK Mono", cls: "nk-mono", latin: "JetBrains Mono NL", hangul: "나눔고딕코딩 한글", note: "합자 없는 순수 터미널 고정폭. 고정폭용으로 그린 한글이 두 칸을 꽉 채웁니다." },
+  pixel: { css: "NK Pixel", cls: "nk-pixel", latin: "Neo둥근모 Code", hangul: "Neo둥근모 Code", note: "16 px 비트맵 격자의 픽셀 터미널 글꼴. Nerd 아이콘 포함, 게임용 포맷도 준비 중입니다." },
+  novel: { css: "NK Novel", cls: "nk-novel", text: true, latin: "Crimson Text", hangul: "고운바탕", note: "책·소설·신문 본문용 비례폭 바탕. 기본 줄 높이 φ = 1.618.", spec: "한글 Aa 1987", spec2: "“그래, 다시 시작하자.” 그녀가\n창밖을 보며 말했다." },
+  comics: { css: "NK Comics", cls: "nk-comics", text: true, latin: "Comic Neue", hangul: "동글", note: "만화·웹툰 말풍선용 비례폭. 기본 줄 높이 √φ = 1.272.", spec: "으악! Aa ?!", spec2: "빨리 도망쳐!! WHAT?!\n잠깐만, 같이 가!" },
 };
+const isText = (id) => !!FAMILY_INFO[id]?.text;
 
 // Terminal cell count, close enough to wcwidth for the characters used on this page.
 function cells(ch) {
@@ -84,11 +88,12 @@ function applyPlay() {
   let size = +$("#sizeR").value;
   if (play.fam === "pixel") size = Math.max(16, Math.round(size / 16) * 16); // integer pixel scale
   a.style.fontSize = size + "px"; $("#sizeV").textContent = size + "px";
-  a.classList.toggle("grid-on", $("#playGrid").checked);
+  a.classList.toggle("grid-on", $("#playGrid").checked && !isText(play.fam));  // no cells in reading faces
+  a.style.lineHeight = play.fam === "novel" ? "1.618" : play.fam === "comics" ? "1.272" : "";
   a.style.fontFeatureSettings = $("#playLiga").checked ? "normal" : '"calt" 0, "liga" 0';
 }
 function initPlay() {
-  seg($("#famSeg"), [["sans", "NK Sans"], ["serif", "NK Serif"], ["pixel", "NK Pixel"]], play.fam, (v) => {
+  seg($("#famSeg"), Object.entries(FAMILY_INFO).map(([id, i]) => [id, i.css]), play.fam, (v) => {
     play.fam = v;
     const fam = manifest.families.find((f) => f.id === v);
     const ws = fam ? fam.webfonts.map((w) => [String(w.weight), w.style]) : [["400", "Regular"]];
@@ -114,21 +119,25 @@ function renderData() {
   $("#stats").innerHTML = stats.map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
 
   const fams = manifest.families.length ? manifest.families : Object.keys(FAMILY_INFO).map((id) => ({ id, family: FAMILY_INFO[id].css, webfonts: [], version: "0.1.0" }));
-  $("#famGrid").innerHTML = fams.map((f) => {
+  const famCard = (f) => {
     const i = FAMILY_INFO[f.id];
+    if (!i) return "";
     const glyphs = f.webfonts[0]?.glyphs?.toLocaleString() ?? "–";
-    return `<article class="fam"><h3 class="${i.cls}">${f.family}</h3>
-      <div class="spec ${i.cls}">한글 Aa 0O1lI</div>
-      <div class="spec2 ${i.cls}">fn 합계(값: i32) -> i32 { 값 * 2 }\n~/문서   main ✔</div>
+    return `<article class="fam"><h3 class="${i.cls}">${f.family}<span class="kind">${i.text ? "비례폭" : "고정폭"}</span></h3>
+      <div class="spec ${i.cls}">${i.spec || "한글 Aa 0O1lI"}</div>
+      <div class="spec2 ${i.cls}">${i.spec2 || "fn 합계(값: i32) -> i32 { 값 * 2 }\n~/문서   main ✔"}</div>
       <p style="margin:0;color:var(--mute);font-size:14px">${i.note}</p>
       <dl><dt>영문</dt><dd>${i.latin}</dd><dt>한글</dt><dd>${i.hangul}</dd><dt>굵기</dt><dd>${f.webfonts.map((w) => w.style).join(", ") || "–"}</dd><dt>글리프</dt><dd>${glyphs}</dd></dl></article>`;
-  }).join("");
+  };
+  $("#famGrid").innerHTML = fams.filter((f) => !isText(f.id)).map(famCard).join("");
+  $("#famGridText").innerHTML = fams.filter((f) => isText(f.id)).map(famCard).join("");
 
   $("#dlGrid").innerHTML = fams.map((f) => {
     const i = FAMILY_INFO[f.id], d = f.download;
+    if (!i) return "";
     return `<article class="dl"><h3 class="${i.cls}">${f.family}</h3>
       <p>v${f.version} · ${d ? `${d.files}개 파일 · ${fmtMB(d.bytes)}` : "빌드 대기"}</p>
-      <p>${d?.nerd ? "Nerd Font · Nerd Font Mono · 마스터" : "마스터"}</p>
+      <p>${i.text ? "읽기용 비례폭 TTF (Nerd 아이콘 없음)" : d?.nerd ? "Nerd Font · Nerd Font Mono · 마스터" : "마스터"}</p>
       ${d ? `<a class="btn" href="${d.url}" download>ZIP 내려받기</a>` : ""}</article>`;
   }).join("");
 }

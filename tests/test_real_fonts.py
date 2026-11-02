@@ -30,3 +30,16 @@ def test_sans_regular_passes_all_checks(sans):
 def test_sans_regular_has_all_hangul_syllables(sans):
     cmap = sans[0].getBestCmap()
     assert all(cp in cmap for cp in range(0xAC00, 0xD7A4))
+
+
+@pytest.mark.parametrize("fid", ["mono", "novel", "comics"])
+def test_new_families_pass_their_checks(fid):
+    srcs = config.sources()
+    if not all(s.path.exists() for s in srcs.values()):
+        pytest.skip("upstream fonts not downloaded (run `nkfont fetch`)")
+    fam = config.family(fid)
+    weight = fam["weight"][0]
+    font = build_master(fam, weight)
+    result = run_all(font, TTFont(srcs[weight["latin"]].path), kind=fam.get("kind", "merge"))
+    assert {k: v for k, v in result.items() if v} == {}
+    assert all(cp in font.getBestCmap() for cp in range(0xAC00, 0xD7A4))

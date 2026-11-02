@@ -1,0 +1,36 @@
+# NK Comics: proportional lettering face for comics, webtoons and speech bubbles.
+# Comic Neue (Latin) + Dongle (rounded Hangul, all 11,172 syllables).
+# kind = "text": no terminal grid, no Nerd Fonts icons; Hangul keeps its own spacing.
+status = "active"
+kind = "text"
+family = "NK Comics"
+file_prefix = "NKComics"
+version = "0.1.0"
+copyright = """Copyright 2026 naturalk (nk-font). \
+Copyright 2014 The Comic Neue Project Authors. \
+Copyright 2021 The Dongle Project Authors."""
+
+[hangul]
+# Dongle is drawn small on its em (가 is 350 units tall); scale it up to Comic Neue's cap height.
+# Dongle's out-of-frame syllables descend deep (를 reaches -390 before scaling), hence the descent.
+scale = 1.55
+dy = 0
+tracking = 0
+
+[metrics]
+# Speech bubbles are set tight: default line = √φ = 1.272 em (phi.py), ascent + descent = 1272.
+ascent = 932
+descent = -340
+line_height = "phi^0.5"
+
+[[weight]]
+name = "Regular"
+latin = "comic-neue-regular"
+hangul = "dongle-light"     # Comic Neue Regular is light; Dongle Regular reads too heavy next to it
+weight_class = 400
+
+[[weight]]
+name = "Bold"
+latin = "comic-neue-bold"
+hangul = "dongle-bold"
+weight_class = 700

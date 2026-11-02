@@ -5,6 +5,7 @@
   --grid:rgba(83,211,189,.16); --shadow:0 30px 80px -30px rgba(0,0,0,.7);
   --sans:"NK Sans","NKSans Nerd Font",ui-monospace,"SFMono-Regular",Menlo,monospace;
   --serif:"NK Serif",ui-monospace,monospace; --pixel:"NK Pixel",ui-monospace,monospace;
+  --mono:"NK Mono",ui-monospace,monospace; --novel:"NK Novel",Georgia,serif; --comics:"NK Comics","Comic Sans MS",cursive;
   --ui:system-ui,-apple-system,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;
   --r:14px; --gut:clamp(16px,4vw,48px);
 }
@@ -109,7 +110,8 @@ main>section{padding:clamp(64px,9vw,120px) var(--gut)}
 .fam h3{margin:0;font-size:26px}.fam .spec{font-size:44px;line-height:1.2;white-space:nowrap;overflow:hidden}
 .fam .spec2{font-size:16px;color:var(--mute);white-space:pre;overflow:hidden;line-height:1.4}
 .fam dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:13px}.fam dt{color:var(--faint)}.fam dd{margin:0;color:var(--mute)}
-.nk-sans{font-family:var(--sans)}.nk-serif{font-family:var(--serif)}
+.nk-sans{font-family:var(--sans)}.nk-serif{font-family:var(--serif)}.nk-mono{font-family:var(--mono)}
+.nk-novel{font-family:var(--novel)}.nk-comics{font-family:var(--comics)}
 .nk-pixel{font-family:var(--pixel);-webkit-font-smoothing:none;font-smooth:never;text-rendering:optimizeSpeed}
 
 /* code */
@@ -156,3 +158,19 @@ main>section{padding:clamp(64px,9vw,120px) var(--gut)}
 
 .foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;padding:48px var(--gut) 64px;border-top:1px solid var(--line);color:var(--mute);font-size:14px}
 .foot h4{color:var(--ink);margin:0 0 8px;font-size:14px}.foot p{margin:8px 0 0}
+
+/* reading faces: NK Novel and NK Comics */
+.fam-sub{margin:34px 0 14px;font-size:15px;color:var(--mute);font-family:var(--ui);letter-spacing:.02em}
+.fam .kind{font-size:12px;color:var(--faint);border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin-left:8px;vertical-align:middle;font-family:var(--ui)}
+.read-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.book{background:#f7f2e8;color:#2a251d;border-radius:var(--r);padding:clamp(22px,4vw,44px);font-size:19px;line-height:1.618;box-shadow:0 1px 0 var(--line)}
+.book h3{font-size:15px;letter-spacing:.2em;color:#8a7a60;margin:0 0 6px;font-weight:400}
+.book h4{font-size:26px;margin:0 0 14px;font-weight:700}
+.book p{margin:0 0 .9em;text-indent:1em;word-break:keep-all}
+.book .phi{font-size:12px;color:#8a7a60;font-family:var(--ui);text-indent:0}
+.panel{background:#fff;color:#111;border:3px solid #111;border-radius:6px;padding:22px;display:flex;flex-direction:column;gap:16px;min-height:300px}
+.bubble{position:relative;align-self:flex-start;background:#fff;border:2.5px solid #111;border-radius:50%/42%;padding:18px 26px;font-size:24px;line-height:1.272;text-align:center;max-width:85%;word-break:keep-all}
+.bubble:after{content:"";position:absolute;left:30px;bottom:-16px;border:9px solid transparent;border-top:14px solid #111}
+.bubble.r{align-self:flex-end}.bubble.r:after{left:auto;right:34px}
+.bubble.shout{font-weight:700;font-size:30px;border-radius:12px;transform:rotate(-1.5deg)}
+.sfx{font-weight:700;font-size:44px;letter-spacing:.04em;color:#e2483d;-webkit-text-stroke:1.5px #111;transform:rotate(-6deg);align-self:center}

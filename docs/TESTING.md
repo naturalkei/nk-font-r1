@@ -43,6 +43,12 @@ make qa                      # = nkfont qa
 
 판정: `pass` / `warn`(통과, 확인 권장) / `skip`(환경 없음, 예: Docker) / `fail`. `fail`이 하나라도 있으면 전체 실패입니다.
 
+### 읽기용 가족 (NK Novel, NK Comics: `kind = "text"`)
+* 터미널 격자가 없으므로 폭·잉크 넘침·고정폭 메트릭 검사 대신 `text-metrics`(고정폭 표시 금지, hhea = typo 줄 메트릭, USE_TYPO_METRICS, usWin이 bbox 포함)와 `hangul-coverage`(현대 한글 11,172자 전부)를 돌립니다. 이름(RFN)과 영문 기능 보존 검사는 같습니다.
+* 골든 이미지는 본문 문장·따옴표·문장부호 샘플(`GOLDEN_TEXT_PROPORTIONAL`)로 렌더합니다.
+* Nerd Fonts 패치 단계는 `skip`(설계상 아이콘 없음)입니다.
+* 황금비 줄 높이(`line_height = "phi"`)는 `ascent − descent + lineGap = round(φ·UPM)`을 단위 테스트로 고정합니다.
+
 ### 잉크 넘침 판정
 * 우리가 넣은 글리프(한글 등)가 칸을 5% 넘게 벗어나면 **실패**입니다.
 * JetBrains Mono에서 물려받은 글리프(그리스 대문자 악센트, 일부 화살표)와 Nerd 아이콘(PUA, 비 Mono 변형은 의도적으로 넘침)은 **경고**로만 집계합니다.

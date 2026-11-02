@@ -15,7 +15,8 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 | --- | --- |
 | **정렬** | 자동 폭 검사 0건, 호환성 매트릭스 10개 환경(§5) 전부 통과, 스크린샷으로 증명 |
 | **한글 품질** | 영문 대비 높이·굵기·중심이 맞도록 조절값 확정, 12~16px에서 획 뭉개짐 없음, 받침 유무에 따른 시각 정렬 규칙 적용 |
-| **패밀리 완성도** | NK Sans 8 weight × (정체 + 이탤릭) = 16종, 각각 Nerd Font / Nerd Font Mono |
+| **패밀리 완성도** | NK Sans 9 weight(Thin~Black) × (정체 + 이탤릭) = 18종, 각각 Nerd Font / Nerd Font Mono, 인쇄용 정적 OTF와 가변 폰트 |
+| **차별화** | φ 비례 체계 리포트, NK 제로, 한글 문장부호·받침 기준선 기능 등 NK 고유 시그니처(FAMILIES.md §2) |
 | **기능** | 영문 합자(`calt`) 끄고 켜기, 스타일 세트(`ss01~`, `cv01~`) 문서화, `0` 점/사선 변형 |
 | **렌더링** | macOS, Windows(ClearType 12~14px), Linux(FreeType) 세 환경 교정 시트 공개 |
 | **배포** | GitHub Releases, Homebrew tap, Scoop bucket, 웹폰트 CDN(jsDelivr) |
@@ -59,11 +60,19 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 * 사이트에 세 가족 비교 화면
 * **완료 기준:** NK Sans와 같은 QA 기준 통과
 
+### M4.5 NK Mono · Novel · Comics (프로토타입 완료 2026-11-02, 상세: [FAMILIES.md](FAMILIES.md))
+* NK Mono: JetBrains Mono NL + 나눔고딕코딩, 합자 없는 순수 터미널 고정폭 (터미널 QA 동일 기준)
+* NK Novel·NK Comics: 읽기용 비례폭 갈래(`kind = "text"`), 황금비 줄 높이(φ, √φ), 전용 QA(`text-metrics`, `hangul-coverage`, 본문 골든)
+* 다음: Comics Light·이탤릭, Novel 굵기 확장(한글 소스 병목), NK OpenType 기능(`dlig`, `zero`, `ss11`~ 한글 기능), 사이트 읽기·만화 섹션 고도화
+* **완료 기준:** 각 가족 Regular·Bold가 `nkfont qa --profile ci` 통과, 사이트에서 미리보기·내려받기
+
 ### M5 확장 (이후)
 * 조합형 자모(macOS NFD 파일명) 폰트 차원 지원
 * 한자 KS X 1001 4,888자
 * 조절 도구 T3(Tauri 데스크톱 앱)
-* 가변 폰트(weight 축) 검토
+* 가변 폰트(`wght` 축)와 Thin~Black 9단계 + 이탤릭, 인쇄용 정적 OTF (FAMILIES.md §4)
+* 획 굵기만 바꾸고 폭은 그대로인 grade 조절(조정 도구의 `grade`, MonoLisa 3.0의 GRAD 축 참고)을 가변 축으로 내보낼지 검토
+* 릴리스마다 변경 이력 페이지와 이전 버전에서 옮겨 오는 안내(이름·기능 번호가 바뀔 때) 공개
 
 ---
 

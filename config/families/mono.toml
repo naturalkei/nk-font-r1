@@ -1,0 +1,31 @@
+# NK Mono: pure terminal monospace. JetBrains Mono NL (no ligatures: every character looks like
+# itself) + NanumGothicCoding Hangul (RFN "Nanum"), which is drawn for a 1:2 fixed-width grid and
+# fills the two-cell box more than Source Han Sans does in NK Sans. Prototype.
+status = "active"
+family = "NK Mono"
+file_prefix = "NKMono"
+version = "0.1.0"
+copyright = """Copyright 2026 naturalk (nk-font). \
+Copyright 2020 The JetBrains Mono Project Authors. \
+Copyright (c) 2010, NHN Corporation, with Reserved Font Names 'Nanum', 'Naver Nanum', \
+'NanumGothic', 'Naver NanumGothic', 'NanumMyeongjo', 'Naver NanumMyeongjo', 'NanumBrush', \
+'Naver NanumBrush', 'NanumPen', 'Naver NanumPen'."""
+
+[hangul]
+# NanumGothicCoding Hangul is 1000 wide on a 1000 em and sits low (y -140..782).
+scale = 1.08
+dy = 40
+center = "advance"
+fit = 0.92
+
+[[weight]]
+name = "Regular"
+latin = "jetbrains-mono-nl-regular"
+hangul = "nanum-gothic-coding-regular"
+weight_class = 400
+
+[[weight]]
+name = "Bold"
+latin = "jetbrains-mono-nl-bold"
+hangul = "nanum-gothic-coding-bold"
+weight_class = 700

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>nk-font — 한글도 칸에 맞게</title>
-<meta name="description" content="터미널을 위한 OFL 한글 고정폭 Nerd Font. NK Sans, NK Serif, NK Pixel 프로토타입.">
+<meta name="description" content="터미널을 위한 OFL 한글 고정폭 Nerd Font와 읽기용 한글 글꼴. NK Sans, Serif, Mono, Pixel, Novel, Comics 프로토타입.">
 <meta property="og:title" content="nk-font — 한글도 칸에 맞게">
 <meta property="og:description" content="Starship, zsh, iTerm2, Linux 터미널에서 한글·영문·아이콘이 셀 격자에 정확히 맞는 한글 Nerd Font.">
 <link rel="stylesheet" href="style.css">
@@ -15,7 +15,7 @@
 <header class="nav">
   <a class="logo" href="#top" aria-label="nk-font 처음으로"><span class="logo-mark">nk</span><span class="logo-word">font</span></a>
   <nav aria-label="주요 메뉴">
-    <a href="#play">체험</a><a href="#why">특징</a><a href="#families">가족</a><a href="#glyphs">글리프</a><a href="#pixel">픽셀</a><a href="#install">설치</a>
+    <a href="#play">체험</a><a href="#why">특징</a><a href="#families">가족</a><a href="#reading">읽기·만화</a><a href="#glyphs">글리프</a><a href="#pixel">픽셀</a><a href="#install">설치</a>
   </nav>
   <div class="nav-right">
     <button class="icon-btn" id="themeBtn" aria-label="밝기 전환" title="밝기 전환">◐</button>
@@ -28,7 +28,7 @@
   <div class="hero-copy">
     <p class="eyebrow"><span class="badge">Prototype</span> <span id="buildInfo" class="nk-sans">v0.1.0</span></p>
     <h1 class="grid-title"><span>한글도</span><span>칸에 맞게.</span></h1>
-    <p class="lede">터미널을 위한 한글 고정폭 Nerd Font. 영문 한 칸, 한글 두 칸, 아이콘까지 셀 격자에 정확히 떨어지도록 만들었습니다. <b>NK Sans</b> · <b>NK Serif</b> · <b>NK Pixel</b>, SIL OFL 1.1.</p>
+    <p class="lede">터미널을 위한 한글 고정폭 Nerd Font. 영문 한 칸, 한글 두 칸, 아이콘까지 셀 격자에 정확히 떨어지도록 만들었습니다. <b>NK Sans</b> · <b>NK Serif</b> · <b>NK Mono</b> · <b>NK Pixel</b>, 그리고 읽기용 <b>NK Novel</b> · 만화용 <b>NK Comics</b>. SIL OFL 1.1.</p>
     <div class="cta"><a class="btn" href="#download">무료로 내려받기</a><a class="btn btn-ghost" href="#play">직접 입력해 보기</a></div>
   </div>
   <figure class="term" aria-label="nk-font로 표시한 터미널 예시">
@@ -77,9 +77,31 @@ if (값 != null) { return a <= b; }</div>
   <div class="stats" id="stats"></div>
 </section>
 
-<section class="band" id="families">
-  <div class="section-head"><h2>세 가족</h2><p>같은 격자 규칙, 다른 목소리.</p></div>
+<section id="families">
+  <div class="section-head"><h2>여섯 가족</h2><p>터미널 넷은 같은 1 : 2 격자, 읽기용 둘은 같은 황금비율 줄 간격. 규칙은 같고 목소리는 다릅니다.</p></div>
+  <h3 class="fam-sub">터미널 · 고정폭 Nerd Font</h3>
   <div class="fam-grid" id="famGrid"></div>
+  <h3 class="fam-sub">읽기 · 비례폭</h3>
+  <div class="fam-grid" id="famGridText"></div>
+</section>
+
+<section class="band" id="reading">
+  <div class="section-head"><h2>읽기와 만화</h2><p>NK Novel은 책·소설·신문 본문을 위해 기본 줄 높이를 황금비 φ = 1.618로, NK Comics는 말풍선을 위해 √φ = 1.272로 맞췄습니다. 터미널 격자가 없는 비례폭 글꼴입니다.</p></div>
+  <div class="read-wrap">
+    <article class="book nk-novel" aria-label="NK Novel 본문 예시">
+      <h3>제3장</h3>
+      <h4>긴 밤</h4>
+      <p>“그래, 다시 시작하자.” 그녀가 창밖을 보며 말했다. 비가 그친 새벽 거리에는 아직 신문 배달 자전거가 지나가고 있었고, 젖은 아스팔트 위로 가로등 불빛이 길게 번졌다.</p>
+      <p>그는 대답 대신 식은 커피를 들었다. 1987년 겨울, 서울의 밤은 지금보다 훨씬 조용했다. The long night was not over yet.</p>
+      <p class="phi">NK Novel · 19px · line-height 1.618 (φ)</p>
+    </article>
+    <div class="panel nk-comics" aria-label="NK Comics 말풍선 예시">
+      <div class="bubble">어… 이게 다 뭐야?<br>방금 뭐가 지나갔지?</div>
+      <div class="sfx">쾅!!</div>
+      <div class="bubble r shout">빨리 도망쳐!!</div>
+      <div class="bubble">WHAT?! 잠깐만, 같이 가!</div>
+    </div>
+  </div>
 </section>
 
 <section id="code">
@@ -145,7 +167,7 @@ if (값 != null) { return a <= b; }</div>
   </div>
   <div>
     <h4>업스트림</h4>
-    <p>JetBrains Mono · Source Han Sans KR · IBM Plex Mono · Source Han Serif KR · Neo둥근모 Code · Nerd Fonts. 각 원본의 예약 글꼴 이름은 nk-font 이름에 쓰지 않습니다.</p>
+    <p>JetBrains Mono · Source Han Sans KR · IBM Plex Mono · Source Han Serif KR · 나눔고딕코딩 · Neo둥근모 Code · Crimson Text · 고운바탕 · Comic Neue · 동글 · Nerd Fonts. 각 원본의 예약 글꼴 이름은 nk-font 이름에 쓰지 않습니다.</p>
   </div>
   <div>
     <h4>프로젝트</h4>
