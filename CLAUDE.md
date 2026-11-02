@@ -22,6 +22,8 @@ nkfont diff OLD.ttf NEW.ttf              # what a change actually did
 nkfont proof FILES -o proofs/proof.png
 nkfont tune mono --scale 0.92:1.04:0.04 --dy -30:10:20
 nkfont studio         # NK Studio web UI: live Hangul tuning, saves [hangul] in config/families
+                      #   /lab = Glyph Lab: overlay vs JetBrains Mono/D2Coding, stems, slant, OT features
+nkfont phi [FILES]    # golden-ratio proportion report (config/proportions.toml, shared by families)
 nkfont site           # build/site: prototype site (WOFF2 + zips); deployed by .github/workflows/pages.yml
 python -m pytest -q   # unit tests use synthetic fonts; real-font tests skip without sources/
 ruff check src tests && ruff format --check src tests
@@ -44,6 +46,9 @@ ruff check src tests && ruff format --check src tests
 - NK Pixel (`kind = "pixel"`) is one source font renamed, not merged: width conflicts (Ambiguous
   symbols drawn two cells) are unmapped, never squeezed.
 - All tunables live in `config/families/*.toml`; code reads them, never hard-codes them.
+  Golden-ratio (φ) targets live in `config/proportions.toml`; on grid families the grid and Latin metrics
+  win over φ (`locked`, reported only); proportional families (`grid = false`) skip `grid_only` rules. New `[hangul]` knobs must default
+  to the identity so existing builds stay byte-identical.
 - Pin every upstream input in `sources.lock` (URL + SHA256, patcher image tag + digest).
 
 ## Testing rule

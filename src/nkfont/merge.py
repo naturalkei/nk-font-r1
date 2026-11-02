@@ -8,6 +8,7 @@ reading families (`advance = "proportional"`) keep the source's own spacing, sca
 
 from __future__ import annotations
 
+import math
 import unicodedata
 from dataclasses import dataclass
 
@@ -30,6 +31,9 @@ class HangulParams:
     dy: float = 0.0  # target units, after scaling
     center: str = "advance"  # "advance" or "bbox"
     fit: float = 0.92  # imported ink may use at most this share of its cell width
+    width: float = 1.0  # extra horizontal scale (1.0 = keep proportions)
+    slant: float = 0.0  # degrees, positive leans right (for italics; skewed about the ink centre)
+    grade: float = 0.0  # font units added to stem weight without changing the advance
     advance: str = "cell"  # "cell" (terminal grid) or "proportional" (reading faces)
     tracking: float = 0.0  # proportional only: target units added to each Hangul advance
 
@@ -37,6 +41,51 @@ class HangulParams:
 def is_cubic(font: TTFont) -> bool:
     """CFF/CFF2 outlines are cubic with the opposite contour direction to TrueType."""
     return "CFF " in font or "CFF2" in font
+
+
+def embolden(glyph, amount: float) -> None:
+    """Thicken (amount > 0) or thin a TrueType glyph's strokes by `amount` font units in total.
+
+    Every point moves along the bisector of its two edge normals by amount/2, the method
+    FreeType's FT_Outline_Embolden uses. Outer contours are clockwise and holes counter-clockwise
+    in TrueType, so holes shrink while outlines grow. Advances are not touched (like a GRAD axis).
+    """
+    if not amount or glyph.numberOfContours <= 0:
+        return
+    coords = glyph.coordinates
+    contours, start = [], 0
+    for end in glyph.endPtsOfContours:
+        contours.append((start, end))
+        start = end + 1
+
+    def signed_area(a, b):
+        pts = [coords[i] for i in range(a, b + 1)]
+        return sum(pts[i][0] * pts[i - 1][1] - pts[i - 1][0] * pts[i][1] for i in range(len(pts)))
+
+    # The biggest contour is an outline: if it runs counter-clockwise the whole glyph is
+    # reversed (not TrueType convention), so flip the normals to keep "outward" outward.
+    outer = max((signed_area(a, b) for a, b in contours), key=abs)
+    half = amount / 2 if outer >= 0 else -amount / 2
+    new = list(coords)
+    for start, end in contours:
+        pts = [coords[i] for i in range(start, end + 1)]
+        n = len(pts)
+        for k in range(n):
+            px, py = pts[k - 1]
+            cx, cy = pts[k]
+            nx, ny = pts[(k + 1) % n]
+            ax, ay = cx - px, cy - py
+            bx, by = nx - cx, ny - cy
+            la, lb = math.hypot(ax, ay), math.hypot(bx, by)
+            if la == 0 or lb == 0:
+                continue
+            # Outward normal of a clockwise (y-up) edge direction (dx, dy) is (-dy, dx).
+            n1 = (-ay / la, ax / la)
+            n2 = (-by / lb, bx / lb)
+            d = max(1 + n1[0] * n2[0] + n1[1] * n2[1], 0.35)  # clamp spikes at sharp corners
+            new[start + k] = (cx + (n1[0] + n2[0]) * half / d, cy + (n1[1] + n2[1]) * half / d)
+    for i, (x, y) in enumerate(new):
+        coords[i] = (round(x), round(y))
 
 
 def half_width(font: TTFont) -> int:
@@ -100,28 +149,40 @@ def merge_hangul(latin: TTFont, hangul: TTFont, ranges, params: HangulParams) ->
         bp = BoundsPen(src_glyphs)
         src_glyphs[src_name].draw(bp)
         x0, _, x1, _ = bp.bounds or (0, 0, 0, 0)
+        _, y0, _, y1 = bp.bounds or (0, 0, 0, 0)
         gs = s
         if proportional:
-            target = round(src_hmtx[src_name][0] * gs + params.tracking)
+            sx = gs * params.width
+            target = round(src_hmtx[src_name][0] * sx + params.tracking)
             dx = params.tracking / 2  # keep the source side bearings, split the tracking
         else:
             target = cell_width(cp, half)
-            if (x1 - x0) * gs > target * params.fit:
+            # Ink width after the horizontal scale and the skew (a slanted box gets wider).
+            span = (x1 - x0) * params.width + abs(math.tan(math.radians(params.slant))) * (y1 - y0)
+            if span * gs > target * params.fit:
                 # Source glyph is wider than its cell (e.g. Source Han Sans "halfwidth" jamo are
                 # 920 wide): shrink uniformly so the ink stays inside the cell, then centre it.
-                gs = target * params.fit / (x1 - x0)
+                gs = target * params.fit / span
+            sx = gs * params.width
             if params.center == "bbox" or gs != s:
-                dx = (target - (x1 - x0) * gs) / 2 - x0 * gs
+                dx = (target - (x1 - x0) * sx) / 2 - x0 * sx
             else:
-                dx = (target - src_hmtx[src_name][0] * gs) / 2
+                dx = (target - src_hmtx[src_name][0] * sx) / 2
+        if params.slant:
+            # Skew about the ink's vertical centre so the glyph stays centred in its cell.
+            k = math.tan(math.radians(params.slant))
+            matrix = (sx, 0, k * gs, gs, dx - k * gs * (y0 + y1) / 2, params.dy)
+        else:
+            matrix = (sx, 0, 0, gs, dx, params.dy)
 
         tt_pen = TTGlyphPen(None)
         cu2qu = Cu2QuPen(tt_pen, max_err=1.0, reverse_direction=reverse)
         # TrueType sources (D2Coding, Gowun Batang) use composite glyphs; decompose them,
         # since their component glyphs are not copied into the Latin font.
-        out = TransformPen(cu2qu, (gs, 0, 0, gs, dx, params.dy))
+        out = TransformPen(cu2qu, matrix)
         src_glyphs[src_name].draw(DecomposingFilterPen(out, src_glyphs))
         glyph = tt_pen.glyph()
+        embolden(glyph, params.grade)
         glyph.program = ttProgram.Program()
         glyph.program.fromBytecode(b"")
 

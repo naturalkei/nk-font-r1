@@ -66,6 +66,9 @@ def hangul_params(fam: dict, **override) -> HangulParams:
         dy=h.get("dy", 0),
         center=h.get("center", "advance"),
         fit=h.get("fit", 0.92),
+        width=h.get("width", 1.0),
+        slant=h.get("slant", 0.0),
+        grade=h.get("grade", 0.0),
         advance="cell" if is_terminal(fam) else "proportional",
         tracking=h.get("tracking", 0),
     )

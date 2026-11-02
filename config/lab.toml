@@ -1,0 +1,68 @@
+# Glyph Lab (`nkfont studio` -> /lab): comparison fonts and glyph presets.
+# Reference fonts come from sources.lock (`nkfont fetch`); they are only measured and shown,
+# never merged or shipped.
+
+[[reference]]
+id = "jetbrains-mono"
+label = "JetBrains Mono"
+Regular = "jetbrains-mono-regular"
+Bold = "jetbrains-mono-bold"
+
+[[reference]]
+id = "d2coding"
+label = "D2Coding"
+Regular = "d2coding-regular"
+Bold = "d2coding-bold"
+
+[[reference]]
+id = "plex-mono"
+label = "IBM Plex Mono"
+Regular = "plex-mono-regular"
+Bold = "plex-mono-bold"
+
+[[reference]]
+id = "source-han-sans"
+label = "Source Han Sans KR (원본)"
+Regular = "source-han-sans-kr-regular"
+Bold = "source-han-sans-kr-bold"
+
+[[reference]]
+id = "neodgm-code"
+label = "Neo Dunggeunmo Code"
+Regular = "neodgm-code"
+
+# Glyph sets to compare in one click. MonoLisa-style legibility pairs first.
+[[preset]]
+label = "혼동 쌍"
+text = "Il1|O0o"
+
+[[preset]]
+label = "소문자 연결"
+text = "dbqp rnm"
+
+[[preset]]
+label = "곡선"
+text = "aegs"
+
+[[preset]]
+label = "획 굵기 (영·한)"
+text = "lHㅣㅡ"
+
+[[preset]]
+label = "한글 높이"
+text = "Hx가한를"
+
+[[preset]]
+label = "받침·겹모음"
+text = "읽꽃뷁됐"
+
+[[preset]]
+label = "기호"
+text = "{}()[]<>@&*"
+
+# Probes for the weight-harmony readout: Latin stem/bar vs. Hangul stem/bar.
+[harmony]
+latin_stem = "l"     # vertical stem read at mid x-height
+latin_bar = "H"      # crossbar read at the glyph centre
+hangul_stem = "ㅣ"
+hangul_bar = "ㅡ"
