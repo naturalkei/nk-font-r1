@@ -1,7 +1,7 @@
 # nk-nerd-font developer shortcuts. Run `make setup` once, then `make all`.
 PY ?= .venv/bin/python
 NK ?= .venv/bin/nkfont
-FAMILY ?= sans
+FAMILY ?= mono
 
 .PHONY: setup fetch build patch check proof tune test lint qa qa-ci all clean
 
@@ -19,7 +19,7 @@ patch:
 	$(NK) patch
 
 check:
-	$(NK) check build/master/*.ttf $(wildcard dist/*.ttf) --base sources/JetBrainsMono-Regular.ttf
+	$(NK) check build/master/NKMono-*.ttf $(wildcard dist/NKMono*.ttf) --base sources/JetBrainsMono-Regular.ttf
 
 proof:
 	$(NK) proof build/master/*.ttf -o proofs/proof.png

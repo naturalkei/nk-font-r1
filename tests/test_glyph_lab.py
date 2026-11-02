@@ -261,10 +261,10 @@ def test_lab_measures_real_fonts():
         pytest.skip("upstream fonts not downloaded (run `nkfont fetch`)")
     out = Lab().glyphs(
         {
-            "family": "sans",
+            "family": "mono",  # terminal family: JetBrains Mono + D2Coding Hangul
             "weight": "Regular",
             "chars": "lㅣ",
-            "params": {"grade": 10},
+            "params": {"grade": -8},
             "fonts": ["nk-edit", "ref:jetbrains-mono", "ref:d2coding"],
             "scan_y": [275],
         }
@@ -273,7 +273,7 @@ def test_lab_measures_real_fonts():
     assert nk["glyphs"][0]["stem"] == jb["glyphs"][0]["stem"]  # Latin is untouched
     assert nk["harmony"]["hangul_stem"] == pytest.approx(nk["harmony"]["latin_stem"], abs=2)
     assert out["ref:d2coding"]["guides"]["half"] == 500
-    assert {r["id"] for r in nk["proportions"]} >= {"hangul_height", "hangul_stem"}
+    assert {r["id"] for r in nk["proportions"]} >= {"hangul_height", "hangul_stem", "hangul_cell"}
 
 
 def test_proportional_family_skips_grid_rules():

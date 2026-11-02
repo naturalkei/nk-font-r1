@@ -9,6 +9,10 @@ on:
 jobs:
   qa:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        family: [sans, serif, mono, pixel, novel, comics]
     env:
       SOURCE_DATE_EPOCH: "1798761600"  # fixed font timestamps (reproducible builds)
     steps:
@@ -23,11 +27,11 @@ jobs:
           path: sources
           key: sources-${{ hashFiles('sources.lock') }}
       - name: nkfont qa --profile ci
-        run: nkfont qa --profile ci --report-dir reports
+        run: nkfont qa --profile ci --family ${{ matrix.family }} --report-dir reports
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: nk-sans-${{ github.sha }}
+          name: nk-${{ matrix.family }}-${{ github.sha }}
           path: |
             dist/*.ttf
             reports/

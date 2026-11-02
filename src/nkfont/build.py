@@ -1,7 +1,11 @@
 """Master build: Latin + Hangul -> NK master TTF (before Nerd Fonts patching).
 
-Families with `kind = "pixel"` start from a single pixel font that already holds Latin and
-Hangul on one grid; they are renamed and terminal-flagged instead of merged.
+Family kinds:
+  merge (default)  terminal monospace: Latin mono + Hangul on the 1:2 cell grid (Sans, Serif, Mono)
+  pixel            one pixel font that already holds Latin and Hangul on one grid; renamed and
+                   terminal-flagged instead of merged (Pixel)
+  text             proportional reading face: Latin text face + Hangul with its own spacing,
+                   no terminal grid and no Nerd Fonts icons (Novel, Comics)
 """
 
 from __future__ import annotations
@@ -12,9 +16,15 @@ from pathlib import Path
 from fontTools.ttLib import TTFont
 
 from . import config
-from .flags import enforce_terminal_flags, fit_terminal_widths, unmap_width_conflicts
+from .flags import (
+    enforce_terminal_flags,
+    enforce_text_flags,
+    fit_terminal_widths,
+    unmap_width_conflicts,
+)
 from .merge import HangulParams, half_width, merge_hangul
 from .names import COPYRIGHT, set_names
+from .phi import line_metrics
 
 # Seconds between 1904-01-01 (OpenType epoch) and 1970-01-01 (Unix epoch).
 MAC_EPOCH_OFFSET = 2082844800
@@ -37,6 +47,18 @@ def save_reproducible(font: TTFont, path: Path) -> None:
     font.save(path)
 
 
+TERMINAL_KINDS = ("merge", "pixel")
+
+
+def kind(fam: dict) -> str:
+    return fam.get("kind", "merge")
+
+
+def is_terminal(fam: dict) -> bool:
+    """Terminal families keep the 0/600/1200 grid and get Nerd Fonts icons."""
+    return kind(fam) in TERMINAL_KINDS
+
+
 def hangul_params(fam: dict, **override) -> HangulParams:
     h = {**fam.get("hangul", {}), **override}
     return HangulParams(
@@ -47,10 +69,12 @@ def hangul_params(fam: dict, **override) -> HangulParams:
         width=h.get("width", 1.0),
         slant=h.get("slant", 0.0),
         grade=h.get("grade", 0.0),
+        advance="cell" if is_terminal(fam) else "proportional",
+        tracking=h.get("tracking", 0),
     )
 
 
-def finish(font: TTFont, fam: dict, weight: dict, ascent: int, descent: int) -> TTFont:
+def _names(font: TTFont, fam: dict, weight: dict) -> None:
     set_names(
         font,
         fam["family"],
@@ -59,6 +83,10 @@ def finish(font: TTFont, fam: dict, weight: dict, ascent: int, descent: int) -> 
         weight["weight_class"],
         fam.get("copyright", COPYRIGHT),
     )
+
+
+def finish(font: TTFont, fam: dict, weight: dict, ascent: int, descent: int) -> TTFont:
+    _names(font, fam, weight)
     half = half_width(font)
     fit_terminal_widths(font, half)
     enforce_terminal_flags(font, half, ascent, descent)
@@ -87,9 +115,33 @@ def build_master(
     srcs = config.sources()
     latin = latin or TTFont(srcs[weight["latin"]].path)
     hangul = hangul or TTFont(srcs[weight["hangul"]].path)
-    ascent, descent = latin["hhea"].ascent, latin["hhea"].descent
+    hhea = latin["hhea"]
+    ascent, descent, line_gap = hhea.ascent, hhea.descent, hhea.lineGap
     merge_hangul(latin, hangul, ranges or config.ranges(), params or hangul_params(fam))
-    return finish(latin, fam, weight, ascent, descent)
+    if is_terminal(fam):
+        return finish(latin, fam, weight, ascent, descent)
+    return finish_text(latin, fam, weight, ascent, descent, line_gap)
+
+
+def finish_text(
+    font: TTFont, fam: dict, weight: dict, ascent: int, descent: int, line_gap: int
+) -> TTFont:
+    """Proportional reading faces: names and text flags only; widths are the designers'."""
+    _names(font, fam, weight)
+    m = fam.get("metrics", {})
+    upm = font["head"].unitsPerEm
+    # Config values are expressed for UPM 1000, like the Hangul scale.
+    to_units = upm / 1000
+    if "ascent" in m:
+        ascent = round(m["ascent"] * to_units)
+    if "descent" in m:
+        descent = round(m["descent"] * to_units)
+    if "line_gap" in m:
+        line_gap = round(m["line_gap"] * to_units)
+    if "line_height" in m:  # golden-ratio rule, see phi.py
+        ascent, descent, line_gap = line_metrics(ascent, descent, upm, m["line_height"])
+    enforce_text_flags(font, ascent, descent, line_gap)
+    return font
 
 
 def master_path(fam: dict, weight: dict, out_dir: Path | None = None) -> Path:

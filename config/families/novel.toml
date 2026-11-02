@@ -1,0 +1,40 @@
+# NK Novel: proportional reading face for books, novels, news and long-form articles.
+# Crimson Text (Latin book face) + Gowun Batang (Hangul batang drawn for long reading).
+# kind = "text": no terminal grid, no Nerd Fonts icons; Hangul keeps its own spacing.
+status = "active"
+kind = "text"
+family = "NK Novel"
+file_prefix = "NKNovel"
+version = "0.1.0"
+copyright = """Copyright 2026 naturalk (nk-font). \
+Copyright 2010 The Crimson Text Project Authors. \
+Copyright 2021 The Gowun Batang Project Authors."""
+
+[hangul]
+# For a 1000-UPM source; Crimson is 1024 UPM (rescaled automatically). Tuned so the Hangul body
+# sits between Crimson's x-height and cap height, as Korean book typesetting expects.
+scale = 0.92
+dy = 0
+# Target units added to every Hangul advance (negative = tighter). Long text reads better with
+# Gowun Batang's generous default spacing pulled in slightly.
+tracking = -10
+
+[metrics]
+# Line metrics for UPM 1000 (rescaled). The default line is exactly φ = 1.618 em (phi.py): the
+# space left after ascent/descent becomes lineGap, which browsers and word processors split above
+# and below the line. Apps that set their own line-height are unaffected.
+ascent = 960
+descent = -300
+line_height = "phi"
+
+[[weight]]
+name = "Regular"
+latin = "crimson-text-regular"
+hangul = "gowun-batang-regular"
+weight_class = 400
+
+[[weight]]
+name = "Bold"
+latin = "crimson-text-bold"
+hangul = "gowun-batang-bold"
+weight_class = 700

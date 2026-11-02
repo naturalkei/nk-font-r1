@@ -121,19 +121,28 @@ class Runner:
     def font_checks(self, st: Stage, files: list[Path]) -> None:
         from .checks import check_overflow, inherited_codepoints, run_all
 
+        fam = config.family(self.report.family)
+        kind = fam.get("kind", "merge")
         # The family's own Latin base (or the single pixel source) is the comparison point.
-        first = config.family(self.report.family)["weight"][0]
-        base = TTFont(config.sources()[first.get("latin") or first["source"]].path)
+        srcs = config.sources()
+        bases = {}
+        for w in fam["weight"]:  # weights may use different Latin sources (NK Comics Black)
+            sid = w.get("latin") or w["source"]
+            bases[w["name"].replace(" ", "")] = TTFont(srcs[sid].path)
+        first = next(iter(bases.values()))
         own = None
         if self.masters:  # code points our merge added; patcher additions are not ours
-            own = set(TTFont(self.masters[0]).getBestCmap()) - set(base.getBestCmap())
+            own = set(TTFont(self.masters[0]).getBestCmap()) - set(first.getBestCmap())
         for f in files:
             font = TTFont(f)
-            for name, problems in run_all(font, base, own).items():
+            base = bases.get(f.stem.split("-")[-1], first)
+            for name, problems in run_all(font, base, own, kind=kind).items():
                 for p in problems[:5]:
                     st.details.append(f"{f.name} {name}: {p}")
                 if problems:
                     st.status = "fail"
+            if kind == "text":
+                continue  # proportional: no cells to overflow
             warnings = check_overflow(font, inherited_codepoints(font, base, own))[1]
             if warnings and st.status != "fail":
                 st.status = "warn"
@@ -158,10 +167,11 @@ class Runner:
     def golden(self, st: Stage, files: list[Path]) -> None:
         from .golden import compare, render_golden
 
+        text = config.family(self.report.family).get("kind") == "text"
         for f in files:
             res = compare(
                 f.stem,
-                render_golden(f),
+                render_golden(f, text=text),
                 update=self.update_golden,
                 out_dir=self.report_dir / "golden-diff",
             )
@@ -190,6 +200,10 @@ class Runner:
                 )
 
     def patch(self, st: Stage) -> None:
+        if config.family(self.report.family).get("kind") == "text":
+            st.status = "skip"
+            st.details.append("reading face: no Nerd Fonts icons by design")
+            return
         if not shutil.which("docker") or _run(["docker", "info"]).returncode:
             st.status = "skip"
             st.details.append("docker daemon not available")

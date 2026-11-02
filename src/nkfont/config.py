@@ -12,7 +12,16 @@ BUILD_DIR = ROOT / "build"
 DIST_DIR = ROOT / "dist"
 
 # Reserved Font Names of upstream fonts; they must never appear in our names.
-RESERVED_NAMES = ("Source", "Pretendard", "Plex", "NeoDunggeunmo", "둥근모")
+RESERVED_NAMES = (
+    "Source",
+    "Pretendard",
+    "Plex",
+    "NeoDunggeunmo",
+    "둥근모",
+    "Nanum",
+    "나눔",
+    "D2Coding",
+)
 
 
 def _load(path: Path) -> dict:
@@ -47,6 +56,16 @@ def patcher_image(root: Path = ROOT) -> str:
 
 def family(name: str, root: Path = ROOT) -> dict:
     return _load(root / "config" / "families" / f"{name}.toml")
+
+
+# Display/build order of the families; config/families/<id>.toml.
+FAMILY_ORDER = ("mono", "serif", "pixel", "sans", "novel", "comics")
+
+
+def family_ids(root: Path = ROOT) -> list[str]:
+    found = {p.stem for p in (root / "config" / "families").glob("*.toml")}
+    order = {f: i for i, f in enumerate(FAMILY_ORDER)}
+    return sorted(found, key=lambda f: (order.get(f, len(order)), f))
 
 
 def ranges(root: Path = ROOT) -> list[tuple[int, int]]:

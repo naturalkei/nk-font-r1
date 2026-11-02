@@ -23,6 +23,16 @@ GOLDEN_TEXT = [
 ]
 
 
+# Reading faces (NK Novel, NK Comics): body text, punctuation pairs, figures and the Hangul
+# extremes. Box drawing and terminal symbols are not part of these families.
+GOLDEN_TEXT_PROPORTIONAL = [
+    "가각힣 뷁똠쀍 ㄱㅏ 0123456789",
+    "“그래, 다시 시작하자.” 그녀가 말했다.",
+    "Hamburgefonstiv — 「신문」 『소설』 …?!",
+    "The quick brown fox, 다람쥐 헌 쳇바퀴.",
+]
+
+
 @dataclass
 class GoldenResult:
     name: str
@@ -31,17 +41,24 @@ class GoldenResult:
     detail: str = ""
 
 
-def render_golden(font: TTFont | Path, size: int = 32) -> Image.Image:
-    """Deterministic render: BASIC layout (no HarfBuzz), grayscale, one glyph per cell slot."""
+def render_golden(font: TTFont | Path, size: int = 32, text: bool = False) -> Image.Image:
+    """Deterministic render: BASIC layout (no HarfBuzz), grayscale.
+
+    Terminal fonts get a fixed 24-cell canvas; `text=True` (proportional faces) sizes the canvas
+    from the widest line of the reading sample.
+    """
     basic = _pil_font(font, size, layout_engine=ImageFont.Layout.BASIC)
     asc, desc = basic.getmetrics()
     line_h = asc + desc
-    cell = basic.getlength("0")
-    cols = 24
-    img = Image.new("L", (int(cell * cols) + 8, line_h * len(GOLDEN_TEXT) + 8), 255)
+    lines = GOLDEN_TEXT_PROPORTIONAL if text else GOLDEN_TEXT
+    if text:
+        width = int(max(basic.getlength(t) for t in lines)) + 16
+    else:
+        width = int(basic.getlength("0") * 24) + 8
+    img = Image.new("L", (width, line_h * len(lines) + 8), 255)
     d = ImageDraw.Draw(img)
-    for row, text in enumerate(GOLDEN_TEXT):
-        d.text((4, 4 + row * line_h), text, fill=0, font=basic)
+    for row, text_line in enumerate(lines):
+        d.text((4, 4 + row * line_h), text_line, fill=0, font=basic)
     return img
 
 
