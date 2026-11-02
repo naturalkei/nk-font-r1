@@ -1,0 +1,36 @@
+# Code points injected from the Hangul source. Only code points the Latin base lacks are added,
+# and the advance is chosen from Unicode East Asian Width: W/F -> full (2 cells), H -> half.
+# Ambiguous-width characters (·, ─, ①, Greek, Cyrillic, ...) are never taken from the Hangul font.
+
+[[range]]
+name = "Hangul Syllables"
+start = 0xAC00
+end = 0xD7A3
+
+[[range]]
+name = "Hangul Compatibility Jamo"
+start = 0x3131
+end = 0x318E
+
+[[range]]
+name = "CJK Symbols and Punctuation"
+start = 0x3000
+end = 0x303F
+
+[[range]]
+name = "Fullwidth Forms"
+start = 0xFF01
+end = 0xFF60
+
+[[range]]
+name = "Fullwidth Signs"
+start = 0xFFE0
+end = 0xFFE6
+
+[[range]]
+name = "Halfwidth Hangul"
+start = 0xFFA0
+end = 0xFFDC
+
+# Excluded on purpose (phase 2): U+1100-11FF conjoining jamo, U+A960-A97F, U+D7B0-D7FF.
+# They need zero-width medial/final glyphs plus ljmo/vjmo/tjmo GSUB to compose correctly.

@@ -1,0 +1,14 @@
+# NK Pixel: single pixel master on an 8x16 / 16x16 grid (Unifont-compatible). Milestone M3.
+status = "planned"
+family = "NK Pixel"
+file_prefix = "NKPixel"
+version = "0.0.0"
+
+[grid]
+half = [8, 16]
+full = [16, 16]
+units_per_pixel = 64          # UPM 1024 at 16 px
+
+[outputs]
+formats = ["ttf", "bdf", "pcf", "minecraft-unihex", "bmfont", "terraria-xnb", "woff2"]
+scales = [1, 2, 3]

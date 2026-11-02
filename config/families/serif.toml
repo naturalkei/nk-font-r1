@@ -1,0 +1,12 @@
+# NK Serif: IBM Plex Mono (RFN "Plex") + Source Han Serif KR (RFN "Source"). Milestone M4.
+status = "planned"
+family = "NK Serif"
+file_prefix = "NKSerif"
+version = "0.0.0"
+
+[hangul]
+scale = 0.96
+dy = -10
+center = "advance"
+# Myeongjo hairlines vanish at small sizes; map Hangul one weight heavier than Latin.
+weight_bias = 1

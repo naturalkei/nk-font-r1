@@ -1,0 +1,30 @@
+# Upstream fonts, pinned by tag and SHA256. `nkfont fetch` downloads them into sources/.
+# Never commit the font binaries themselves.
+
+[patcher]
+image = "nerdfonts/patcher:4.27.3"   # contains font-patcher 3.5.1
+digest = "sha256:5afde49c2b29eb5628bcae0b5e814acc32d39335631228d6532455f9dbe02d3a"
+
+[[font]]
+id = "jetbrains-mono-regular"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMono-Regular.ttf"
+sha256 = "a0bf60ef0f83c5ed4d7a75d45838548b1f6873372dfac88f71804491898d138f"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "jetbrains-mono-bold"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMono-Bold.ttf"
+sha256 = "5590990c82e097397517f275f430af4546e1c45cff408bde4255dad142479dcb"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "source-han-sans-kr-regular"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/SubsetOTF/KR/SourceHanSansKR-Regular.otf"
+sha256 = "d8299926a5284f7461b46fa0617cc05d4f1fce8f034ffff78084225ce8b38071"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-sans-kr-bold"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/SubsetOTF/KR/SourceHanSansKR-Bold.otf"
+sha256 = "f678def86be3d973e85fb0e34513b93b9ec7d6a478380d93fe79d43d1ad9f797"
+license = "OFL-1.1 (RFN 'Source')"
