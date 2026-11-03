@@ -24,6 +24,31 @@ license = "OFL-1.1 (RFN 'D2Coding')"
 homepage = "https://github.com/naver/d2-coding-font"
 weights = { 400 = "d2coding-regular", 700 = "d2coding-bold" }
 
+# Pixel references: shown only next to NK Pixel (`nk` limits a reference to those NK families;
+# without it a reference is compared with every NK family). Only fixed-width faces are measured
+# here; the proportional Neo둥근모 Pro and 물마루 are in the Glyph Lab (config/lab.toml) instead.
+[[reference]]
+# NK Pixel is Neo둥근모 Code renamed; the regular face shows what NK changes on the grid
+# (Ambiguous symbols drawn two cells are unmapped, Nerd icons added).
+id = "neodgm"
+name = "Neo둥근모"
+version = "1.601"
+license = "OFL-1.1 (RFN 'Neo둥근모', 'NeoDunggeunmo')"
+homepage = "https://github.com/neodgm/neodgm"
+copyright = "Copyright (c) 2017-2021, Eunbin Jeong (Dalgona.) <project-neodgm@dalgona.dev>"
+weights = { 400 = "neodgm" }
+nk = ["pixel"]
+
+[[reference]]
+# A smaller (12 px), bolder Hangul pixel face with rounded corners.
+id = "mulmaru-mono"
+name = "물마루 Mono"
+version = "1.0"
+license = "OFL-1.1 (RFN '물마루', 'Mulmaru')"
+homepage = "https://github.com/mushsooni/mulmaru"
+weights = { 400 = "mulmaru-mono" }
+nk = ["pixel"]
+
 # Overlay specimens: each group's characters are drawn on top of each other from the outlines,
 # and `distinct` = 1 - IoU of the two most similar members (0 = identical, 1 = no overlap).
 [[group]]

@@ -31,6 +31,27 @@ id = "neodgm-code"
 label = "Neo Dunggeunmo Code"
 Regular = "neodgm-code"
 
+# Pixel references (OFL-1.1, RFN names; measured and shown only).
+[[reference]]
+id = "neodgm"
+label = "Neo Dunggeunmo"
+Regular = "neodgm"
+
+[[reference]]
+id = "neodgm-pro"
+label = "Neo Dunggeunmo Pro"
+Regular = "neodgm-pro"
+
+[[reference]]
+id = "mulmaru"
+label = "Mulmaru (물마루)"
+Regular = "mulmaru"
+
+[[reference]]
+id = "mulmaru-mono"
+label = "Mulmaru Mono (물마루 Mono)"
+Regular = "mulmaru-mono"
+
 # Glyph sets to compare in one click. MonoLisa-style legibility pairs first.
 [[preset]]
 label = "혼동 쌍"

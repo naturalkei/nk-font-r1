@@ -152,3 +152,38 @@ id = "source-han-sans-kr-heavy"
 url = "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/SubsetOTF/KR/SourceHanSansKR-Heavy.otf"
 sha256 = "bd67d7a106b48540662f87579dae049dbbc9e56553610aa7770d1e121db468bb"
 license = "OFL-1.1 (RFN 'Source')"
+
+# Pixel references (compare page, Glyph Lab, specimen). Measured and shown only, never merged
+# or shipped in an NK font. Licenses checked 2026-11-03 against each upstream LICENSE.
+# Neo Dunggeunmo 1.601 (proportional sibling of the Code face above), official web font kit.
+[[font]]
+id = "neodgm"
+url = "https://raw.githubusercontent.com/neodgm/neodgm-webfont/v1.601/neodgm/neodgm.ttf"
+sha256 = "77305267996073aae07bad9313dad2e306a4128e55bfafbed4c41558fee57b4d"
+license = "OFL-1.1 (RFN 'Neo둥근모', 'NeoDunggeunmo')"
+
+# Neo Dunggeunmo Pro 1.020 (github.com/neodgm/neodgm-pro, OFL-1.1, RFN "NeoDunggeunmo Pro").
+# The official build is a GitHub release asset, which the cloud sessions cannot reach, so this
+# pins the npm repackage of that TTF (name table: "NeoDunggeunmo Pro", "Version 1.020",
+# unmodified UPM 16 outlines). The tarball and the extracted TTF are both hash-pinned.
+[[font]]
+id = "neodgm-pro"
+url = "https://registry.npmjs.org/neodgm-pro/-/neodgm-pro-0.1.1.tgz"
+member = "package/neodgm_pro.ttf"
+archive_sha256 = "6f1420590c03fc97e7683cbb696a63de1e0f72dd7bf3c1f763019f7005147bc0"
+sha256 = "e4b974b1a378ef1962e3c72dfbcb7b7bba09f54dd53bf57889af300b2531b155"
+license = "OFL-1.1 (RFN 'NeoDunggeunmo Pro')"
+
+# Mulmaru 1.0 / Mulmaru Mono 1.0 by Mushsooni (github.com/mushsooni/mulmaru, OFL-1.1, RFN
+# "물마루", "물마루 Mono", "Mulmaru", "Mulmaru Mono"), from the author's site repo pinned by commit.
+[[font]]
+id = "mulmaru"
+url = "https://raw.githubusercontent.com/mushsooni/mushsooni.github.io/2ec3ba90418f9ac8a6b9a1bc6cc04c2127e33ad1/Mulmaru.ttf"
+sha256 = "02545e10374c0797be32df8670e18663c6ab73eea6966bb98f4ffd0283138810"
+license = "OFL-1.1 (RFN '물마루', 'Mulmaru')"
+
+[[font]]
+id = "mulmaru-mono"
+url = "https://raw.githubusercontent.com/mushsooni/mushsooni.github.io/2ec3ba90418f9ac8a6b9a1bc6cc04c2127e33ad1/MulmaruMono.ttf"
+sha256 = "34a1641eb4e94449b26192321e8e0c2bd4f07ef3674fac8abed33d8953a7f70d"
+license = "OFL-1.1 (RFN '물마루 Mono', 'Mulmaru Mono')"

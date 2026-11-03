@@ -1,12 +1,13 @@
 """Download upstream fonts listed in sources.lock and verify their SHA256.
 
-Entries with `member` come from a zip archive: the archive is downloaded once per run, its
-`archive_sha256` checked, and the member extracted to sources/.
+Entries with `member` come from an archive (zip, or an npm-style .tgz): the archive is downloaded
+once per run, its `archive_sha256` checked, and the member extracted to sources/.
 """
 
 from __future__ import annotations
 
 import hashlib
+import tarfile
 import tempfile
 import urllib.request
 import zipfile
@@ -21,7 +22,7 @@ def sha256(path) -> str:
 
 def _archive(src: config.SourceFont, cache: dict[str, Path], tmp: Path) -> Path:
     if src.url not in cache:
-        dest = tmp / f"archive{len(cache)}.zip"
+        dest = tmp / f"archive{len(cache)}"
         urllib.request.urlretrieve(src.url, dest)
         digest = sha256(dest)
         if src.archive_sha256 and digest != src.archive_sha256:
@@ -33,8 +34,15 @@ def _archive(src: config.SourceFont, cache: dict[str, Path], tmp: Path) -> Path:
 
 
 def extract_member(archive: Path, member: str, dest: Path) -> Path:
-    with zipfile.ZipFile(archive) as z:
-        dest.write_bytes(z.read(member))
+    if zipfile.is_zipfile(archive):
+        with zipfile.ZipFile(archive) as z:
+            dest.write_bytes(z.read(member))
+    else:  # .tar.gz / .tgz (npm tarballs); read the one member, never extractall
+        with tarfile.open(archive) as t:
+            f = t.extractfile(member)
+            if f is None:
+                raise RuntimeError(f"{archive.name}: {member} is not a regular file")
+            dest.write_bytes(f.read())
     return dest
 
 

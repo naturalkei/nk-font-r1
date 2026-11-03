@@ -102,3 +102,27 @@ def test_build_compare_orders_nk_families_and_writes_json(tmp_path, latin, hangu
     data = json.loads((out / "compare.json").read_text())
     assert [f["id"] for f in data["fonts"]] == ["mono", "sans"]  # nk_order, default first
     assert all("todo" in f for f in data["fonts"])
+
+
+def test_references_can_be_scoped_to_nk_families():
+    """Pixel references (Neo둥근모, 물마루) are shown and benchmarked only next to NK Pixel."""
+    refs = {"JBM": {}, "Neo": {"nk": ["pixel"]}}
+    assert list(compare.refs_for("pixel", refs)) == ["JBM", "Neo"]
+    assert list(compare.refs_for("mono", refs)) == ["JBM"]
+
+
+def test_compare_config_references_are_pinned():
+    from nkfont import config
+
+    cfg = compare.load_compare_config()
+    srcs = config.sources()
+    nk = set(cfg["nk_order"])
+    for ref in cfg["reference"]:
+        assert all(sid in srcs for sid in ref["weights"].values()), ref["id"]
+        assert set(ref.get("nk", [])) <= nk, ref["id"]
+
+
+def test_reference_license_notice_drops_our_copyright():
+    text = "Copyright 2026 naturalk (nk-font)\n\nThis Font Software is licensed under the SIL OFL"
+    assert compare.ofl_body(text).startswith("This Font Software")
+    assert "naturalk" not in compare.ofl_body(text)

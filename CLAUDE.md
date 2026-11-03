@@ -51,7 +51,7 @@ ruff check src tests && ruff format --check src tests
 - Never import East Asian *Ambiguous* characters from the Hangul font; never overwrite Latin glyphs.
 - U+1100–11FF conjoining jamo are out of scope until phase 2 (needs ljmo/vjmo/tjmo).
 - Merge with fontTools into the Latin TTF so GSUB/GPOS survive; don't round-trip through FontForge.
-- Reserved Font Names `Source`, `Pretendard`, `Plex`, `Neo둥근모`, `NeoDunggeunmo`, `Nanum`/`나눔`, `D2Coding` must not appear in our names.
+- Reserved Font Names `Source`, `Pretendard`, `Plex`, `Neo둥근모`, `NeoDunggeunmo`, `Nanum`/`나눔`, `D2Coding`, `Mulmaru`/`물마루` must not appear in our names.
 - Only reverse contours of cubic (CFF) Hangul sources; TrueType sources keep their direction.
 - NK Pixel (`kind = "pixel"`) is one source font renamed, not merged: width conflicts (Ambiguous
   symbols drawn two cells) are unmapped, never squeezed.
