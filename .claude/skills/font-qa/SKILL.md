@@ -12,6 +12,8 @@ Run the automated pipeline and report its actual output; a build is "working" on
    Stages: lint, upstream SHA256, unit (+ real-font) tests, master build, font checks (widths,
    ink overflow, metrics, names, features), reproducible build, golden images, Nerd patch +
    patched checks, proof sheet. See docs/TESTING.md.
+   Before a release: `make qa-release FAMILY=<id>` adds the fontbakery audit (`nkfont audit`,
+   config/audit.toml). Known findings sit in `[warn_only]` with a reason; new ones fail.
 2. Golden failure: open `reports/golden-diff/*.diff.png` (red = old, green = new). If the change
    is intended, `nkfont qa --update-golden` and commit the new PNGs; otherwise fix the code.
 3. `nkfont diff old.ttf new.ttf` to explain what changed (cmap, advances, outlines, metrics, names).

@@ -3,7 +3,7 @@ PY ?= .venv/bin/python
 NK ?= .venv/bin/nkfont
 FAMILY ?= mono
 
-.PHONY: setup app app-install fetch build patch check proof tune test lint qa qa-ci all clean
+.PHONY: setup app app-install fetch build patch check audit proof tune test lint qa qa-ci qa-release all clean
 
 setup:
 	python3 -m venv .venv
@@ -30,6 +30,11 @@ patch:
 check:
 	$(NK) check build/master/NKMono-*.ttf $(wildcard dist/NKMono*.ttf) --base sources/JetBrainsMono-Regular.ttf
 
+# fontbakery (config/audit.toml); installs the optional [audit] extra on first use.
+audit:
+	$(PY) -m pip install -q -e ".[dev,audit]"
+	$(NK) audit
+
 proof:
 	$(NK) proof build/master/*.ttf -o proofs/proof.png
 
@@ -48,6 +53,10 @@ qa:
 
 qa-ci:
 	$(NK) qa --profile ci
+
+qa-release:
+	$(PY) -m pip install -q -e ".[dev,audit]"
+	$(NK) qa --profile release --family $(FAMILY)
 
 all: build check patch check
 

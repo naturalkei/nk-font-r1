@@ -4,7 +4,8 @@ Profiles grow from fast to thorough:
   quick    lint, unit tests, Regular master build, font checks, reproducibility, golden images,
            golden-ratio proportion report (advisory)
   ci       quick + all weights, real-font tests, Nerd Fonts patch (Docker), checks on patched fonts
-  release  ci + manual terminal-matrix checklist in the report
+  release  ci + fontbakery audit (optional tool, skipped if missing) + manual terminal-matrix
+           checklist in the report
 """
 
 from __future__ import annotations
@@ -273,6 +274,25 @@ class Runner:
         self.patched = patch(self.masters)
         st.details += [p.name for p in self.patched]
 
+    def audit(self, st: Stage) -> None:
+        """fontbakery (config/audit.toml). Known findings warn; anything new fails."""
+        from .audit import available, format_findings, run_fontbakery
+
+        files = self.masters + self.patched
+        if not files:
+            st.status = "skip"
+            return
+        if not available():
+            st.status = "skip"
+            st.details.append('fontbakery not installed: pip install -e ".[audit]"')
+            return
+        findings = run_fontbakery(files)
+        st.details += format_findings(findings)
+        if any(not f.known for f in findings):
+            st.status = "fail"
+        elif findings:
+            st.status = "warn"
+
     def proof(self, st: Stage) -> None:
         from .proof import render
 
@@ -307,6 +327,8 @@ class Runner:
             self.stage("nerd fonts patch", self.patch)
             if self.patched:
                 self.stage("font checks (patched)", lambda st: self.font_checks(st, self.patched))
+        if p == "release":
+            self.stage("fontbakery audit", self.audit)
         self.stage("proof sheet", self.proof)
         return self.report
 

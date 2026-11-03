@@ -1,11 +1,61 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(make setup)",
+      "Bash(make fetch)",
+      "Bash(make build:*)",
+      "Bash(make check)",
+      "Bash(make audit)",
+      "Bash(make proof)",
+      "Bash(make tune:*)",
+      "Bash(make test)",
+      "Bash(make lint)",
+      "Bash(make qa)",
+      "Bash(make qa-ci)",
+      "Bash(make qa-release:*)",
+      "Bash(nkfont:*)",
+      "Bash(.venv/bin/nkfont:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(.venv/bin/python -m pytest:*)",
+      "Bash(ruff check:*)",
+      "Bash(ruff format:*)",
+      "Bash(.venv/bin/ruff:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(sha256sum:*)",
+      "Bash(docker info)",
+      "Bash(fc-list:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh",
+            "timeout": 600
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/format-python.sh",
+            "timeout": 30
           }
         ]
       }

@@ -15,7 +15,7 @@
 ```bash
 nkfont qa                    # quick 프로필 (기본)
 nkfont qa --profile ci       # PR 기준: 전체 weight + 실제 폰트 테스트 + Nerd Fonts 패치
-nkfont qa --profile release  # ci + 수동 터미널 점검표
+nkfont qa --profile release  # ci + fontbakery 감사 + 수동 터미널 점검표 (make qa-release)
 nkfont qa --update-golden    # 의도한 디자인 변경일 때 골든 이미지 갱신
 nkfont diff old.ttf new.ttf  # 두 빌드의 구조 차이 (cmap, 폭, 외곽선, 메트릭, 이름, 기능)
 make qa                      # = nkfont qa
@@ -42,6 +42,7 @@ make qa                      # = nkfont qa
 | 설계 노트 데이터 | ✓ | ✓ | ✓ | `config/design.toml` 글리프가 없으면 실패, 획 골격이 그림에 맞지 않아 획 순서가 빠지면 경고 |
 | Nerd Fonts 패치 + 패치본 검사 | | ✓ | ✓ | 패처가 폭·플래그를 망가뜨림 |
 | 교정 시트 생성 | ✓ | ✓ | ✓ | 사람 눈으로 확인할 자료 |
+| fontbakery 감사 (`config/audit.toml`, 선택 설치 `.[audit]`) | | | ✓ | 커뮤니티 표준 검사: 버전 필드 불일치, 공백 글리프 잉크, 빈 글자 등. 알려진 항목(`warn_only`)은 경고, 새 항목은 실패. 미설치면 skip |
 | 수동 터미널 점검표 | | | ✓ | 자동화가 못 보는 실제 렌더링 |
 
 판정: `pass` / `warn`(통과, 확인 권장) / `skip`(환경 없음, 예: Docker) / `fail`. `fail`이 하나라도 있으면 전체 실패입니다.
