@@ -75,7 +75,11 @@ class LocalFont:
     def find(self, weight: str, root: Path = ROOT) -> Path | None:
         for name in self.weights.get(weight, []):
             for d in local_font_dirs(root):
-                if (d / name).is_file():
+                if any(c in name for c in "*?["):
+                    hits = sorted(p for p in d.glob(name) if p.is_file()) if d.is_dir() else []
+                    if hits:
+                        return hits[0]
+                elif (d / name).is_file():
                     return d / name
         return None
 

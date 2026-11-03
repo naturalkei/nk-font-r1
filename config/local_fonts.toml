@@ -8,8 +8,8 @@
 # (no WOFF2 on the site), and nothing here is a build input.
 #
 # Fields: id, label (Lab chip), license (what we verified), homepage, weights = {Lab weight =
-# [file names to look for, first match wins]}, optional sha256 = {file name = digest} to warn
-# when a different release is installed.
+# [file names or glob patterns to look for, first match wins]}, optional sha256 = {file name =
+# digest} to warn when a different release is installed.
 
 [[font]]
 # 만화진흥원체 (KOMACON), Korea Manhwa Contents Agency. Comic speech-bubble lettering; NK Comics
@@ -22,3 +22,12 @@ label = "만화진흥원체 (KOMACON, 로컬)"
 license = "free font, redistribution terms unverified: local only"
 homepage = "https://www.komacon.kr/"
 weights = { Regular = ["KOMACON.ttf", "KOMACON.otf"] }
+
+[[font]]
+# HCL 리얼노트필기: the pen-handwriting feel the user wants for NK Comics (2026-11-03 sample).
+# No license text found, so local only; shape reference, never a glyph source. The installed
+# file name is unknown, so match by pattern.
+id = "hcl-realnote"
+label = "HCL 리얼노트필기 (로컬)"
+license = "license unverified: local only"
+weights = { Regular = ["HCL*리얼노트*.ttf", "HCL*리얼노트*.otf", "*RealNote*.ttf", "*RealNote*.otf", "*Realnote*.ttf", "*Realnote*.otf"] }
