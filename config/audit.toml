@@ -1,0 +1,14 @@
+# fontbakery audit (`nkfont audit`, qa profile `release`). Optional tool: pip install -e ".[audit]".
+# Check ids are fontbakery's own (`fontbakery check-universal --list-checks`).
+profile = "universal"
+
+# Checks that need the network or do not apply to our pipeline. Each entry says why.
+exclude = [
+  "fontdata_namecheck",  # queries namecheck.fontdata.com; network service, not a font property
+]
+
+# Known findings that report as a warning instead of a failure, with the reason and the follow-up.
+# Remove an entry once it is fixed so a regression fails again.
+[warn_only]
+case_mapping = "inherited from the JetBrains Mono Latin base (caron/diaeresis case pairs); we never overwrite Latin glyphs"
+smart_dropout = "unhinted TrueType; decided by the Windows hinting experiment (docs/ROADMAP.md)"

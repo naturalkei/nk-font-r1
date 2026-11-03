@@ -62,6 +62,9 @@ def main(argv: list[str] | None = None) -> int:
     q.add_argument("--report-dir", type=Path, default=Path("reports"))
     q.add_argument("--update-golden", action="store_true", help="accept current renders")
 
+    au = sub.add_parser("audit", help="fontbakery audit (optional: pip install -e '.[audit]')")
+    au.add_argument("fonts", nargs="*", type=Path, help="font files; default build/master/*.ttf")
+
     d = sub.add_parser("diff", help="structural diff of two font files")
     d.add_argument("old", type=Path)
     d.add_argument("new", type=Path)
@@ -106,6 +109,21 @@ def main(argv: list[str] | None = None) -> int:
         report = run(args.profile, args.family, args.report_dir, args.update_golden)
         print(f"\nreport: {args.report_dir / 'qa.md'}  result: {'PASS' if report.ok else 'FAIL'}")
         return 0 if report.ok else 1
+
+    if args.cmd == "audit":
+        from .audit import available, format_findings, run_fontbakery
+
+        if not available():
+            print('fontbakery is not installed: pip install -e ".[audit]"')
+            return 1
+        files = args.fonts or sorted((config.BUILD_DIR / "master").glob("*.ttf"))
+        if not files:
+            print("no fonts: run `nkfont build` first or pass font files")
+            return 1
+        findings = run_fontbakery(files)
+        for line in format_findings(findings) or ["fontbakery: no failures"]:
+            print(line)
+        return 1 if any(not f.known for f in findings) else 0
 
     if args.cmd == "diff":
         from .diff import diff_fonts, format_diff

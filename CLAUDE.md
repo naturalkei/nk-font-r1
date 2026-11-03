@@ -19,6 +19,8 @@ nkfont patch          # Docker Nerd Fonts patcher -> dist/NK*NerdFont*.ttf (term
 nkfont check FILES --base sources/JetBrainsMono-Regular.ttf [--master build/master/NKMono-Regular.ttf] [--kind text]
 nkfont qa [--profile quick|ci|release]   # full automated pipeline + report (docs/TESTING.md)
 nkfont diff OLD.ttf NEW.ttf              # what a change actually did
+nkfont audit [FILES]  # fontbakery (optional `pip install -e ".[audit]"`, config/audit.toml);
+                      #   also the qa `release` stage (`make qa-release FAMILY=mono`)
 nkfont proof FILES -o proofs/proof.png
 nkfont tune mono --scale 0.92:1.04:0.04 --dy -30:10:20
 nkfont studio         # NK Studio web UI: live Hangul tuning, saves [hangul] in config/families
@@ -66,4 +68,6 @@ Design changes that alter renders need `nkfont qa --update-golden` and the new P
 
 ## Layout
 `src/nkfont/` pipeline (merge, names, flags, checks, patch, proof, cli) · `config/` families and
-ranges · `tests/` · `.claude/skills/` project skills (font-build, font-qa, font-tune).
+ranges · `tests/` · `.claude/skills/` project skills (font-build, font-qa, font-tune, font-glyphs, font-release,
+studio-preview) · `.claude/hooks/` session setup (venv + `nkfont fetch`) and ruff-format after edits.
+Browser checks: ego-browser when installed, otherwise Playwright (cloud sessions).

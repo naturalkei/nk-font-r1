@@ -16,6 +16,8 @@ dependencies = [
 dev = ["pytest>=8", "ruff>=0.6"]
 # `nkfont app`: native window around the studio server (WebKit on macOS). Not a build input.
 app = ["pywebview>=5.3"]
+# `nkfont audit` and the qa `release` fontbakery stage. Not a build input.
+audit = ["fontbakery>=1.1"]
 
 [project.scripts]
 nkfont = "nkfont.cli:main"
