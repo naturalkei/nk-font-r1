@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nk-font 설계 노트 — 글자를 어떻게 짓는가</title>
+<meta name="description" content="NK 글꼴의 실제 윤곽선 위에 격자, 황금비 분할, 획 순서, 획 두께, 온커브·오프커브 점을 그려 글자를 설계하는 과정을 보여 줍니다.">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="pages.css">
+<link rel="stylesheet" href="design.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23141513'/%3E%3Cpath d='M8 9h3v14H8zM13 9h3l5 8V9h3v14h-3l-5-8v8h-3z' fill='%2353d3bd'/%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip" href="#main">본문으로</a>
+<header class="nav">
+  <a class="logo" href="index.html" aria-label="nk-font 처음으로"><span class="logo-mark">nk</span><span class="logo-word">font</span></a>
+  <nav aria-label="주요 메뉴">
+    <a href="index.html">소개</a><a href="design.html" aria-current="page">설계</a><a href="compare.html">비교</a><a href="tester.html">테스터</a><a href="index.html#glyphs">글리프</a><a href="index.html#download">내려받기</a>
+  </nav>
+  <div class="nav-right">
+    <button class="icon-btn" id="themeBtn" aria-label="밝기 전환" title="밝기 전환">◐</button>
+    <a class="btn btn-small" href="index.html#download">내려받기</a>
+  </div>
+</header>
+
+<main id="main">
+<section class="page-hero dn-hero">
+  <p class="eyebrow"><span class="badge">Design notes</span> 실제 글꼴의 윤곽선 위에 그렸습니다</p>
+  <h1>한 획씩,<br>설계한 대로.</h1>
+  <p class="lede">글자 하나를 격자 위에 올리고, 획을 쓰는 순서와 굵기, 황금비로 나눈 공간을 적어 둔 설계 노트입니다. 그림은 손으로 그린 것이 아니라 <code>nkfont site</code>가 빌드할 때 각 글꼴의 윤곽선을 읽어 만듭니다. 획 순서 골격은 실제 획의 중심선에 맞춰 붙이고, 두께는 그 자리에서 잽니다.</p>
+  <div class="dn-controls" role="group" aria-label="설계 노트 설정">
+    <div class="seg" id="famSeg" role="radiogroup" aria-label="NK 가족"></div>
+    <div class="seg" id="viewSeg" role="radiogroup" aria-label="보기"></div>
+  </div>
+</section>
+
+<section class="dn-stage" id="stage" aria-live="polite">
+  <figure class="dn-sheet" id="sheet">
+    <div class="dn-tools" role="group" aria-label="겹쳐 그릴 것">
+      <label class="switch"><input type="checkbox" id="layGrid" checked> 격자·φ</label>
+      <label class="switch"><input type="checkbox" id="layGuide" checked> 메트릭</label>
+      <label class="switch"><input type="checkbox" id="layOrder" checked> 획 순서</label>
+      <label class="switch"><input type="checkbox" id="layMeasure" checked> 치수</label>
+      <label class="switch" id="layPointsWrap"><input type="checkbox" id="layPoints" checked> 점·핸들</label>
+      <button type="button" class="btn btn-small btn-ghost" id="replay">▶ 다시 쓰기</button>
+    </div>
+    <div class="dn-canvas" id="canvas"></div>
+    <figcaption class="dn-hint" id="hint"></figcaption>
+  </figure>
+  <aside class="dn-notes" id="notes"></aside>
+</section>
+
+<section class="band" id="pages">
+  <div class="section-head"><h2>노트 한 장씩</h2><p>같은 골격을 가족마다 그 글꼴의 획에 맞춰 붙였습니다. 골격이 그 글꼴의 그림과 맞지 않는 글자는 억지로 그리지 않고 획 순서를 생략합니다.</p></div>
+  <div class="dn-cards" id="cards" role="listbox" aria-label="글자 선택"></div>
+</section>
+
+<section id="method">
+  <div class="section-head"><h2>어떻게 그렸나</h2></div>
+  <div class="method">
+    <div>
+      <h3>격자와 가이드</h3>
+      <ul>
+        <li><b>φ 격자</b>: 글자 잉크 상자를 가로·세로 모두 황금비(0.382 : 0.618)로 나눈 선입니다. 손으로 설계할 때 쓰는 보조 격자를 같은 규칙으로 그렸습니다.</li>
+        <li><b>메트릭</b>: 기준선, x높이(x), 대문자 높이(H), 한글 높이(한), 어센더·디센더, 그리고 터미널 칸 경계(600 단위).</li>
+        <li><b>비율</b>: 잰 값을 모든 NK 가족이 함께 쓰는 φ^(n/6) 눈금(<code>config/proportions.toml</code>)의 가장 가까운 칸과 비교합니다. 2% 안이면 ✓.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>획과 점</h3>
+      <ul>
+        <li><b>획 순서</b>: 한글 필순대로 적은 골격(<code>config/design.toml</code>)을 빌드 때 실제 획의 중심선으로 옮깁니다. 가로획은 수평을, 세로획은 수직을 유지한 채 붙고, ㅇ·0은 속공간에서 바깥으로 광선을 쏴 둘레를 따라갑니다.</li>
+        <li><b>획 두께</b>: 획을 가로지르는 선으로 몇 군데 잘라 가장 얇은 값입니다(이음매에서는 더 두껍게 읽히므로). 비스듬한 획은 수직 두께로 고칩니다.</li>
+        <li><b>점·핸들</b>: 윤곽선 그대로의 온커브(■)·오프커브(●) 점입니다. TrueType은 두 오프커브 사이의 온커브를 저장하지 않으므로 작은 점(·)으로 표시합니다. 점을 누르면 좌표가 나옵니다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div>
+    <div class="logo"><span class="logo-mark">nk</span><span class="logo-word">font</span></div>
+    <p>Copyright 2026 naturalk (nk-font). 폰트는 <a href="https://openfontlicense.org">SIL Open Font License 1.1</a>, 빌드 도구 코드는 MIT.</p>
+  </div>
+  <div><h4>측정 데이터</h4><p><a href="design.json">design.json</a> · <a href="fonts.json">빌드 정보</a></p></div>
+  <div><h4>프로젝트</h4><p><a href="https://github.com/naturalkei/nk-font-r1">GitHub</a> · <a href="https://github.com/naturalkei/nk-font-r1/blob/main/docs/ROADMAP.md">로드맵</a></p></div>
+</footer>
+<script src="design.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+# Design notes page (site/design.html, `nkfont site` -> design.json).
+#
+# Each [[glyph]] is drawn from the real outline of every family's Regular master, with its metric
+# guides, golden-ratio (phi) grid, measured stroke thickness, on/off-curve points and an animated
+# stroke order. Stroke skeletons are written here in ink-box coordinates (0..1, y up, (0,0) =
+# bottom-left of the glyph's ink box) and snapped at build time onto the centre of the nearest real
+# stroke, so the same skeleton follows each family's drawing. A point that finds no ink within
+# `snap_radius` (share of the larger ink-box side) is kept where it is and reported as a miss.
+# A stroke is `pts` (level/plumb segments snap onto a bar/stem as a whole) or `ring = [u, v, ru, rv]`
+# (a bowl traced around its counter, counter-clockwise from the top, as ㅇ and 0 are written).
+
+[page]
+families = ["mono", "serif", "pixel", "sans", "novel", "comics"]
+snap_radius = 0.16
+# A glyph whose skeleton misses more points than this in a family shows no stroke order there
+# (the outline, guides and measurements still show).
+max_misses = 2
+# Ratios printed on a note are matched to the nearest step of the shared scale phi^(step/6)
+# (config/proportions.toml) and called "on phi" within this tolerance.
+phi_tolerance = 0.02
+
+[[glyph]]
+ch = "한"
+title = "Han"
+note = "ㅎ의 꼭지·가로획·ㅇ이 위로 쌓이니 받침 ㄴ이 들어갈 자리를 남겨 세로 공간을 나눕니다."
+strokes = [
+  { pts = [[0.30, 0.97], [0.36, 0.90]] },
+  { pts = [[0.06, 0.79], [0.62, 0.79]] },
+  { ring = [0.34, 0.63, 0.19, 0.11] },
+  { pts = [[0.80, 0.99], [0.80, 0.40]] },
+  { pts = [[0.81, 0.73], [0.97, 0.73]] },
+  { pts = [[0.12, 0.33], [0.12, 0.05], [0.96, 0.05]] },
+]
+
+[[glyph]]
+ch = "글"
+title = "Geul"
+note = "ㅡ가 가운데를 가로질러 위의 ㄱ과 아래 ㄹ을 나눕니다. ㄹ의 세 가로획 간격이 고르게 떨어져야 회색도가 맞습니다."
+strokes = [
+  { pts = [[0.12, 0.97], [0.86, 0.97], [0.86, 0.66]] },
+  { pts = [[0.02, 0.56], [0.98, 0.56]] },
+  { pts = [[0.14, 0.42], [0.86, 0.42], [0.86, 0.23]] },
+  { pts = [[0.14, 0.23], [0.86, 0.23]] },
+  { pts = [[0.14, 0.23], [0.14, 0.03], [0.90, 0.03]] },
+]
+
+[[glyph]]
+ch = "꼴"
+title = "Kkol"
+note = "쌍자음 ㄲ은 두 ㄱ을 좁혀 한 자리에 넣고, ㅗ의 짧은 기둥이 위아래를 잇습니다."
+strokes = [
+  { pts = [[0.10, 0.97], [0.42, 0.97], [0.42, 0.70]] },
+  { pts = [[0.56, 0.97], [0.88, 0.97], [0.88, 0.70]] },
+  { pts = [[0.50, 0.74], [0.50, 0.62]] },
+  { pts = [[0.02, 0.53], [0.98, 0.53]] },
+  { pts = [[0.14, 0.42], [0.86, 0.42], [0.86, 0.23]] },
+  { pts = [[0.14, 0.23], [0.86, 0.23]] },
+  { pts = [[0.14, 0.23], [0.14, 0.03], [0.90, 0.03]] },
+]
+
+[[glyph]]
+ch = "N"
+title = "N"
+note = "대각선이 두 기둥을 잇습니다. 꼭짓점에 잉크가 몰려 검게 뭉치지 않도록 대각선은 기둥보다 조금 가늘게 두는 것이 보통입니다. 획 두께 숫자로 가족마다 확인할 수 있습니다."
+strokes = [
+  { pts = [[0.08, 0.02], [0.08, 0.98]] },
+  { pts = [[0.10, 0.96], [0.90, 0.04]] },
+  { pts = [[0.92, 0.98], [0.92, 0.02]] },
+]
+
+[[glyph]]
+ch = "K"
+title = "K"
+note = "팔과 다리가 기둥 가까이에서 만나 좁은 칸에서도 오른쪽 속공간이 막히지 않습니다."
+strokes = [
+  { pts = [[0.08, 0.98], [0.08, 0.02]] },
+  { pts = [[0.92, 0.98], [0.18, 0.40]] },
+  { pts = [[0.40, 0.58], [0.95, 0.02]] },
+]
+
+[[glyph]]
+ch = "0"
+title = "Zero"
+note = "터미널 가족은 O와 헷갈리지 않도록 속공간에 점이나 빗금을 넣습니다. ㅇ처럼 위에서 시작해 시계 반대 방향으로 한 번에 돕니다."
+strokes = [
+  { ring = [0.50, 0.50, 0.44, 0.46] },
+]
