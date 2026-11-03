@@ -124,10 +124,62 @@ def inherited_codepoints(
     return set(base.getBestCmap()) if base is not None else None
 
 
+def check_text_metrics(font: TTFont) -> list[str]:
+    """Proportional reading faces: consistent line metrics, no monospace claims, no clipping."""
+    os2, hhea, post = font["OS/2"], font["hhea"], font["post"]
+    p = []
+    if post.isFixedPitch:
+        p.append("post.isFixedPitch is set on a proportional face")
+    if (os2.panose.bFamilyType, os2.panose.bProportion) == (2, 9):
+        p.append("panose claims monospaced on a proportional face")
+    if (hhea.ascent, hhea.descent, hhea.lineGap) != (
+        os2.sTypoAscender,
+        os2.sTypoDescender,
+        os2.sTypoLineGap,
+    ):
+        p.append("hhea and typo line metrics differ")
+    if not os2.fsSelection & USE_TYPO_METRICS:
+        p.append("USE_TYPO_METRICS not set")
+    y_min, y_max = glyph_y_extent(font)
+    if os2.usWinAscent < y_max or os2.usWinDescent < -y_min:
+        p.append(f"usWin {os2.usWinAscent}/{os2.usWinDescent} clips bbox {y_max}/{y_min}")
+    hmtx = font["hmtx"]
+    for cp, name in sorted(font.getBestCmap().items()):
+        if 0xAC00 <= cp <= 0xD7A3 and hmtx[name][0] <= 0:
+            p.append(f"U+{cp:04X} Hangul syllable has no advance")
+            break
+    return p
+
+
+def check_hangul_coverage(font: TTFont) -> list[str]:
+    """Reading faces must set any modern Korean text: all 11,172 syllables, no fallback."""
+    cmap = font.getBestCmap()
+    missing = [cp for cp in range(0xAC00, 0xD7A4) if cp not in cmap]
+    if not missing:
+        return []
+    return [f"{len(missing)} Hangul syllables missing, first U+{missing[0]:04X}"]
+
+
 def run_all(
-    font: TTFont, base: TTFont | None = None, own: set[int] | None = None
+    font: TTFont,
+    base: TTFont | None = None,
+    own: set[int] | None = None,
+    kind: str = "merge",
 ) -> dict[str, list[str]]:
-    """`own`: code points we import (master cmap minus Latin base); improves overflow triage."""
+    """`own`: code points we import (master cmap minus Latin base); improves overflow triage.
+
+    `kind = "text"` (proportional reading faces) swaps the terminal width/overflow/metrics checks
+    for text metrics and full Hangul coverage.
+    """
+    if kind == "text":
+        result = {
+            "text-metrics": check_text_metrics(font),
+            "hangul-coverage": check_hangul_coverage(font),
+            "names": check_names(font),
+        }
+        if base is not None:
+            result["features"] = check_features(font, base)
+        return result
     result = {
         "widths": check_widths(font),
         "overflow": check_overflow(font, inherited_codepoints(font, base, own))[0],

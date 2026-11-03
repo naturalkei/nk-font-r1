@@ -84,15 +84,13 @@ class Studio:
 
     def families(self) -> list[dict]:
         out = []
-        order = {"sans": 0, "serif": 1, "pixel": 2}
-        paths = (self.root / "config" / "families").glob("*.toml")
-        for path in sorted(paths, key=lambda p: (order.get(p.stem, 9), p.stem)):
-            fam = config.family(path.stem, self.root)
+        for fid in config.family_ids(self.root):
+            fam = config.family(fid, self.root)
             if fam.get("status") != "active":
                 continue
             out.append(
                 {
-                    "id": path.stem,
+                    "id": fid,
                     "family": fam["family"],
                     "kind": fam.get("kind", "merge"),
                     "weights": [w["name"] for w in fam["weight"]],
@@ -143,11 +141,11 @@ class Studio:
 
 logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
 
-_KEYS = ("scale", "dy", "center")
+_KEYS = ("scale", "dy", "center", "width", "slant", "grade")
 
 
 def update_hangul_config(family: str, values: dict, root: Path = config.ROOT) -> Path:
-    """Rewrite `scale`, `dy`, `center` inside [hangul] of config/families/<family>.toml.
+    """Rewrite [hangul] values (scale, dy, center, width, slant, grade) of a family TOML.
 
     Only the value tokens change; comments and layout stay, so diffs stay reviewable.
     """
@@ -161,8 +159,11 @@ def update_hangul_config(family: str, values: dict, root: Path = config.ROOT) ->
         if key not in values or values[key] is None:
             continue
         v = values[key]
-        if key == "scale":
+        if key in ("scale", "width"):
             token = f"{float(v):.3f}".rstrip("0").rstrip(".")
+            token = token if "." in token else token + ".0"
+        elif key in ("slant", "grade"):
+            token = f"{float(v):.1f}"
         elif key == "dy":
             token = str(int(round(float(v))))
         else:

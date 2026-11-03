@@ -27,7 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("fetch", help="download pinned upstream fonts into sources/")
 
     b = sub.add_parser("build", help="build master TTFs (Latin + Hangul)")
-    b.add_argument("family", nargs="?", default="sans")
+    b.add_argument("family", nargs="?", default="mono", help="family id, or 'all'")
     b.add_argument("--weight", help="build only this weight, e.g. Regular")
 
     p = sub.add_parser("patch", help="Nerd Fonts patch masters with Docker (nf + nfm variants)")
@@ -37,6 +37,12 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("fonts", nargs="+", type=Path)
     c.add_argument("--base", type=Path, help="Latin base font, for feature/width comparison")
     c.add_argument("--master", type=Path, help="our unpatched master, to tell our glyphs apart")
+    c.add_argument(
+        "--kind",
+        choices=["merge", "pixel", "text"],
+        default="merge",
+        help="text = proportional reading face (NK Novel, NK Comics): no terminal grid checks",
+    )
 
     pr = sub.add_parser("proof", help="render a proof sheet PNG")
     pr.add_argument("fonts", nargs="+", type=Path)
@@ -44,7 +50,7 @@ def main(argv: list[str] | None = None) -> int:
     pr.add_argument("--size", type=int, default=28)
 
     t = sub.add_parser("tune", help="render a parameter sweep of Hangul scale/dy for one weight")
-    t.add_argument("family", nargs="?", default="sans")
+    t.add_argument("family", nargs="?", default="mono")
     t.add_argument("--weight", default="Regular")
     t.add_argument("--scale", default=None, help="start:stop:step, e.g. 0.92:1.0:0.04")
     t.add_argument("--dy", default=None, help="start:stop:step in font units")
@@ -52,7 +58,7 @@ def main(argv: list[str] | None = None) -> int:
 
     q = sub.add_parser("qa", help="run the automated test pipeline and write a report")
     q.add_argument("--profile", choices=["quick", "ci", "release"], default="quick")
-    q.add_argument("--family", default="sans")
+    q.add_argument("--family", default="mono")
     q.add_argument("--report-dir", type=Path, default=Path("reports"))
     q.add_argument("--update-golden", action="store_true", help="accept current renders")
 
@@ -64,6 +70,9 @@ def main(argv: list[str] | None = None) -> int:
     st.add_argument("--host", default="127.0.0.1")
     st.add_argument("--port", type=int, default=8765)
     st.add_argument("--no-browser", action="store_true")
+
+    ph = sub.add_parser("phi", help="golden-ratio proportion report (config/proportions.toml)")
+    ph.add_argument("fonts", nargs="*", type=Path, help="font files; default build/master/*.ttf")
 
     w = sub.add_parser("webfont", help="convert TTF files to WOFF2")
     w.add_argument("fonts", nargs="+", type=Path)
@@ -93,6 +102,16 @@ def main(argv: list[str] | None = None) -> int:
         serve(args.host, args.port, open_browser=not args.no_browser)
         return 0
 
+    if args.cmd == "phi":
+        from .proportions import format_report, report_files
+
+        files = args.fonts or sorted((config.BUILD_DIR / "master").glob("*.ttf"))
+        if not files:
+            print("no fonts: run `nkfont build` first or pass font files")
+            return 1
+        print(format_report(report_files(files)))
+        return 0
+
     if args.cmd == "webfont":
         from .site import to_woff2
 
@@ -116,14 +135,31 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "build":
         from .build import build_family
 
-        for path in build_family(args.family, only=args.weight):
-            print(path)
+        ids = config.family_ids() if args.family == "all" else [args.family]
+        for fid in ids:
+            if args.family == "all" and config.family(fid).get("status") != "active":
+                continue
+            for path in build_family(fid, only=args.weight):
+                print(path)
         return 0
 
     if args.cmd == "patch":
+        from .build import is_terminal
         from .patch import patch
 
-        masters = args.masters or sorted((config.BUILD_DIR / "master").glob("*.ttf"))
+        masters = args.masters
+        if not masters:
+            # Only terminal families get Nerd Fonts icons; reading faces (kind = "text") don't.
+            prefixes = [
+                f["file_prefix"]
+                for f in map(config.family, config.family_ids())
+                if is_terminal(f) and f.get("status") == "active"
+            ]
+            masters = [
+                m
+                for m in sorted((config.BUILD_DIR / "master").glob("*.ttf"))
+                if m.stem.split("-")[0] in prefixes
+            ]
         for path in patch(masters):
             print(path)
         return 0
@@ -138,7 +174,7 @@ def main(argv: list[str] | None = None) -> int:
         failed = False
         for f in args.fonts:
             print(f"== {f}")
-            for name, problems in run_all(TTFont(f), base, own).items():
+            for name, problems in run_all(TTFont(f), base, own, kind=args.kind).items():
                 status = "ok " if not problems else "FAIL"
                 print(f"  {status} {name} ({len(problems)})")
                 for line in problems[:20]:

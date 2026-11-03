@@ -1,0 +1,81 @@
+# Golden-ratio proportion rules, shared by every NK family (Sans, Serif, Mono, Novel, Comics...).
+#
+# Targets come from a modular scale built on phi = (1 + sqrt 5) / 2:
+#   target = phi ** (step / divisions)
+# With divisions = 6 the scale reads ... 0.852, 0.923, 1, 1.084, 1.174, 1.272, 1.378, 1.493, phi.
+# Each rule compares one measured ratio (numerator / denominator, in 1000-UPM units) with its step.
+#
+# On terminal (grid) families the grid always wins: advances stay 0/600/1200 and the Latin base's
+# metrics stay as they are, so rules on those are `locked` (reported, never applied).
+# Proportional document families (`grid = false` in the family TOML) skip `grid_only` rules, and
+# `locked = "grid"` rules become plain targets for them. Rules with `drives` can be
+# snapped in the Glyph Lab by changing that [hangul] parameter in config/families/<family>.toml.
+#
+# Measurements available as numerator/denominator:
+#   cap_height x_height line_height upm cell      Latin base (locked)
+#   han_height han_width han_cell                  Hangul probe "한" ink box and its 2-cell advance
+#   latin_stem latin_bar hangul_stem hangul_bar    stroke thickness probes ([harmony] in lab.toml)
+
+[scale]
+divisions = 6
+tolerance = 0.015   # default allowed deviation from the target, as a share of the target
+
+[[rule]]
+id = "hangul_height"
+label = "한글 높이 / 대문자 높이"
+numerator = "han_height"
+denominator = "cap_height"
+step = 2            # phi^(2/6) = 1.174: Hangul sits a little taller than capitals
+drives = "scale"
+
+[[rule]]
+id = "hangul_aspect"
+label = "한글 잉크 폭 / 높이"
+numerator = "han_width"
+denominator = "han_height"
+step = -1           # phi^(-1/6) = 0.923: slightly narrow box reads square in a 2-cell slot
+drives = "width"
+
+[[rule]]
+id = "hangul_stem"
+label = "한글 세로획 / 영문 세로획"
+numerator = "hangul_stem"
+denominator = "latin_stem"
+step = -1           # phi^(-1/6) = 0.923: Hangul packs more strokes per cell, so a lighter stem
+drives = "grade"    # gives the same typographic colour as Latin
+tolerance = 0.03
+
+[[rule]]
+id = "hangul_contrast"
+label = "한글 가로획 / 세로획"
+numerator = "hangul_bar"
+denominator = "hangul_stem"
+step = -2           # phi^(-2/6) = 0.852
+tolerance = 0.05    # comes from the source design; grade moves both strokes together
+
+[[rule]]
+id = "hangul_cell"
+label = "한글 잉크 폭 / 두 칸 폭"
+numerator = "han_width"
+denominator = "han_cell"
+step = -5           # phi^(-5/6) = 0.670: the white around Hangul matches Latin side bearings
+tolerance = 0.02
+grid_only = true    # proportional families have no fixed two-cell slot
+
+[[rule]]
+id = "x_to_cap"
+label = "x높이 / 대문자 높이"
+numerator = "x_height"
+denominator = "cap_height"
+step = -3           # phi^(-3/6) = 0.786
+locked = "grid"
+tolerance = 0.05
+
+[[rule]]
+id = "line_height"
+label = "줄 높이 / UPM"
+numerator = "line_height"
+denominator = "upm"
+step = 4            # phi^(4/6) = 1.378
+locked = "grid"
+tolerance = 0.05

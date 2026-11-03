@@ -16,11 +16,13 @@ homepage = "https://www.jetbrains.com/lp/mono/"
 weights = { 400 = "jetbrains-mono-regular", 700 = "jetbrains-mono-bold" }
 
 [[reference]]
+# NK Mono takes its Hangul from D2Coding, so this comparison isolates what NK adds on top:
+# the 1:2 grid without Ambiguous double-width symbols, JetBrains Mono Latin, icons, line metrics.
 id = "d2coding"
 name = "D2Coding"
-version = "1.3.2"
-license = "OFL-1.1"
-homepage = "https://github.com/naver/d2codingfont"
+version = "1.4.0"
+license = "OFL-1.1 (RFN 'D2Coding')"
+homepage = "https://github.com/naver/d2-coding-font"
 weights = { 400 = "d2coding-regular", 700 = "d2coding-bold" }
 
 # Overlay specimens: each group's characters are drawn on top of each other from the outlines,

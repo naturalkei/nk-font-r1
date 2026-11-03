@@ -16,6 +16,7 @@ from pathlib import Path
 from fontTools.ttLib import TTFont
 
 from . import config
+from .phi import ratio
 
 README = """{family} {version} (prototype)
 ================================
@@ -33,6 +34,23 @@ License
 SIL Open Font License 1.1, see OFL.txt. {copyright}
 Nerd Fonts icons keep the licenses of their icon sets (https://github.com/ryanoasis/nerd-fonts).
 """
+
+
+README_TEXT = """{family} {version} (prototype)
+================================
+
+Proportional reading face (not for terminals): {use}.
+{prefix}-*.ttf  one file per weight. Default line height is {line_height} em (golden-ratio rule).
+
+License
+-------
+SIL Open Font License 1.1, see OFL.txt. {copyright}
+"""
+
+TEXT_USE = {
+    "novel": "books, novels, news and long-form articles",
+    "comics": "comics, webtoons and speech bubbles",
+}
 
 
 def to_woff2(src: Path, dest: Path) -> Path:
@@ -84,10 +102,9 @@ def glyph_index(font: TTFont) -> dict:
     return {"half": half, "runs": runs, "icons": icons}
 
 
-def build_site(
-    out: Path | None = None, families=("sans", "serif", "pixel"), compare: bool = True
-) -> Path:
+def build_site(out: Path | None = None, families=None, compare: bool = True) -> Path:
     out = out or config.BUILD_DIR / "site"
+    families = families or config.family_ids()
     shutil.rmtree(out, ignore_errors=True)
     shutil.copytree(config.ROOT / "site", out)
     manifest = {
@@ -124,17 +141,29 @@ def build_site(
                     "glyphs": len(font.getGlyphOrder()),
                 }
             )
+        entry["webfonts"].sort(key=lambda w: w["weight"])  # Regular before Bold in the UI
         zip_name = f"{fam['file_prefix']}-{fam['version']}.zip"
         zip_path = out / "downloads" / zip_name
         zip_path.parent.mkdir(parents=True, exist_ok=True)
         nf_family = f"{fam['family'].replace(' ', '')} Nerd Font"
-        readme = README.format(
-            family=fam["family"],
-            version=fam["version"],
-            prefix=fam["file_prefix"],
-            nf_family=nf_family,
-            copyright=fam.get("copyright", ""),
-        )
+        if fam.get("kind") == "text":
+            line_height = fam.get("metrics", {}).get("line_height", "-")
+            readme = README_TEXT.format(
+                family=fam["family"],
+                version=fam["version"],
+                prefix=fam["file_prefix"],
+                use=TEXT_USE.get(fid, "reading"),
+                line_height=f"{ratio(line_height):.3f}" if line_height != "-" else "-",
+                copyright=fam.get("copyright", ""),
+            )
+        else:
+            readme = README.format(
+                family=fam["family"],
+                version=fam["version"],
+                prefix=fam["file_prefix"],
+                nf_family=nf_family,
+                copyright=fam.get("copyright", ""),
+            )
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
             for f in files["nf"] + files["nfm"] + files["master"]:
                 z.write(f, f"{zip_path.stem}/{f.name}")
@@ -159,9 +188,10 @@ def build_site(
             regular = [f for f in web if f.stem.endswith("-Regular")] or web
             nk[entry["id"]] = {"family": entry["family"], "path": regular[0]}
         build_compare(out, nk)
-    sans_nf = _family_files(config.family("sans"))["nf"]
-    if sans_nf:
-        idx = glyph_index(TTFont(sans_nf[0]))
+    # The glyph explorer shows the terminal flagship with its Nerd icons.
+    mono_nf = _family_files(config.family("mono"))["nf"]
+    if mono_nf:
+        idx = glyph_index(TTFont(mono_nf[0]))
         (out / "glyphs.json").write_text(json.dumps(idx, separators=(",", ":")))
         manifest["glyph_count"] = sum(r[1] - r[0] + 1 for r in idx["runs"])
         manifest["icon_count"] = sum(

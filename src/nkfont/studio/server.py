@@ -9,8 +9,10 @@ import webbrowser
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib import resources
+from urllib.parse import parse_qs, urlparse
 
 from .core import DEFAULT_TEXT, Studio, update_hangul_config
+from .lab import Lab
 
 _LOCK = threading.Lock()
 
@@ -19,10 +21,12 @@ def _static(name: str) -> bytes:
     return resources.files(__package__).joinpath("static", name).read_bytes()
 
 
-def make_handler(studio: Studio):
+def make_handler(studio: Studio, lab: Lab | None = None):
+    lab = lab or Lab(studio.root)
+
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, fmt, *args):  # quieter console
-            if not self.path.startswith("/api/preview"):
+            if not self.path.startswith(("/api/preview", "/api/lab/glyphs")):
                 super().log_message(fmt, *args)
 
         def _send(self, status: int, body: bytes, ctype: str) -> None:
@@ -37,10 +41,22 @@ def make_handler(studio: Studio):
             self._send(status, json.dumps(obj, ensure_ascii=False).encode(), "application/json")
 
         def do_GET(self):
-            if self.path in ("/", "/index.html"):
+            url = urlparse(self.path)
+            if url.path in ("/", "/index.html"):
                 return self._send(200, _static("index.html"), "text/html; charset=utf-8")
-            if self.path == "/api/families":
+            if url.path in ("/lab", "/lab.html"):
+                return self._send(200, _static("lab.html"), "text/html; charset=utf-8")
+            if url.path == "/api/families":
                 return self._json({"families": studio.families(), "text": DEFAULT_TEXT})
+            if url.path == "/api/lab/info":
+                return self._json(lab.info())
+            if url.path == "/api/lab/font":
+                q = {k: v[0] for k, v in parse_qs(url.query).items()}
+                try:
+                    data = lab.font_bytes(q["id"], q["family"], q["weight"])
+                except Exception as exc:
+                    return self._json({"error": f"{type(exc).__name__}: {exc}"}, 400)
+                return self._send(200, data, "font/ttf")
             self._send(404, b"not found", "text/plain")
 
         def do_POST(self):
@@ -60,6 +76,17 @@ def make_handler(studio: Studio):
                         )
                     ms = round((time.perf_counter() - t0) * 1000)
                     return self._json({"font": p.font_b64, "metrics": p.metrics, "ms": ms})
+                if self.path == "/api/lab/glyphs":
+                    t0 = time.perf_counter()
+                    with _LOCK:
+                        out = lab.glyphs(req)
+                    ms = round((time.perf_counter() - t0) * 1000)
+                    return self._json({"fonts": out, "ms": ms})
+                if self.path == "/api/lab/charset":
+                    return self._json({"blocks": lab.charset(req["family"], req["weight"])})
+                if self.path == "/api/lab/features":
+                    feats = lab.features(req["font"], req["family"], req["weight"])
+                    return self._json({"features": feats})
                 if self.path == "/api/save":
                     path = update_hangul_config(req["family"], req, studio.root)
                     return self._json({"saved": str(path.relative_to(studio.root))})
@@ -74,7 +101,7 @@ def serve(host: str = "127.0.0.1", port: int = 8765, open_browser: bool = True) 
     studio = Studio()
     httpd = ThreadingHTTPServer((host, port), make_handler(studio))
     url = f"http://{host}:{port}/"
-    print(f"NK Studio on {url}  (Ctrl+C to stop)")
+    print(f"NK Studio on {url}  ·  Glyph Lab on {url}lab  (Ctrl+C to stop)")
     if open_browser:
         threading.Timer(0.5, webbrowser.open, (url,)).start()
     try:
