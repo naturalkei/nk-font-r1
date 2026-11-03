@@ -233,6 +233,32 @@ class Runner:
                     f"({r['deviation']:+.1%}) -> {r['drives'] or 'source design'}"
                 )
 
+    def design_notes(self, st: Stage) -> None:
+        """Design-notes page data (config/design.toml) for the Regular master.
+
+        Fails if a configured glyph is missing or has no outline; warns when a stroke skeleton no
+        longer fits the drawing (the page then hides that glyph's stroke order).
+        """
+        from .designnotes import family_notes, load_design_config
+
+        regular = [m for m in self.masters if m.stem.endswith("-Regular")] or self.masters
+        if not regular:
+            st.status = "skip"
+            return
+        cfg = load_design_config()
+        notes = family_notes(TTFont(regular[0]), cfg)
+        have = {g["ch"]: g for g in notes["glyphs"]}
+        for spec in cfg.get("glyph", []):
+            g = have.get(spec["ch"])
+            if g is None:
+                st.status = "fail"
+                st.details.append(f"{spec['ch']}: missing or empty in {regular[0].name}")
+                continue
+            line = f"{g['ch']}: {len(g['strokes'])}/{len(spec.get('strokes', []))} strokes"
+            st.details.append(f"{line}, {g['misses']} snap misses")
+            if spec.get("strokes") and not g["strokes"] and st.status != "fail":
+                st.status = "warn"
+
     def patch(self, st: Stage) -> None:
         if config.family(self.report.family).get("kind") == "text":
             st.status = "skip"
@@ -276,6 +302,7 @@ class Runner:
         self.stage("reproducible build", self.reproducible)
         self.stage("golden images (masters)", lambda st: self.golden(st, self.masters))
         self.stage("golden-ratio proportions", self.proportions)
+        self.stage("design notes", self.design_notes)
         if thorough:
             self.stage("nerd fonts patch", self.patch)
             if self.patched:

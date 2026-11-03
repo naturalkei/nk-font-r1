@@ -1,0 +1,94 @@
+/* Design notes page (design.html). Two looks for one drawing: an ink notebook and a font
+   editor's outline view. Both are tokens so the light/dark theme switch keeps working. */
+:root{
+  --paper:#1c1a27; --paper-edge:#2a2738; --pen:#b7a6ff; --pen-soft:rgba(183,166,255,.34); --pen-faint:rgba(183,166,255,.13);
+  --hatch:rgba(183,166,255,.75); --mark:#ffb36b; --sel:#6f9bff;
+  --ed-bg:#141513; --ed-line:rgba(239,238,232,.13); --ed-ink:#efeee8; --ed-soft:rgba(239,238,232,.45); --ed-fill:rgba(239,238,232,.05);
+}
+:root[data-theme=light]{
+  --paper:#f7f1df; --paper-edge:#e6dcc0; --pen:#3d2fb0; --pen-soft:rgba(61,47,176,.32); --pen-faint:rgba(61,47,176,.12);
+  --hatch:rgba(61,47,176,.7); --mark:#c0531c; --sel:#2f5be0;
+  --ed-bg:#fbfaf6; --ed-line:rgba(26,26,23,.12); --ed-ink:#1a1a17; --ed-soft:rgba(26,26,23,.45); --ed-fill:rgba(26,26,23,.04);
+}
+
+.dn-hero{padding-bottom:clamp(24px,3vw,40px)!important}
+.dn-hero h1{font-size:clamp(34px,5vw,60px)}
+.dn-controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center}
+main>section.dn-stage{padding-top:0;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start}
+@media (max-width:980px){main>section.dn-stage{grid-template-columns:minmax(0,1fr)}}
+
+.dn-sheet{margin:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+.dn-tools{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.dn-tools .btn{margin-left:auto}
+.dn-canvas{position:relative;aspect-ratio:1/1.02;display:grid;place-items:center}
+.dn-canvas svg{width:100%;height:100%;display:block}
+.dn-hint{padding:10px 16px;font-size:12.5px;color:var(--mute);background:var(--panel);border-top:1px solid var(--line);min-height:2.6em}
+.dn-hint b{color:var(--ink);font-family:var(--term);font-weight:600}
+
+/* notebook look */
+.is-note .dn-canvas{background:
+  radial-gradient(circle at 18px 50%,var(--bg) 0 6px,transparent 7px) left/36px 44px repeat-y,
+  linear-gradient(var(--paper),var(--paper))}
+.is-note .dn-canvas{border-left:2px solid var(--paper-edge)}
+.is-outline .dn-canvas{background:var(--ed-bg)}
+
+.dn-notes{display:flex;flex-direction:column;gap:18px;min-width:0}
+.dn-title{display:flex;align-items:baseline;gap:14px;margin:0}
+.dn-title .big{font-size:64px;line-height:1}
+.dn-title .rom{font:700 26px var(--comics);color:var(--pen);transform:rotate(-4deg);display:inline-block}
+.dn-note{margin:0;font-size:16px;line-height:1.7;color:var(--ink);border-left:3px solid var(--pen-soft);padding:2px 0 2px 14px}
+.dn-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0;font-size:14px}
+.dn-dl dt{color:var(--mute)}
+.dn-dl dd{margin:0;font-family:var(--term);font-size:13.5px;overflow-wrap:anywhere}
+.dn-h{margin:4px 0 0;font-size:13px;letter-spacing:.04em;color:var(--mute);font-weight:700}
+.dn-ratios{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.dn-ratios li{display:grid;grid-template-columns:1fr auto;gap:2px 10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13.5px}
+.dn-ratios .v{font-family:var(--term);font-weight:700;text-align:right}
+.dn-ratios small{grid-column:1/-1;color:var(--faint);font-family:var(--term);font-size:12px}
+.dn-ratios .on small{color:var(--acc)}
+.dn-strokes{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.dn-strokes li{font:600 12.5px var(--term);border:1px solid var(--line);border-radius:99px;padding:2px 10px;background:var(--panel)}
+.dn-strokes li b{color:var(--pen)}
+.dn-muted{color:var(--faint);font-size:13px;margin:0}
+
+.dn-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:16px}
+.dn-card{all:unset;box-sizing:border-box;cursor:pointer;border-radius:12px;border:1px solid var(--paper-edge);background:var(--paper);padding:10px 10px 6px;display:flex;flex-direction:column;gap:4px;transition:transform .15s}
+.dn-card:hover{transform:translateY(-2px)}
+.dn-card[aria-selected=true]{outline:2px solid var(--pen);outline-offset:2px}
+.dn-card:focus-visible{outline:2px solid var(--acc)}
+.dn-card svg{width:100%;aspect-ratio:1/1.02;display:block}
+.dn-card span{font:700 15px var(--comics);color:var(--pen)}
+
+/* svg parts (classes so the theme switch restyles without a redraw) */
+.n-rule{stroke:var(--pen-faint);stroke-width:2;fill:none}
+.n-grid{stroke:var(--pen-soft);stroke-width:3;fill:none}
+.n-phi{fill:var(--pen);font:28px var(--comics);opacity:.75}
+.n-guide{stroke:var(--pen-soft);stroke-width:2;stroke-dasharray:10 9;fill:none}
+.n-guide-label{fill:var(--pen);font:26px var(--comics);opacity:.85}
+.n-pencil{fill:none;stroke:var(--pen-soft);stroke-width:3}
+.n-glyph{fill:url(#dn-hatch);stroke:var(--pen);stroke-width:6;stroke-linejoin:round}
+.n-arrow{fill:none;stroke:var(--mark);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.n-num{fill:var(--mark);font:700 46px var(--comics)}
+.n-dim{stroke:var(--pen);stroke-width:3;fill:none}
+.n-dim-label{fill:var(--pen);font:700 26px var(--comics)}
+.n-hatch-line{stroke:var(--hatch);stroke-width:5}
+.n-hatch-bg{fill:var(--pen-faint)}
+
+.is-outline .n-rule{stroke:var(--ed-line)}
+.is-outline .n-grid{stroke:var(--ed-line);stroke-width:2}
+.is-outline .n-phi,.is-outline .n-guide-label,.is-outline .n-dim-label{font-family:var(--term);fill:var(--ed-soft);font-size:22px}
+.is-outline .n-guide{stroke:var(--ed-soft);stroke-dasharray:none;stroke-width:1.5}
+.is-outline .n-glyph{fill:var(--ed-fill);stroke:var(--ed-ink);stroke-width:2.4}
+.is-outline .n-dim{stroke:var(--ed-soft);stroke-width:2}
+.is-outline .n-arrow{stroke-width:4;opacity:.9}
+.is-outline .n-num{font:700 34px var(--term)}
+.o-handle{stroke:var(--ed-soft);stroke-width:1.6;fill:none}
+.o-on{fill:var(--ed-bg);stroke:var(--ed-ink);stroke-width:2.6;cursor:pointer}
+.o-off{fill:var(--ed-bg);stroke:var(--ed-soft);stroke-width:2.2;cursor:pointer}
+.o-implied{fill:var(--ed-soft)}
+.o-start{fill:var(--ed-ink)}
+.o-sel{stroke:var(--sel);stroke-width:7;fill:none;stroke-linecap:round}
+.o-on.is-sel,.o-off.is-sel{fill:var(--sel);stroke:var(--sel)}
+.o-coord{fill:var(--sel);font:700 24px var(--term)}
+@media (prefers-reduced-motion:reduce){.dn-card{transition:none}}
+.dn-tools [hidden]{display:none}

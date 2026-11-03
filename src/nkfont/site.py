@@ -104,7 +104,9 @@ def glyph_index(font: TTFont) -> dict:
     return {"half": half, "runs": runs, "icons": icons}
 
 
-def build_site(out: Path | None = None, families=None, compare: bool = True) -> Path:
+def build_site(
+    out: Path | None = None, families=None, compare: bool = True, design: bool = True
+) -> Path:
     out = out or config.BUILD_DIR / "site"
     families = families or config.family_ids()
     shutil.rmtree(out, ignore_errors=True)
@@ -190,6 +192,19 @@ def build_site(out: Path | None = None, families=None, compare: bool = True) -> 
             regular = [f for f in web if f.stem.endswith("-Regular")] or web
             nk[entry["id"]] = {"family": entry["family"], "path": regular[0]}
         build_compare(out, nk)
+    if design:
+        from .designnotes import build_design
+
+        notes = {}
+        for entry in manifest["families"]:
+            masters = _family_files(config.family(entry["id"]))["master"]
+            regular = [f for f in masters if f.stem.endswith("-Regular")] or masters
+            notes[entry["id"]] = {
+                "family": entry["family"],
+                "kind": entry["kind"],
+                "path": regular[0],
+            }
+        build_design(out, notes)
     # The glyph explorer shows the terminal flagship with its Nerd icons.
     mono_nf = _family_files(config.family("mono"))["nf"]
     if mono_nf:
