@@ -19,12 +19,8 @@ dist/
 proofs/
 reports/
 
-# --- Node (the repo has no JS build; site/ is plain ES modules) ---
+# --- Node (site/ has no build step today; lockfiles stay trackable if one is added) ---
 node_modules/
-package.json
-package-lock.json
-pnpm-lock.yaml
-yarn.lock
 .pnpm-store/
 npm-debug.log*
 pnpm-debug.log*
