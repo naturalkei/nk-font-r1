@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 마커펜"
+family = "comics"
+weight = "Regular"
+note = "Bagel 획을 조금 깎고 살짝 기울여 굵은 마커 필기"
+features = []
+
+[style]
+slant = 4.0
+grade = -40.0
+tracking = 10
+bounce = 12.0
+tilt = 1.5
+seed = 1

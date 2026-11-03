@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 이탤릭"
+family = "pixel"
+weight = "Regular"
+note = "4줄마다 1px 계단식 기울임(줄 가운데 기준)"
+features = []
+
+[pixel]
+italic = 4

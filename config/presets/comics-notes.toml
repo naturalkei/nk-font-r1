@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 노트 필기"
+family = "comics"
+weight = "Regular"
+note = "리얼노트필기 방향: 가는 펜, 적당한 기울기, 고른 흔들림"
+features = []
+
+[style]
+slant = 6.0
+grade = -85.0
+tracking = 25
+bounce = 14.0
+tilt = 2.0
+seed = 6

@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 일기장"
+family = "comics"
+weight = "Regular"
+note = "출렁이는 기준선과 넉넉한 자간의 일기 필기"
+features = []
+
+[style]
+slant = 3.0
+grade = -95.0
+tracking = 35
+bounce = 26.0
+tilt = 3.5
+seed = 5

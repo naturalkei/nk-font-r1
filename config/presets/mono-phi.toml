@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono φ 정합"
+family = "mono"
+weight = "Regular"
+note = "황금비 목표를 모두 맞춤: 대문자보다 φ^(2/6) 큰 한글, 영문보다 φ^(-1/6) 가는 획, 대문자와 같은 중심 (목표 높이 1.174 · 폭/높이 0.923 · 획 0.923 · 중심 0)"
+features = []
+
+[hangul]
+scale = 0.9574
+dy = 46
+width = 0.9556
+grade = 0.2

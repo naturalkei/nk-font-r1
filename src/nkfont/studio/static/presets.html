@@ -54,6 +54,10 @@ section.cmp{min-width:0;display:flex;flex-direction:column}
 .feats label.on{border-color:var(--acc);color:var(--acc)}
 .hint{font-size:12px;color:var(--mute)}.err{color:#c0392b;font-size:12px;white-space:pre-wrap}
 .empty{padding:40px 0;color:var(--mute)}
+.qa{font:11px ui-monospace,monospace;color:var(--mute);margin:-4px 0 6px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.qa b{font-weight:600}.qa .ok{color:var(--acc)}.qa .bad{color:#c0392b;font-weight:600}
+.qa .sum{border:1px solid currentColor;border-radius:4px;padding:0 4px}
+.ehead{font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em;margin:4px 0 -4px}
 @media (max-width:900px){main{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line)}#rows.grid2{grid-template-columns:1fr}.bar{position:static}}
 </style>
 </head>
@@ -77,7 +81,10 @@ section.cmp{min-width:0;display:flex;flex-direction:column}
     <div class="hint">저장하면 <code>config/presets/&lt;id&gt;.toml</code>에 기록됩니다. 빌드 값(<code>config/families</code>)은 바뀌지 않습니다.</div>
     <div id="eErr" class="err"></div>
   </div>
-  <div><h4>비교할 프리셋</h4><div class="plist" id="plist"></div></div>
+  <div><h4>비교할 프리셋</h4>
+    <div class="row" style="margin-bottom:6px"><select id="pfam" title="가족별로 보기"></select><button class="ghost" id="pall" title="보이는 목록 모두 켜기/끄기">모두</button></div>
+    <label class="chk" style="display:flex;gap:4px;align-items:center"><input type="checkbox" id="qaOn"> 한·영 조화 QA 표시</label>
+    <div class="plist" id="plist"></div></div>
   <div><h4>기준 글꼴</h4><div class="plist" id="rlist"><span class="hint">불러오는 중…</span></div></div>
   <div id="err" class="err"></div>
 </aside>
@@ -98,13 +105,27 @@ const $ = (id) => document.getElementById(id);
 const KNOBS = [ // key, label, min, max, step
   ["scale", "한글 크기 scale", 0.8, 1.2, 0.005], ["dy", "세로 이동 dy", -120, 120, 1], ["width", "한글 폭 width", 0.85, 1.1, 0.005],
   ["grade", "한글 굵기 grade", -40, 40, 0.5], ["slant", "기울기 slant (°)", -14, 14, 0.5], ["tracking", "한글 자간 tracking (비례폭)", -80, 80, 1]];
+// Whole-face knobs of proportional families (Latin and Hangul together) and NK Pixel's pixel knobs.
+const STYLE_KNOBS = [
+  ["slant", "기울기 slant (°, 한·영 함께)", -15, 15, 0.5], ["grade", "획 굵기 grade (한·영 함께)", -120, 80, 1],
+  ["tracking", "자간 tracking (한·영 함께)", -100, 200, 1], ["bounce", "기준선 흔들림 bounce", 0, 60, 1],
+  ["tilt", "글자 각도 흔들림 tilt (°)", 0, 8, 0.5], ["seed", "흔들림 무늬 seed", 0, 99, 1]];
+const PIXEL_KNOBS = [
+  ["bold", "세로획 bold (px: -1 가늘게, +1 굵게)", -1, 1, 1], ["heavy", "가로획 heavy (+1px)", 0, 1, 1],
+  ["italic", "이탤릭 italic (N줄마다 1px, 0=끔)", 0, 8, 1], ["shadow", "그림자 shadow", 0, 1, 1],
+  ["dy", "세로 이동 dy (px)", -4, 4, 1], ["hangul_dy", "한글만 세로 이동 hangul_dy (px)", -4, 4, 1]];
+const QA_LABELS = { height: "높이", centre: "중심", weight: "획", contrast: "대비", colour: "회색도", slant: "기울기",
+  spacing: "자간", overflow: "넘침", grid: "격자", pixels: "픽셀", split: "분리", gaps: "틈", broken: "깨짐" };
 const TABS = [["hangul", "한글"], ["latin", "영문"], ["code", "코드"], ["terminal", "터미널"], ["custom", "직접 입력"]];
 const LS = { get(k, d) { try { const v = localStorage.getItem("nkp." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
              set(k, v) { try { localStorage.setItem("nkp." + k, JSON.stringify(v)); } catch {} } };
 
 let families = [], presets = [], refs = [], samples = {}, tab = LS.get("tab", "hangul"), custom = LS.get("custom", "NK 폰트로 쓰는 나의 문장 0O1lI");
+let pfam = LS.get("pfam", ""), qaOn = LS.get("qaOn", true);
+const qaCache = new Map();
 let shown = new Set(LS.get("shown", [])), shownRefs = new Set(LS.get("refs", [])), editing = null, seq = 0, timer = null;
 const faceCache = new Map(); // key -> face name
+let nFace = 0;
 
 function famOf(id) { return families.find(f => f.id === id); }
 function text() { return tab === "custom" ? custom : samples[tab] || ""; }
@@ -133,10 +154,10 @@ function weightFor(p) {
 // One small preview font per (preset values, weight, text): built by the same code as `nkfont build`.
 async function presetFace(p) {
   const weight = weightFor(p), t = text();
-  const key = JSON.stringify([p.family, weight, p.hangul || {}, t]);
+  const key = JSON.stringify([p.family, weight, p.hangul || {}, p.style || {}, p.pixel || {}, t]);
   if (faceCache.has(key)) return { face: faceCache.get(key), weight, metrics: faceCache.get(key + "m") };
-  const r = await api("/api/preview", { family: p.family, weight, text: t, ...(p.hangul || {}) });
-  const name = "nkp" + faceCache.size;
+  const r = await api("/api/preview", { family: p.family, weight, text: t, style: p.style || {}, pixel: p.pixel || {}, ...(p.hangul || {}) });
+  const name = "nkp" + nFace++; // a counter, not the cache size: previews finish out of order
   await addFace(name, Uint8Array.from(atob(r.font), c => c.charCodeAt(0)).buffer);
   faceCache.set(key, name); faceCache.set(key + "m", r.metrics);
   return { face: name, weight, metrics: r.metrics };
@@ -147,7 +168,7 @@ async function refFace(ref) {
   const w = $("weight").value && ref.weights.includes($("weight").value) ? $("weight").value : (ref.weights.includes("Regular") ? "Regular" : ref.weights[0]);
   const key = "ref|" + ref.id + "|" + w;
   if (!faceCache.has(key)) {
-    const name = "nkr" + faceCache.size;
+    const name = "nkr" + nFace++;
     await addFace(name, `url(/api/lab/font?id=${encodeURIComponent(ref.id)}&family=${fid}&weight=${w})`);
     faceCache.set(key, name);
   }
@@ -158,6 +179,8 @@ function metaFor(p) {
   const h = p.hangul || {}, parts = [famOf(p.family)?.family || p.family, weightFor(p)];
   for (const [k] of KNOBS) if (h[k] !== undefined) parts.push(`${k} ${h[k]}`);
   if (h.center) parts.push(h.center);
+  for (const [k, v] of Object.entries(p.style || {})) parts.push(`${k} ${v}`);
+  for (const [k, v] of Object.entries(p.pixel || {})) parts.push(`${k} ${v}`);
   return parts.join(" · ");
 }
 
@@ -172,6 +195,7 @@ function rowHtml(item, isRef) {
       ${item.readonly ? "" : `<button class="ghost" data-act="del">삭제</button>`}</span>`;
   return `<div class="prow ${editing && editing.id === item.id ? "editing" : ""}" data-id="${esc(item.id)}" data-ref="${isRef ? 1 : ""}">
     <header><b>${esc(item.label || "(새 프리셋)")}</b>${tags} <span class="meta">${isRef ? "" : esc(metaFor(item))}</span> ${feats}${item.note ? ` <span class="hint">${esc(item.note)}</span>` : ""}${acts}</header>
+    ${isRef || !qaOn ? "" : '<div class="qa">조화 QA 측정 중…</div>'}
     <div class="sample loading" contenteditable="plaintext-only" spellcheck="false"></div></div>`;
 }
 
@@ -209,12 +233,35 @@ async function render() {
   });
   await Promise.all(jobs);
   if (my === seq) setStatus(`${items.length + rs.length}개 비교 중`);
+  if (qaOn) for (const p of items) fillQa(p, my);
+}
+
+// Hangul/Latin harmony of one preset (same measurements and bands as `nkfont presets`).
+async function fillQa(p, my) {
+  const key = JSON.stringify([p.family, weightFor(p), p.hangul || {}, p.style || {}, p.pixel || {}]);
+  const box = $("rows").querySelector(`.prow[data-id="${CSS.escape(p.id)}"] .qa`);
+  if (!box) return;
+  try {
+    if (!qaCache.has(key)) qaCache.set(key, api("/api/presets/qa", { label: p.label || "check", family: p.family, weight: weightFor(p),
+      hangul: p.hangul || {}, style: p.style || {}, pixel: p.pixel || {} }));
+    const r = await qaCache.get(key);
+    if (my !== seq) return;
+    if (r.error) { box.innerHTML = `<span class="bad">${esc(r.error)}</span>`; return; }
+    const shown = r.checks.filter(c => c.value !== null && !["grid", "pixels", "split", "broken"].includes(c.key) || !c.ok);
+    box.innerHTML = `<span class="sum ${r.ok ? "ok" : "bad"}">${r.ok ? "한·영 조화 ✓" : "조화 벗어남"}</span>` + shown.map(c =>
+      `<span class="${c.ok ? "" : "bad"}" title="허용 ${c.lo ?? ""}…${c.hi ?? ""}">${QA_LABELS[c.key] || c.key} <b>${c.value}</b></span>`).join("");
+  } catch (e) { qaCache.delete(key); box.innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
 }
 
 function schedule(ms = 200) { clearTimeout(timer); timer = setTimeout(render, ms); }
 
 function renderLists() {
-  $("plist").innerHTML = presets.map(p => `<label class="pitem ${p.error ? "err" : ""}" title="${esc(p.error || metaFor(p))}">
+  const fams = [...new Set(presets.filter(p => !p.error).map(p => p.family))];
+  $("pfam").innerHTML = `<option value="">모든 가족 (${presets.length})</option>` + fams.map(f => {
+    const n = presets.filter(p => p.family === f).length;
+    return `<option value="${f}" ${f === pfam ? "selected" : ""}>${esc((famOf(f)?.family || f).replace("NK ", ""))} (${n})</option>`; }).join("");
+  $("qaOn").checked = qaOn;
+  $("plist").innerHTML = presets.filter(p => !pfam || p.family === pfam).map(p => `<label class="pitem ${p.error ? "err" : ""}" title="${esc(p.error || metaFor(p))}">
       <input type="checkbox" data-pid="${esc(p.id)}" ${shown.has(p.id) ? "checked" : ""} ${p.error ? "disabled" : ""}>
       <span>${esc(p.label)}</span><small>${p.readonly ? "저장값" : esc(famOf(p.family)?.family.replace("NK ", "") || "")}</small></label>`).join("");
   $("rlist").innerHTML = refs.map(r => `<label class="pitem" title="${r.missing ? "nkfont fetch 필요" : ""}">
@@ -231,7 +278,8 @@ function renderLists() {
 function openEditor(base, asNew) {
   const f = famOf(base.family) || families[0];
   editing = { id: asNew ? "__new__" : base.id, label: asNew ? (base.label ? base.label.replace(" (저장값)", "") + " 사본" : "") : base.label,
-              family: f.id, weight: base.weight || f.weights[0], hangul: { ...(base.hangul || {}) }, features: [...(base.features || [])], note: base.note || "", isNew: asNew };
+              family: f.id, weight: base.weight || f.weights[0], hangul: { ...(base.hangul || {}) }, style: { ...(base.style || {}) }, pixel: { ...(base.pixel || {}) },
+              features: [...(base.features || [])], note: base.note || "", isNew: asNew };
   $("editor").hidden = false; $("eErr").textContent = "";
   $("eLabel").value = editing.label; $("eNote").value = editing.note;
   $("eFamily").innerHTML = families.map(x => `<option value="${x.id}" ${x.id === f.id ? "selected" : ""}>${esc(x.family)}</option>`).join("");
@@ -242,19 +290,27 @@ function openEditor(base, asNew) {
 function editorFamily(reset) {
   const f = famOf($("eFamily").value);
   editing.family = f.id;
-  if (reset) { editing.hangul = {}; editing.features = []; editing.weight = f.weights[0]; }
+  if (reset) { editing.hangul = {}; editing.style = {}; editing.pixel = {}; editing.features = []; editing.weight = f.weights[0]; }
   $("eWeight").innerHTML = f.weights.map(w => `<option ${w === editing.weight ? "selected" : ""}>${w}</option>`).join("");
   editing.weight = $("eWeight").value;
-  const pixel = f.kind === "pixel";
-  const knobs = KNOBS.filter(([k]) => k !== "tracking" || f.kind === "text");
-  $("eKnobs").innerHTML = pixel ? '<div class="hint">NK Pixel은 원본 픽셀 글꼴 그대로라 한글 조절값이 없습니다.</div>' : knobs.map(([k, label, lo, hi, step]) => {
-    const v = editing.hangul[k] ?? f.hangul[k] ?? { scale: 0.96, width: 1, dy: 0, grade: 0, slant: 0, tracking: 0 }[k];
-    return `<div><label>${label} <small>${editing.hangul[k] === undefined ? "(저장값)" : ""}</small></label>
-      <div class="row"><input type="range" data-k="${k}" min="${lo}" max="${hi}" step="${step}" value="${v}"><span class="val" id="v_${k}">${v}</span></div></div>`;
-  }).join("");
+  const pixel = f.kind === "pixel", text = f.kind === "text";
+  const knobs = KNOBS.filter(([k]) => k !== "tracking" || text);
+  const slider = (table, [k, label, lo, hi, step], fallback) => {
+    const v = editing[table][k] ?? fallback;
+    return `<div><label>${label} <small>${editing[table][k] === undefined ? (table === "hangul" ? "(저장값)" : "(기본)") : ""}</small></label>
+      <div class="row"><input type="range" data-t="${table}" data-k="${k}" min="${lo}" max="${hi}" step="${step}" value="${v}"><span class="val" id="v_${table}_${k}">${v}</span></div></div>`;
+  };
+  let html = "";
+  if (pixel) {
+    html += '<div class="ehead">픽셀 조절 (한·영 함께, 1px 단위)</div>' + PIXEL_KNOBS.map(k => slider("pixel", k, 0)).join("");
+  } else {
+    html += '<div class="ehead">한글 조절</div>' + knobs.map(k => slider("hangul", k, f.hangul[k[0]] ?? { scale: 0.96, width: 1, dy: 0, grade: 0, slant: 0, tracking: 0 }[k[0]])).join("");
+    if (text) html += '<div class="ehead">글꼴 전체 (한·영 함께: 펜 필기 느낌)</div>' + STYLE_KNOBS.map(k => slider("style", k, 0)).join("");
+  }
+  $("eKnobs").innerHTML = html;
   $("eCenter").value = editing.hangul.center || ""; $("eCenter").disabled = pixel;
   for (const r of $("eKnobs").querySelectorAll("input[type=range]")) r.oninput = () => {
-    editing.hangul[r.dataset.k] = +r.value; $("v_" + r.dataset.k).textContent = r.value;
+    editing[r.dataset.t][r.dataset.k] = +r.value; $(`v_${r.dataset.t}_${r.dataset.k}`).textContent = r.value;
     r.closest("div").previousElementSibling.querySelector("small").textContent = ""; schedule(250);
   };
   loadFeatures();
@@ -282,7 +338,7 @@ function closeEditor() { editing = null; $("editor").hidden = true; render(); }
 
 async function saveEditor() {
   const body = { label: $("eLabel").value.trim(), family: editing.family, weight: $("eWeight").value, hangul: { ...editing.hangul },
-                 features: editing.features, note: $("eNote").value.trim() };
+                 style: { ...editing.style }, pixel: { ...editing.pixel }, features: editing.features, note: $("eNote").value.trim() };
   if ($("eCenter").value) body.hangul.center = $("eCenter").value;
   if (!editing.isNew) body.id = editing.id;
   try {
@@ -344,7 +400,14 @@ $("rows").onclick = async (e) => {
 };
 $("plist").addEventListener("click", (e) => { const l = e.target.closest(".pitem"); if (!l || e.target.tagName === "INPUT") return;
   $("dup").disabled = false; $("dup").dataset.pid = l.querySelector("input").dataset.pid; });
-$("new").onclick = () => openEditor({ family: families[0].id }, true);
+$("new").onclick = () => openEditor({ family: pfam || families[0].id }, true);
+$("pfam").onchange = () => { pfam = $("pfam").value; LS.set("pfam", pfam); renderLists(); };
+$("qaOn").onchange = () => { qaOn = $("qaOn").checked; LS.set("qaOn", qaOn); render(); };
+$("pall").onclick = () => { // toggle every preset in the current list
+  const ids = presets.filter(p => !p.error && (!pfam || p.family === pfam)).map(p => p.id);
+  const all = ids.every(id => shown.has(id));
+  for (const id of ids) all ? shown.delete(id) : shown.add(id);
+  LS.set("shown", [...shown]); renderLists(); render(); };
 $("dup").onclick = () => { const p = presets.find(x => x.id === $("dup").dataset.pid); if (p) openEditor(p, true); };
 $("eFamily").onchange = () => { editorFamily(true); render(); };
 $("eWeight").onchange = () => { editing.weight = $("eWeight").value; loadFeatures(); render(); };

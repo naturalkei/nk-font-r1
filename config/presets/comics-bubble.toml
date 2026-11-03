@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 말풍선 촘촘"
+family = "comics"
+weight = "Regular"
+note = "말풍선에 많이 넣는 대사: 자간을 줄이고 흔들림은 조금"
+features = []
+
+[style]
+grade = -30.0
+tracking = -20
+bounce = 6.0
+tilt = 1.0
+seed = 12

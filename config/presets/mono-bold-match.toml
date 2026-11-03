@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono Bold 획 일치"
+family = "mono"
+weight = "Bold"
+note = "Bold: 한글 세로획을 JetBrains Mono Bold l과 같게 (목표 높이 1.33 · 획 1.0 · 중심 34)"
+features = []
+
+[hangul]
+scale = 1.0799
+dy = 41
+width = 1.0
+grade = -10.0

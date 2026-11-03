@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 내레이션"
+family = "comics"
+weight = "Regular"
+note = "내레이션 박스: 펜 굵기, 흔들림 없음"
+features = []
+
+[style]
+grade = -60.0
+tracking = 10

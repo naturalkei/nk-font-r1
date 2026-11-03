@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono Bold 꽉 찬 한글"
+family = "mono"
+weight = "Bold"
+note = "Bold 작은 크기용: 두 칸을 더 채우고 획을 조금 더 굵게 (목표 높이 1.38 · 폭/높이 0.97 · 획 1.1 · 중심 40)"
+features = []
+
+[hangul]
+scale = 1.1079
+dy = 38
+width = 1.0144
+grade = -3.0

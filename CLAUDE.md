@@ -28,12 +28,15 @@ nkfont studio         # NK Studio web UI: live Hangul tuning, saves [hangul] in 
                       #     (height, width, stem, centre... config/lab.toml [core]); the solver derives [hangul]
                       #     every save is a numbered version in config/versions/<family>.toml (restorable)
                       #   /lab/advanced = overlay vs JetBrains Mono/D2Coding, stems, scanlines, OT features
-                      #   /presets = side-by-side style presets (config/presets/*.toml, never a build input)
+                      #   /presets = side-by-side style presets (config/presets/*.toml, never a build input;
+                      #     [hangul], plus [style] for text families and [pixel] for NK Pixel), with harmony QA
                       #   /specimen = per-family specimen workbench (NK axes, φ type scale)
 nkfont app            # same pages in a native window (pywebview, `pip install -e ".[app]"`);
                       #   --install-mac-app writes ~/Applications/NK Studio.app
                       #   /update = self-update: git pull --ff-only (stops on local edits), then restart
 nkfont phi [FILES]    # golden-ratio proportion report (config/proportions.toml, shared by families)
+nkfont presets [FAMILY|ID ...] [--proof DIR]   # Hangul/Latin harmony QA of every style preset
+                      #   (config/preset_qa.toml bands; also the qa stage "preset harmony")
 nkfont site           # build/site: prototype site (WOFF2 + zips); deployed by .github/workflows/pages.yml
 python -m pytest -q   # unit tests use synthetic fonts; real-font tests skip without sources/
 ruff check src tests && ruff format --check src tests
@@ -58,7 +61,10 @@ ruff check src tests && ruff format --check src tests
 - All tunables live in `config/families/*.toml`; code reads them, never hard-codes them.
   Golden-ratio (φ) targets live in `config/proportions.toml`; on grid families the grid and Latin metrics
   win over φ (`locked`, reported only); proportional families (`grid = false`) skip `grid_only` rules. New `[hangul]` knobs must default
-  to the identity so existing builds stay byte-identical.
+  to the identity so existing builds stay byte-identical. The same holds for `[style]` (text families: one transform
+  for Latin and Hangul together, src/nkfont/style.py) and `[pixel]` (NK Pixel: whole-pixel bitmap knobs that never
+  close a one-pixel gap, src/nkfont/pixelstyle.py).
+- Every preset in `config/presets/` must stay inside its Hangul/Latin harmony bands (`nkfont presets`).
 - Pin every upstream input in `sources.lock` (URL + SHA256, patcher image tag + digest).
   Reference fonts whose terms don't clearly allow redistribution (e.g. 만화진흥원체/KOMACON) go in
   `config/local_fonts.toml` instead: found on the owner's disk, shown in the Lab, never committed,

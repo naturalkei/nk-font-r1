@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono D2Coding 비례"
+family = "mono"
+weight = "Regular"
+note = "D2Coding 원본(레퍼런스)에서 잰 높이·폭·획 비율과 중심을 JetBrains Mono 영문 옆에 그대로 재현 (목표 높이 1.29 · 폭/높이 0.965 · 획 1.071 · 중심 -14)"
+features = []
+
+[hangul]
+scale = 1.0528
+dy = 1
+width = 1.0
+grade = 2.8

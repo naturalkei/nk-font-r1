@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 1px 가는 획"
+family = "pixel"
+weight = "Regular"
+note = "세로획 2px→1px: 원조 둥근모·Unifont에 가까운 가벼운 화면"
+features = []
+
+[pixel]
+bold = -1

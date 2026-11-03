@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 이탤릭·한글 중심"
+family = "pixel"
+weight = "Regular"
+note = "이탤릭 + 한글 1px 올림"
+features = []
+
+[pixel]
+italic = 4
+hangul_dy = 1

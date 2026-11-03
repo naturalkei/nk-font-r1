@@ -91,6 +91,13 @@ def main(argv: list[str] | None = None) -> int:
         help='write an "NK Studio.app" launcher (default ~/Applications) and exit',
     )
 
+    ps = sub.add_parser(
+        "presets", help="Hangul/Latin harmony QA of every style preset (config/preset_qa.toml)"
+    )
+    ps.add_argument("only", nargs="*", help="family ids or preset ids; default all")
+    ps.add_argument("--markdown", action="store_true", help="print a Markdown table")
+    ps.add_argument("--proof", type=Path, metavar="DIR", help="write <family>.png proof sheets")
+
     ph = sub.add_parser("phi", help="golden-ratio proportion report (config/proportions.toml)")
     ph.add_argument("fonts", nargs="*", type=Path, help="font files; default build/master/*.ttf")
 
@@ -144,6 +151,22 @@ def main(argv: list[str] | None = None) -> int:
             print(app.mac_app_bundle(args.install_mac_app))
             return 0
         return app.run(args.page, args.port, args.debug)
+
+    if args.cmd == "presets":
+        from .presetqa import format_table, gating, proof_sheet, run
+
+        results = run(only=args.only or None)
+        print(format_table(results, markdown=args.markdown))
+        if args.proof:
+            args.proof.mkdir(parents=True, exist_ok=True)
+            for fid in sorted({r.preset.get("family") for r in results if not r.error}):
+                sheet = proof_sheet([r for r in results if r.preset.get("family") == fid])
+                if sheet:
+                    sheet.save(args.proof / f"{fid}.png")
+                    print(args.proof / f"{fid}.png")
+        bad = gating(results)
+        print(f"\n{len(results)} presets, {len(bad)} out of the harmony bands")
+        return 1 if bad else 0
 
     if args.cmd == "phi":
         from .proportions import format_report, report_files

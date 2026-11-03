@@ -236,6 +236,40 @@ class Runner:
                     f"({r['deviation']:+.1%}) -> {r['drives'] or 'source design'}"
                 )
 
+    def preset_harmony(self, st: Stage) -> None:
+        """Hangul/Latin harmony of every style preset (config/preset_qa.toml).
+
+        Fails when a preset file leaves its bands; saved families out of band only warn (their
+        values are tuned in the Glyph Lab). Writes presets.md and one proof PNG per family.
+        """
+        from .presetqa import format_table, gating, proof_sheet, run
+
+        results = run()
+        bad = gating(results)
+        self.report_dir.mkdir(parents=True, exist_ok=True)
+        table = self.report_dir / "presets.md"
+        table.write_text(format_table(results, markdown=True) + "\n", encoding="utf-8")
+        self.report.artifacts.append(str(table))
+        if self.report.profile != "quick":
+            for fid in sorted({r.preset.get("family") for r in results if not r.error}):
+                sheet = proof_sheet([r for r in results if r.preset.get("family") == fid])
+                if sheet:
+                    out = self.report_dir / f"presets-{fid}.png"
+                    sheet.save(out)
+                    self.report.artifacts.append(str(out))
+        st.details.append(f"{len(results)} presets measured, {len(bad)} out of band")
+        for r in results:
+            if r.ok:
+                continue
+            why = r.error or ", ".join(
+                f"{c.key}={c.value} not in [{c.lo}, {c.hi}]" for c in r.checks if not c.ok
+            )
+            st.details.append(f"{r.preset['id']}: {why}")
+        if bad:
+            st.status = "fail"
+        elif len(st.details) > 1:
+            st.status = "warn"
+
     def design_notes(self, st: Stage) -> None:
         """Design-notes page data (config/design.toml) for the Regular master.
 
@@ -325,6 +359,7 @@ class Runner:
         self.stage("golden images (masters)", lambda st: self.golden(st, self.masters))
         self.stage("golden-ratio proportions", self.proportions)
         self.stage("design notes", self.design_notes)
+        self.stage("preset harmony", self.preset_harmony)
         if thorough:
             self.stage("nerd fonts patch", self.patch)
             if self.patched:

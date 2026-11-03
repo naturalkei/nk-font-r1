@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono 단정한 작은 한글"
+family = "mono"
+weight = "Regular"
+note = "영문이 주인공인 코드용: 한글을 작고 좁게, 획은 영문과 같게 (목표 높이 1.22 · 폭/높이 0.9 · 획 1.0 · 중심 15)"
+features = []
+
+[hangul]
+scale = 0.9875
+dy = 52
+width = 0.9318
+grade = 8.0

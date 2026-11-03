@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 외침"
+family = "comics"
+weight = "Black"
+note = "Gasoek 굵기 그대로 기울고 튀는 외침"
+features = []
+
+[style]
+slant = 10.0
+tracking = 10
+bounce = 25.0
+tilt = 4.0
+seed = 16

@@ -143,6 +143,9 @@ const STYLES = [ // name, size, weight role, lh step
 const LS = { get(k, d) { try { const v = localStorage.getItem("nks." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
              set(k, v) { try { localStorage.setItem("nks." + k, JSON.stringify(v)); } catch {} } };
 
+// Whole-face [style] / [pixel] knobs of the applied preset: kept for previews and saves, the
+// specimen's own axes only cover [hangul].
+let extra = {};
 let families = [], presets = [], fam = null, weight = null, axes = {}, lhStep = 3, styles = {}, blocks = [], cur = 0, seq = 0, timer = null, nFace = 0;
 const faces = new Map();
 
@@ -166,9 +169,9 @@ function styleWeight(name) { const s = styles[name]; return s.weight === "bold" 
 function allText() { return [$("name").textContent, $("hero").textContent, ...blocks.map(b => b.text), "0Hx한"].join("\n"); }
 
 async function faceFor(w) {
-  const text = allText(), key = JSON.stringify([fam.id, w, hangulParams(), text]);
+  const text = allText(), key = JSON.stringify([fam.id, w, hangulParams(), extra, text]);
   if (faces.has(key)) return faces.get(key);
-  const r = await api("/api/preview", { family: fam.id, weight: w, text, ...hangulParams() });
+  const r = await api("/api/preview", { family: fam.id, weight: w, text, ...extra, ...hangulParams() });
   const name = "nks" + nFace++, face = new FontFace(name, Uint8Array.from(atob(r.font), c => c.charCodeAt(0)).buffer);
   await face.load(); document.fonts.add(face);
   const v = { name, metrics: r.metrics }; faces.set(key, v); return v;
@@ -242,6 +245,7 @@ function setFamily(id, keepAxes) {
 
 function applyPreset(p) {
   setFamily(p.family);
+  extra = { ...(p.style ? { style: p.style } : {}), ...(p.pixel ? { pixel: p.pixel } : {}) };
   if (fam.weights.includes(p.weight)) weight = p.weight;
   for (const [k] of AXES) if (p.hangul?.[k] !== undefined) axes[k] = p.hangul[k];
   $("preset").value = p.id; $("pLabel").value = p.readonly ? "" : p.label;
@@ -255,7 +259,7 @@ function setScript(s) {
 }
 
 // ---- events ----------------------------------------------------------------------------------
-$("family").onchange = () => setFamily($("family").value);
+$("family").onchange = () => { extra = {}; setFamily($("family").value); };
 $("script").onchange = () => setScript($("script").value);
 $("sentence").onchange = () => { $("hero").textContent = SCRIPTS[$("script").value][+$("sentence").value]; schedule(0); };
 $("hero").oninput = () => schedule(450);
@@ -265,7 +269,7 @@ $("axisList").oninput = (e) => { const r = e.target; if (!r.dataset.k) return; a
 document.querySelector(".axes").onclick = (e) => { const b = e.target.closest("[data-reset]"); if (!b) return;
   const k = b.dataset.reset; if (k === "lh") { lhStep = fam.kind === "text" ? 6 : 3; } else axes[k] = saved(k); renderAxes(); schedule(0); };
 $("lh").oninput = () => { lhStep = +$("lh").value; $("lhV").textContent = `n=${lhStep} · ${lhOf(lhStep)}`; $("hero").style.lineHeight = lhOf(lhStep); };
-$("resetAll").onclick = () => { axes = Object.fromEntries(AXES.map(([k]) => [k, saved(k)])); weight = fam.weights[0]; lhStep = fam.kind === "text" ? 6 : 3; $("preset").value = ""; renderAxes(); renderBlocks(); };
+$("resetAll").onclick = () => { extra = {}; axes = Object.fromEntries(AXES.map(([k]) => [k, saved(k)])); weight = fam.weights[0]; lhStep = fam.kind === "text" ? 6 : 3; $("preset").value = ""; renderAxes(); renderBlocks(); };
 $("blocks").addEventListener("focusin", (e) => { const el = e.target.closest(".blk"); if (!el) return; cur = +el.dataset.i;
   for (const x of $("blocks").children) x.classList.toggle("cur", x === el); renderTool(); renderStyles(); });
 $("blocks").addEventListener("input", (e) => { const el = e.target.closest(".blk"); blocks[+el.dataset.i].text = el.textContent; LS.set("blocks", blocks); schedule(500); });
@@ -284,7 +288,7 @@ $("pSave").onclick = async () => {
   const label = $("pLabel").value.trim() || `${fam.family} ${weight} 스페시먼`;
   const p = presets.find(x => x.id === $("preset").value && !x.readonly && x.label === label);
   try {
-    const r = await api("/api/presets/save", { ...(p ? { id: p.id, features: p.features } : {}), label, family: fam.id, weight, hangul: hangulParams() });
+    const r = await api("/api/presets/save", { ...(p ? { id: p.id, features: p.features, note: p.note } : {}), ...extra, label, family: fam.id, weight, hangul: hangulParams() });
     presets = (await api("/api/presets")).presets; setFamily(fam.id, true); $("preset").value = r.preset.id; $("pLabel").value = r.preset.label;
     setStatus("저장됨 → config/presets/" + r.preset.id + ".toml"); $("err").textContent = "";
   } catch (e) { $("err").textContent = e.message; }

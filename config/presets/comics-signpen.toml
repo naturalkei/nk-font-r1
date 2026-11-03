@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 사인펜"
+family = "comics"
+weight = "Regular"
+note = "사인펜 굵기, 글자마다 다른 높이·각도"
+features = []
+
+[style]
+slant = 5.0
+grade = -70.0
+tracking = 20
+bounce = 16.0
+tilt = 2.0
+seed = 2

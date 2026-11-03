@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono 닫힌 영문"
+family = "mono"
+weight = "Regular"
+note = "JetBrains Mono ss02(closed construction) + 단정하게 닫힌 느낌의 좁은 한글 (목표 높이 1.26 · 폭/높이 0.92 · 획 0.97 · 중심 20)"
+features = ["ss02"]
+
+[hangul]
+scale = 1.0291
+dy = 42
+width = 0.9525
+grade = -1.4

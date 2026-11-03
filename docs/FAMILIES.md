@@ -104,6 +104,26 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 
 ---
 
+### 3.1 레퍼런스 기반 변형 프리셋 (가족마다 20종)
+
+`config/presets/`의 프리셋은 빌드 입력이 아니라 `/presets`에서 나란히 비교하는 후보입니다. 레퍼런스 글꼴은
+**재기만 하고** 글리프는 가져오지 않습니다. 모든 값은 우리 조절값으로만 만듭니다.
+
+| 가족 | 레퍼런스 | 조절 축 | 20종의 방향 |
+| --- | --- | --- | --- |
+| NK Mono | JetBrains Mono(영문), D2Coding(한글 원본) | `[hangul]` scale·dy·width·grade·center + JetBrains Mono 기능(ss01, ss02, zero, cv01, cv04) | 높이·폭·획·중심 목표(φ 정합, D2Coding에서 잰 비례, 대문자 중심, 획 일치 등)를 Glyph Lab 솔버로 풀어 만든 값. Bold 3종 |
+| NK Pixel | Neo둥근모(원본), 물마루 | `[pixel]` bold(-1/+1px)·italic(N줄마다 1px)·shadow·hangul_dy·dy/scope | 1px 가는 획, 볼드, 계단 이탤릭 3단계, 게임 UI 그림자, 한글 1px 올림(대문자 중심 맞춤)과 그 조합 |
+| NK Comics | 개구, 나눔손글씨 펜, 만화진흥원체(로컬), HCL 리얼노트필기(로컬) | `[style]` slant·grade·tracking·bounce·tilt·seed (영문과 한글을 함께) | 펜 필기 14종(마커·사인펜·볼펜·만년필·노트·일기·붓펜 등: 획을 깎고 기울이고 글자마다 기준선·각도를 흔듦) + 레터링 6종(외침·효과음·포스터 등, Black 포함) |
+
+**조화 QA**: `nkfont presets`가 프리셋마다 한글과 영문의 높이·중심·획 굵기·대비·회색도·기울기·자간과 격자를
+재고 `config/preset_qa.toml` 밴드를 벗어나면 실패합니다(qa 단계 "preset harmony"). QA가 정한 한계:
+
+- Comics(Bagel Fat One)는 grade -95보다 더 깎으면 한글 획이 영문보다 너무 가늘어지고(획 0.84 미만) 윤곽이 뒤집힙니다.
+  더 가는 진짜 펜 느낌은 펜 필기 원본(예: 개구, OFL)으로 Comics 소스를 바꾸는 결정이 필요합니다.
+- Comics Black(Gasoek One)은 원래 한글 획이 영문보다 가벼워(0.85) 깎을 여유가 없습니다.
+- Pixel의 가로획 2px(`heavy`)과 블랙은 16px 한글에 자리가 없어 를·를 가로획 사이 1px 틈이 막히거나 영문만 굵어져
+  밴드를 벗어납니다. 축은 남기고 프리셋에서는 뺐습니다.
+
 ## 4. 인쇄 디자인용 굵기 범위
 
 목표: 인쇄 디자이너가 제목부터 각주까지 한 가족으로 쓸 수 있도록 **Thin(100)부터 Black(900)까지 9단계 + 이탤릭**, 가변 폰트(`wght` 축)와 정적 OTF/TTF를 함께 제공합니다. 굵기 이름, `usWeightClass`, 스타일 링크(RIBBI는 같은 패밀리, 나머지는 `NK Sans Light` 같은 레거시 패밀리 + `typographic family` 16/17번)는 이미 `names.py`가 규칙대로 씁니다.

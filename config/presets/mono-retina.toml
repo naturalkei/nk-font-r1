@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono 고해상도 가벼운 한글"
+family = "mono"
+weight = "Regular"
+note = "Retina·4K 화면용: 크기는 저장값 수준, 획만 5% 가볍게 해 영문보다 덜 검게 (목표 높이 1.31 · 획 0.95 · 중심 30)"
+features = []
+
+[hangul]
+scale = 1.082
+dy = 35
+width = 1.0
+grade = -12.0
