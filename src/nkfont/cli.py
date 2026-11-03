@@ -71,6 +71,21 @@ def main(argv: list[str] | None = None) -> int:
     st.add_argument("--port", type=int, default=8765)
     st.add_argument("--no-browser", action="store_true")
 
+    a = sub.add_parser("app", help="NK Studio in a desktop window (pywebview), presets first")
+    a.add_argument(
+        "--page", choices=["presets", "specimen", "studio", "lab", "site"], default="presets"
+    )
+    a.add_argument("--port", type=int, default=0, help="0 = any free port")
+    a.add_argument("--debug", action="store_true", help="enable the web inspector")
+    a.add_argument(
+        "--install-mac-app",
+        nargs="?",
+        const=Path.home() / "Applications",
+        type=Path,
+        metavar="DIR",
+        help='write an "NK Studio.app" launcher (default ~/Applications) and exit',
+    )
+
     ph = sub.add_parser("phi", help="golden-ratio proportion report (config/proportions.toml)")
     ph.add_argument("fonts", nargs="*", type=Path, help="font files; default build/master/*.ttf")
 
@@ -101,6 +116,14 @@ def main(argv: list[str] | None = None) -> int:
 
         serve(args.host, args.port, open_browser=not args.no_browser)
         return 0
+
+    if args.cmd == "app":
+        from .studio import app
+
+        if args.install_mac_app:
+            print(app.mac_app_bundle(args.install_mac_app))
+            return 0
+        return app.run(args.page, args.port, args.debug)
 
     if args.cmd == "phi":
         from .proportions import format_report, report_files

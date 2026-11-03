@@ -40,14 +40,14 @@ pre.spec .ln{display:block;box-shadow:inset 0 -1px 0 var(--grid)}
 </style>
 </head>
 <body>
-<header><b>NK Studio</b><span>한글 미세 조절 · 저장하면 config/families/*.toml 에 기록</span><a href="/lab" style="margin-left:auto;color:var(--acc);text-decoration:none">글리프 랩 → 획·기울기·φ 비교</a><span id="status" class="pill">준비</span></header>
+<header><b>NK Studio</b><span>한글 미세 조절 · 저장하면 config/families/*.toml 에 기록</span><a href="/specimen" style="margin-left:auto;color:var(--acc);text-decoration:none">스페시먼</a><a href="/presets" style="color:var(--acc);text-decoration:none">프리셋 비교</a><a href="/lab" style="color:var(--acc);text-decoration:none">글리프 랩 → 획·기울기·φ 비교</a><span id="status" class="pill">준비</span></header>
 <main>
 <aside>
   <div><label>가족</label><select id="family"></select></div>
   <div><label>굵기</label><select id="weight"></select></div>
   <div>
     <label>한글 크기 scale</label>
-    <div class="row"><input id="scale" type="range" min="0.84" max="1.10" step="0.005"><span class="val" id="scaleV"></span></div>
+    <div class="row"><input id="scale" type="range" min="0.80" max="1.20" step="0.005"><span class="val" id="scaleV"></span></div>
   </div>
   <div>
     <label>세로 이동 dy (font units)</label>
@@ -61,6 +61,7 @@ pre.spec .ln{display:block;box-shadow:inset 0 -1px 0 var(--grid)}
   </div>
   <div><label>목표 한글/대문자 높이 비율</label><input id="capTarget" type="number" step="0.01" value="1.16" style="width:100%"></div>
   <div class="row"><button id="reset">저장값으로</button><button class="primary" id="save">설정 저장</button></div>
+  <button id="asPreset" title="지금 값을 config/presets/ 에 프리셋으로 저장하고 프리셋 비교 화면에서 나란히 봅니다">프리셋으로 저장 → 비교</button>
   <div><label>크기 (px)</label><select id="size"><option>12</option><option>14</option><option selected>16</option><option>20</option><option>28</option><option>40</option></select></div>
   <div class="row"><label style="margin:0"><input type="checkbox" id="grid" checked> 셀 격자</label><label style="margin:0"><input type="checkbox" id="liga" checked> 합자(calt)</label></div>
   <div><label>미리보기 문장</label><textarea id="text"></textarea></div>
@@ -199,11 +200,28 @@ $("save").onclick = async () => {
   } catch (e) { $("err").textContent = e.message; }
 };
 
+$("asPreset").onclick = async () => {
+  const f = fam(), label = prompt("프리셋 이름", `${f.family} ${$("weight").value} scale ${(+$("scale").value).toFixed(3)}`);
+  if (!label) return;
+  try {
+    const r = await api("/api/presets/save", { label, family: f.id, weight: $("weight").value, hangul: f.kind === "pixel" ? {} : params(), features: [] });
+    location.href = "/presets#" + r.preset.id;
+  } catch (e) { $("err").textContent = e.message; }
+};
+
 (async () => {
   const r = await api("/api/families");
   families = r.families; $("text").value = r.text;
   $("family").innerHTML = families.map(f => `<option value="${f.id}">${f.family}</option>`).join("");
+  // Opened from the preset page ("Studio에서 열기"): ?family=&weight=&scale=&dy=&center=
+  const q = new URLSearchParams(location.search);
+  if (q.get("family") && families.some(f => f.id === q.get("family"))) $("family").value = q.get("family");
   onFamily();
+  if (q.get("weight") && fam().weights.includes(q.get("weight"))) $("weight").value = q.get("weight");
+  if (q.has("scale")) $("scale").value = q.get("scale");
+  if (q.has("dy")) $("dy").value = q.get("dy");
+  if (q.has("center")) $("center").value = q.get("center");
+  if ([...q.keys()].length) schedule();
 })();
 </script>
 </body>

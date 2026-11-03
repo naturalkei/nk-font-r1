@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NK Specimen</title>
+<style>
+:root{--bg:#f6f5f1;--panel:#fff;--ink:#1c1b19;--mute:#6d6a63;--line:#e4e1d9;--acc:#1f7a6d;--acc2:#c2571a;--sel:rgba(31,122,109,.08);--term:#15171a;--termink:#e7e5de}
+@media (prefers-color-scheme:dark){:root{--bg:#121311;--panel:#1b1c1a;--ink:#ecebe6;--mute:#9a978f;--line:#2d2e2b;--acc:#5cc6b4;--acc2:#f08a4b;--sel:rgba(92,198,180,.09);--term:#0b0c0d}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+header.top{display:flex;align-items:center;gap:18px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+header.top b{font-size:16px;letter-spacing:.02em}
+nav a{color:var(--mute);text-decoration:none;margin-right:14px;font-size:13px}nav a.on{color:var(--ink);font-weight:600;border-bottom:2px solid var(--acc);padding-bottom:3px}nav a:hover{color:var(--acc)}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute);margin-left:auto;white-space:nowrap}
+.wrap{max-width:1320px;margin:0 auto;padding:26px 28px 90px}
+select,button,input[type=text]{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 9px}
+button{cursor:pointer}button.primary{background:var(--acc);border-color:var(--acc);color:#fff}button:disabled{opacity:.4;cursor:default}
+.icon{border:0;background:none;color:var(--mute);padding:2px 6px;border-radius:5px}.icon:hover{color:var(--acc);background:var(--sel)}
+.title{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.title h1{margin:0;font-weight:400;font-size:64px;line-height:1.05;letter-spacing:-.01em}
+.title .pick{display:flex;gap:8px;margin-left:auto;align-items:center}
+.sub{color:var(--mute);margin:8px 0 12px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}.tags span{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:2px 10px;color:var(--mute)}
+.tags span.k{border-color:var(--acc);color:var(--acc)}
+.hero{margin:34px 0 30px;font-size:clamp(40px,7vw,104px);line-height:1.18;word-break:keep-all;overflow-wrap:anywhere;min-height:1.2em;outline:none}
+.hero.mono{white-space:pre-wrap}
+.picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 0;border-top:1px solid var(--line)}
+.picker label{color:var(--mute)}
+.bench{display:grid;grid-template-columns:270px 1fr;gap:28px;margin-top:14px}
+.axes h3,.styles h3{display:flex;align-items:center;margin:0 0 12px;font-size:13px;font-weight:600}.axes h3 .icon{margin-left:auto}
+.axis{margin-bottom:16px}.axis .hd{display:flex;align-items:center;gap:6px;font-size:13px}.axis .hd small{color:var(--mute);font:11px ui-monospace,monospace;margin-left:auto}
+.axis .hd .icon{padding:0 4px}.axis.changed .hd span{color:var(--acc);font-weight:600}
+.axis input[type=range]{width:100%;accent-color:var(--acc);margin:4px 0 0}
+.axis .why{font-size:11px;color:var(--mute)}
+.wseg{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.wseg button{padding:3px 9px;font-size:12px}.wseg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.presetbox{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.presetbox .row{display:flex;gap:6px}.presetbox .row>*{flex:1}
+.editor{border:1px solid var(--line);border-radius:12px;background:var(--panel);min-width:0}
+.tool{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tool .sep{width:1px;height:22px;background:var(--line);margin:0 6px}
+.tool .num{font:12px ui-monospace,monospace;min-width:52px;text-align:center}
+.tool .icon.on{color:var(--acc);background:var(--sel)}
+.blocks{padding:12px 18px 18px}
+.blk{position:relative;border-left:3px solid transparent;padding:4px 10px;margin:4px 0;outline:none;overflow-wrap:anywhere}
+.blk.cur{border-left-color:var(--acc)}
+.blk.term{background:var(--term);color:var(--termink);border-radius:6px;white-space:pre;overflow-x:auto;padding:10px 14px}
+.add{margin:8px 10px 0}
+.styles{margin-top:22px}
+.stl{display:grid;grid-template-columns:90px 110px 120px 1fr;gap:6px;font:12px ui-monospace,monospace;padding:9px 12px;border-left:3px solid transparent;border-radius:4px;cursor:pointer}
+.stl:hover{background:var(--sel)}.stl.cur{border-left-color:var(--acc);background:var(--sel)}
+.stl b{font-weight:600;font-family:system-ui,sans-serif}
+.hint{font-size:12px;color:var(--mute)}.err{color:#c0392b;font-size:12px;white-space:pre-wrap}
+.loading{opacity:.35;transition:opacity .2s}
+@media (max-width:900px){.bench{grid-template-columns:1fr}.title h1{font-size:44px}.stl{grid-template-columns:70px 90px 1fr}.stl span:nth-child(3){display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <b>NK Studio</b>
+  <nav><a href="/specimen" class="on">스페시먼</a><a href="/presets">프리셋 비교</a><a href="/">한글 미세 조절</a><a href="/lab">글리프 랩</a><a href="/site/">미리보기 사이트</a></nav>
+  <span id="status" class="pill">준비</span>
+</header>
+<div class="wrap">
+  <div class="title">
+    <h1 id="name" class="loading">NK</h1>
+    <div class="pick"><select id="family"></select></div>
+  </div>
+  <div class="sub" id="desc"></div>
+  <div class="tags" id="tags"></div>
+
+  <div class="hero loading" id="hero" contenteditable="plaintext-only" spellcheck="false"></div>
+
+  <div class="picker">
+    <label>미리보기 글자</label><select id="script"></select><select id="sentence"></select>
+    <span class="hint">위 큰 글자와 아래 블록은 모두 직접 고쳐 쓸 수 있습니다.</span>
+  </div>
+
+  <div class="bench">
+    <div>
+      <div class="axes">
+        <h3>NK 축<button class="icon" id="resetAll" title="모든 축을 저장값으로">↺ 모두</button></h3>
+        <div class="axis"><div class="hd"><span>굵기</span><small id="wV"></small></div><div class="wseg" id="weights"></div>
+          <div class="why">고정 굵기(static) 파일. 아래 GRAD로 폭은 그대로 두고 한글 획만 더하거나 뺍니다.</div></div>
+        <div id="axisList"></div>
+        <div class="axis"><div class="hd"><span>줄 간격 φ 단계</span><small id="lhV"></small><button class="icon" data-reset="lh" title="되돌리기">↺</button></div>
+          <input type="range" id="lh" min="0" max="6" step="1" value="3"><div class="why">φ^(n/6): 0 = 1.0, 3 = φ^0.5 ≈ 1.272, 6 = φ ≈ 1.618</div></div>
+      </div>
+      <div class="presetbox">
+        <label class="hint">프리셋에서 불러오기</label>
+        <select id="preset"><option value="">—</option></select>
+        <input type="text" id="pLabel" placeholder="새 프리셋 이름">
+        <div class="row"><button class="primary" id="pSave">프리셋으로 저장</button><button id="pCompare" title="프리셋 비교 화면에서 나란히 보기">비교 →</button></div>
+        <div class="err" id="err"></div>
+      </div>
+    </div>
+    <div>
+      <div class="editor">
+        <div class="tool">
+          <select id="bStyle" title="블록 스타일"></select>
+          <span class="sep"></span>
+          <button class="icon" id="sizeDown" title="작게">−</button><span class="num" id="sizeV"></span><button class="icon" id="sizeUp" title="크게">+</button>
+          <span class="sep"></span>
+          <button class="icon" data-align="left" title="왼쪽">⇤</button><button class="icon" data-align="center" title="가운데">↔</button><button class="icon" data-align="right" title="오른쪽">⇥</button><button class="icon" data-align="justify" title="양쪽">☰</button>
+          <span class="sep"></span>
+          <button class="icon" id="lhCycle" title="이 스타일의 줄 간격 (φ 단계 순환)">↕ <span id="blhV"></span></button>
+          <button class="icon" id="bWeight" title="이 스타일의 굵기 순환">B <span id="bwV"></span></button>
+          <span class="sep"></span>
+          <button class="icon" id="bDel" title="블록 삭제">✕</button>
+        </div>
+        <div class="blocks" id="blocks"></div>
+        <button class="icon add" id="bAdd">+ 블록 추가</button>
+      </div>
+      <div class="styles"><h3>사용된 스타일</h3><div id="stlList"></div>
+        <div class="hint" style="margin:8px 12px">크기는 본문 16px에서 φ 비율로 올립니다 (제목 1 = 16·φ³, 제목 2 = 16·φ², 제목 3 = 16·φ, 캡션 = 16/√φ).</div></div>
+    </div>
+  </div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const PHI = (1 + Math.sqrt(5)) / 2;
+const AXES = [ // key, label, min, max, step, explanation
+  ["grade", "GRAD 한글 획", -40, 40, 0.5, "font units, 폭(advance)은 그대로"],
+  ["scale", "한글 크기", 0.8, 1.2, 0.005, "원본 1000 UPM 기준 배율"],
+  ["width", "한글 폭", 0.85, 1.1, 0.005, "가로 배율 (격자 가족은 두 칸 안에서)"],
+  ["dy", "세로 위치", -120, 120, 1, "font units, 영문 대문자 중심과 맞출 때"],
+  ["slant", "기울기", -14, 14, 0.5, "도, 이탤릭과 맞출 때"],
+  ["tracking", "한글 자간", -80, 80, 1, "비례폭 가족만, font units"]];
+const DEF = { scale: 0.96, width: 1, dy: 0, grade: 0, slant: 0, tracking: 0 };
+const KIND = { merge: "터미널 고정폭", pixel: "픽셀 · 게임", text: "문서 비례폭" };
+const DESC = { mono: "터미널 대표. JetBrains Mono + D2Coding 한글, 1:2 격자.", serif: "고정폭 세리프. IBM Plex Mono + 본명조.", pixel: "픽셀 아트 게임과 터미널.",
+  sans: "문서용 비례폭 고딕. IBM Plex Sans + 본고딕.", novel: "책·소설·뉴스 읽기용 명조.", comics: "만화 대사와 웹툰 말풍선." };
+const SCRIPTS = {
+  hangul: ["다람쥐 헌 쳇바퀴에 타고파", "키스의 고유조건은 입술끼리 만나야 하고 특별한 기술은 필요치 않다.", "모든 인간은 태어날 때부터 자유로우며 그 존엄과 권리에 있어 동등하다.", "읽꽃뷁됐 · 갉곬끊 · 쀍쒧"],
+  latin: ["Sphinx of black quartz, judge my vow.", "The quick brown fox jumps over the lazy dog.", "Il1| O0o {}[]() => != >="],
+  mixed: ["NK 폰트는 Korean과 English를 한 줄에서 고르게 보여 줍니다.", "버전 v0.1.0 · 2026년 11월 · 600/1200 격자"],
+  code: ['const 이름 = "나크"; // 한글 두 칸', "if (x != y && a >= b) return 0xFF;"],
+  terminal: ["~/dev/nk-font on main ❯ ls 문서/", "✔ 완료  ✘ 실패  ➜ 다음  ┌──┬──┐"],
+};
+const SCRIPT_LABEL = { hangul: "한글", latin: "영문", mixed: "한영 혼용", code: "코드", terminal: "터미널" };
+const STYLES = [ // name, size, weight role, lh step
+  ["제목 1", Math.round(16 * PHI ** 3), "bold", 1], ["제목 2", Math.round(16 * PHI ** 2), "bold", 1], ["제목 3", Math.round(16 * PHI), "regular", 2],
+  ["본문", 16, "regular", 6], ["캡션", Math.round(16 / Math.sqrt(PHI)), "regular", 4], ["터미널", 15, "regular", 1]];
+const LS = { get(k, d) { try { const v = localStorage.getItem("nks." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+             set(k, v) { try { localStorage.setItem("nks." + k, JSON.stringify(v)); } catch {} } };
+
+let families = [], presets = [], fam = null, weight = null, axes = {}, lhStep = 3, styles = {}, blocks = [], cur = 0, seq = 0, timer = null, nFace = 0;
+const faces = new Map();
+
+const lhOf = (n) => +(PHI ** (n / 6)).toFixed(3);
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]); }
+function setStatus(t) { $("status").textContent = t; }
+async function api(path, body) {
+  const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
+  const j = await r.json(); if (j.error) throw new Error(j.error); return j;
+}
+const saved = (k) => fam.hangul[k] ?? DEF[k];
+function hangulParams() { // only knobs that differ from the saved family value
+  const out = {}; for (const [k] of AXES) if (axes[k] !== undefined && axes[k] !== saved(k)) out[k] = axes[k]; return out;
+}
+function weightFor(role) { // style weight role -> one of the family's static weights
+  if (role === "bold") return fam.weights.find(w => /bold|black|heavy/i.test(w) && w !== weight) || fam.weights[fam.weights.length - 1];
+  return weight;
+}
+function styleWeight(name) { const s = styles[name]; return s.weight === "bold" ? weightFor("bold") : s.weight === "regular" ? weight : s.weight; }
+
+function allText() { return [$("name").textContent, $("hero").textContent, ...blocks.map(b => b.text), "0Hx한"].join("\n"); }
+
+async function faceFor(w) {
+  const text = allText(), key = JSON.stringify([fam.id, w, hangulParams(), text]);
+  if (faces.has(key)) return faces.get(key);
+  const r = await api("/api/preview", { family: fam.id, weight: w, text, ...hangulParams() });
+  const name = "nks" + nFace++, face = new FontFace(name, Uint8Array.from(atob(r.font), c => c.charCodeAt(0)).buffer);
+  await face.load(); document.fonts.add(face);
+  const v = { name, metrics: r.metrics }; faces.set(key, v); return v;
+}
+
+async function refreshFonts() {
+  const my = ++seq; setStatus("빌드 중…");
+  const ws = [...new Set([weight, ...Object.keys(styles).map(styleWeight)])];
+  try {
+    const got = Object.fromEntries(await Promise.all(ws.map(async w => [w, await faceFor(w)])));
+    if (my !== seq) return;
+    const ff = (w) => `"${got[w].name}", ${fam.kind === "text" ? "serif" : "monospace"}`;
+    for (const id of ["name", "hero"]) { $(id).style.fontFamily = ff(weight); $(id).classList.remove("loading"); }
+    $("hero").style.lineHeight = lhOf(lhStep); $("hero").classList.toggle("mono", fam.kind !== "text");
+    for (const el of $("blocks").children) el.style.fontFamily = ff(styleWeight(el.dataset.style));
+    setStatus(`${fam.family} ${weight}` + (Object.keys(hangulParams()).length ? " · 조정 중" : ""));
+  } catch (e) { $("err").textContent = e.message; setStatus("오류"); }
+}
+function schedule(ms = 220) { clearTimeout(timer); timer = setTimeout(refreshFonts, ms); }
+
+function renderAxes() {
+  const pixel = fam.kind === "pixel";
+  $("weights").innerHTML = fam.weights.map(w => `<button class="${w === weight ? "on" : ""}" data-w="${esc(w)}">${esc(w)}</button>`).join("");
+  $("wV").textContent = weight;
+  const list = AXES.filter(([k]) => k !== "tracking" || fam.kind === "text");
+  $("axisList").innerHTML = pixel ? '<div class="hint axis">NK Pixel은 원본 픽셀 그대로라 한글 축이 없습니다. 크기는 원래 격자의 정수배로 보세요.</div>' :
+    list.map(([k, label, lo, hi, step, why]) => `<div class="axis ${axes[k] !== saved(k) ? "changed" : ""}" id="ax_${k}"><div class="hd"><span>${label}</span><small id="v_${k}">${axes[k]}</small><button class="icon" data-reset="${k}" title="저장값 ${saved(k)}으로">↺</button></div>
+      <input type="range" data-k="${k}" min="${lo}" max="${hi}" step="${step}" value="${axes[k]}"><div class="why">${why} · 저장값 ${saved(k)}</div></div>`).join("");
+  $("lh").value = lhStep; $("lhV").textContent = `n=${lhStep} · ${lhOf(lhStep)}`;
+}
+
+function renderBlocks() {
+  $("blocks").innerHTML = blocks.map((b, i) => {
+    const s = styles[b.style];
+    return `<div class="blk ${i === cur ? "cur" : ""} ${b.style === "터미널" ? "term" : ""}" data-i="${i}" data-style="${esc(b.style)}" contenteditable="plaintext-only" spellcheck="false"
+      style="font-size:${s.size}px;line-height:${lhOf(s.lh)};text-align:${s.align || "left"}">${esc(b.text)}</div>`;
+  }).join("");
+  renderTool(); renderStyles(); schedule(0);
+}
+function renderTool() {
+  const b = blocks[cur]; if (!b) return; const s = styles[b.style];
+  $("bStyle").innerHTML = Object.keys(styles).map(n => `<option ${n === b.style ? "selected" : ""}>${n}</option>`).join("");
+  $("sizeV").textContent = s.size + "px"; $("blhV").textContent = lhOf(s.lh); $("bwV").textContent = styleWeight(b.style);
+  for (const x of document.querySelectorAll("[data-align]")) x.classList.toggle("on", (s.align || "left") === x.dataset.align);
+}
+function renderStyles() {
+  const used = [...new Set(blocks.map(b => b.style))];
+  $("stlList").innerHTML = used.map(n => { const s = styles[n];
+    return `<div class="stl ${blocks[cur]?.style === n ? "cur" : ""}" data-n="${esc(n)}"><span>크기 ${s.size}</span><span>굵기 ${esc(styleWeight(n))}</span><span>행간 ${lhOf(s.lh)}</span><b>${esc(n)}</b></div>`; }).join("");
+  LS.set("styles", styles); LS.set("blocks", blocks);
+}
+
+function defaultBlocks(script) {
+  const t = SCRIPTS[script];
+  if (script === "terminal") return [{ style: "터미널", text: t.join("\n") }, { style: "캡션", text: "터미널 미리보기: 한글은 두 칸, 아이콘은 한 칸" }];
+  return [{ style: "제목 1", text: t[0] }, { style: "제목 2", text: t[1] || t[0] }, { style: "제목 3", text: t[2] || t[0] }, { style: "본문", text: t.join(" ") }, { style: "캡션", text: t[t.length - 1] }];
+}
+
+function setFamily(id, keepAxes) {
+  fam = families.find(f => f.id === id) || families[0]; LS.set("family", fam.id);
+  $("family").value = fam.id;
+  if (!fam.weights.includes(weight)) weight = fam.weights[0];
+  if (!keepAxes) axes = Object.fromEntries(AXES.map(([k]) => [k, saved(k)]));
+  lhStep = fam.kind === "text" ? 6 : 3;
+  $("name").textContent = fam.family; $("desc").textContent = DESC[fam.id] || "";
+  $("tags").innerHTML = `<span class="k">${KIND[fam.kind] || fam.kind}</span>` + fam.weights.map(w => `<span>${esc(w)}</span>`).join("") + '<span>한글 11,172</span><span>OFL 1.1</span>';
+  const ps = presets.filter(p => !p.error && p.family === fam.id);
+  $("preset").innerHTML = '<option value="">—</option>' + ps.map(p => `<option value="${esc(p.id)}">${esc(p.label)}</option>`).join("");
+  renderAxes(); renderBlocks();
+}
+
+function applyPreset(p) {
+  setFamily(p.family);
+  if (fam.weights.includes(p.weight)) weight = p.weight;
+  for (const [k] of AXES) if (p.hangul?.[k] !== undefined) axes[k] = p.hangul[k];
+  $("preset").value = p.id; $("pLabel").value = p.readonly ? "" : p.label;
+  renderAxes(); schedule(0);
+}
+
+function setScript(s) {
+  LS.set("script", s); $("script").value = s;
+  $("sentence").innerHTML = SCRIPTS[s].map((t, i) => `<option value="${i}">${esc(t.length > 34 ? t.slice(0, 34) + "…" : t)}</option>`).join("");
+  $("hero").textContent = SCRIPTS[s][0]; blocks = defaultBlocks(s); cur = 0; renderBlocks();
+}
+
+// ---- events ----------------------------------------------------------------------------------
+$("family").onchange = () => setFamily($("family").value);
+$("script").onchange = () => setScript($("script").value);
+$("sentence").onchange = () => { $("hero").textContent = SCRIPTS[$("script").value][+$("sentence").value]; schedule(0); };
+$("hero").oninput = () => schedule(450);
+$("weights").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; weight = b.dataset.w; renderAxes(); renderTool(); renderStyles(); schedule(0); };
+$("axisList").oninput = (e) => { const r = e.target; if (!r.dataset.k) return; axes[r.dataset.k] = +r.value; $("v_" + r.dataset.k).textContent = r.value;
+  $("ax_" + r.dataset.k).classList.toggle("changed", +r.value !== saved(r.dataset.k)); schedule(); };
+document.querySelector(".axes").onclick = (e) => { const b = e.target.closest("[data-reset]"); if (!b) return;
+  const k = b.dataset.reset; if (k === "lh") { lhStep = fam.kind === "text" ? 6 : 3; } else axes[k] = saved(k); renderAxes(); schedule(0); };
+$("lh").oninput = () => { lhStep = +$("lh").value; $("lhV").textContent = `n=${lhStep} · ${lhOf(lhStep)}`; $("hero").style.lineHeight = lhOf(lhStep); };
+$("resetAll").onclick = () => { axes = Object.fromEntries(AXES.map(([k]) => [k, saved(k)])); weight = fam.weights[0]; lhStep = fam.kind === "text" ? 6 : 3; $("preset").value = ""; renderAxes(); renderBlocks(); };
+$("blocks").addEventListener("focusin", (e) => { const el = e.target.closest(".blk"); if (!el) return; cur = +el.dataset.i;
+  for (const x of $("blocks").children) x.classList.toggle("cur", x === el); renderTool(); renderStyles(); });
+$("blocks").addEventListener("input", (e) => { const el = e.target.closest(".blk"); blocks[+el.dataset.i].text = el.textContent; LS.set("blocks", blocks); schedule(500); });
+$("bStyle").onchange = () => { blocks[cur].style = $("bStyle").value; renderBlocks(); };
+const bump = (d) => { const s = styles[blocks[cur].style]; s.size = Math.max(8, Math.min(200, s.size + d)); renderBlocks(); };
+$("sizeDown").onclick = () => bump(-1); $("sizeUp").onclick = () => bump(1);
+for (const b of document.querySelectorAll("[data-align]")) b.onclick = () => { styles[blocks[cur].style].align = b.dataset.align; renderBlocks(); };
+$("lhCycle").onclick = () => { const s = styles[blocks[cur].style]; s.lh = (s.lh + 1) % 7; renderBlocks(); };
+$("bWeight").onclick = () => { const s = styles[blocks[cur].style], ws = ["regular", "bold", ...fam.weights];
+  s.weight = ws[(ws.indexOf(s.weight) + 1) % ws.length]; renderBlocks(); };
+$("bDel").onclick = () => { if (blocks.length < 2) return; blocks.splice(cur, 1); cur = Math.max(0, cur - 1); renderBlocks(); };
+$("bAdd").onclick = () => { blocks.push({ style: "본문", text: SCRIPTS[$("script").value].join(" ") }); cur = blocks.length - 1; renderBlocks(); };
+$("stlList").onclick = (e) => { const r = e.target.closest(".stl"); if (!r) return; const i = blocks.findIndex(b => b.style === r.dataset.n); if (i >= 0) { cur = i; renderBlocks(); } };
+$("preset").onchange = () => { const p = presets.find(x => x.id === $("preset").value); if (p) applyPreset(p); else $("pLabel").value = ""; };
+$("pSave").onclick = async () => {
+  const label = $("pLabel").value.trim() || `${fam.family} ${weight} 스페시먼`;
+  const p = presets.find(x => x.id === $("preset").value && !x.readonly && x.label === label);
+  try {
+    const r = await api("/api/presets/save", { ...(p ? { id: p.id, features: p.features } : {}), label, family: fam.id, weight, hangul: hangulParams() });
+    presets = (await api("/api/presets")).presets; setFamily(fam.id, true); $("preset").value = r.preset.id; $("pLabel").value = r.preset.label;
+    setStatus("저장됨 → config/presets/" + r.preset.id + ".toml"); $("err").textContent = "";
+  } catch (e) { $("err").textContent = e.message; }
+};
+$("pCompare").onclick = () => { location.href = "/presets" + ($("preset").value ? "#" + encodeURIComponent($("preset").value) : ""); };
+
+(async () => {
+  try {
+    const [f, p] = await Promise.all([api("/api/families"), api("/api/presets")]);
+    families = f.families; presets = p.presets;
+    $("family").innerHTML = families.map(x => `<option value="${x.id}">${esc(x.family)}</option>`).join("");
+    $("script").innerHTML = Object.keys(SCRIPTS).map(k => `<option value="${k}">${SCRIPT_LABEL[k]}</option>`).join("");
+    styles = Object.fromEntries(STYLES.map(([n, size, w, lh]) => [n, { size, weight: w, lh, align: "left" }]));
+    const q = new URLSearchParams(location.search), stored = LS.get("styles", null);
+    if (stored) for (const n in stored) if (styles[n]) styles[n] = { ...styles[n], ...stored[n] };
+    const fromPreset = presets.find(x => x.id === q.get("preset"));
+    setFamily(fromPreset?.family || q.get("family") || LS.get("family", "mono"));
+    const script = LS.get("script", "hangul"); setScript(SCRIPTS[script] ? script : "hangul");
+    const sb = LS.get("blocks", null); if (sb?.length) { blocks = sb.filter(b => styles[b.style]); renderBlocks(); }
+    if (fromPreset) applyPreset(fromPreset);
+  } catch (e) { $("err").textContent = e.message; setStatus("오류"); }
+})();
+</script>
+</body>
+</html>

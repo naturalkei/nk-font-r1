@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono 꽉 찬 한글"
+family = "mono"
+weight = "Regular"
+note = "두 칸을 더 채우고 GRAD로 획을 살짝 굵게: 작은 크기 터미널용"
+features = []
+
+[hangul]
+scale = 1.12
+dy = 34
+grade = 6.0
