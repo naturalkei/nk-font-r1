@@ -1,0 +1,24 @@
+# Local-only reference fonts: free to use, but their terms do not clearly allow redistribution,
+# so they are never committed, never pinned in sources.lock and never downloaded by `nkfont fetch`.
+# Each owner installs the font from its official distributor; nkfont finds the file by name in
+#   sources/local/, $NK_LOCAL_FONTS (os.pathsep list), ~/Library/Fonts, /Library/Fonts,
+#   ~/.local/share/fonts, ~/.fonts
+# and shows it next to NK glyphs in the Glyph Lab (/lab, /lab/advanced, /presets) when found.
+# They are only measured and drawn for comparison: never merged, subset, re-wrapped or shipped
+# (no WOFF2 on the site), and nothing here is a build input.
+#
+# Fields: id, label (Lab chip), license (what we verified), homepage, weights = {Lab weight =
+# [file names to look for, first match wins]}, optional sha256 = {file name = digest} to warn
+# when a different release is installed.
+
+[[font]]
+# 만화진흥원체 (KOMACON), Korea Manhwa Contents Agency. Comic speech-bubble lettering; NK Comics
+# reference only. The upload (2026-11-03) ships just a Mac/Windows installer (YoonfontInstall,
+# payload packed) and a vertical-writing usage PDF: no license text we could read, and no public
+# license page found, so it is treated as non-redistributable. Install it with the official
+# KomaconFonts.dmg / .exe; the installed file is KOMACON.ttf.
+id = "komacon"
+label = "만화진흥원체 (KOMACON, 로컬)"
+license = "free font, redistribution terms unverified: local only"
+homepage = "https://www.komacon.kr/"
+weights = { Regular = ["KOMACON.ttf", "KOMACON.otf"] }

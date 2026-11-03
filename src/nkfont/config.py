@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -48,6 +49,53 @@ class SourceFont:
 def sources(root: Path = ROOT) -> dict[str, SourceFont]:
     data = _load(root / "sources.lock")
     return {f["id"]: SourceFont(**f) for f in data["font"]}
+
+
+# Where local-only reference fonts (config/local_fonts.toml) are looked up, after
+# <root>/sources/local and $NK_LOCAL_FONTS.
+SYSTEM_FONT_DIRS = (
+    "~/Library/Fonts",
+    "/Library/Fonts",
+    "~/.local/share/fonts",
+    "~/.fonts",
+)
+
+
+@dataclass(frozen=True)
+class LocalFont:
+    """A reference font we may compare against but not redistribute (never fetched or shipped)."""
+
+    id: str
+    label: str
+    license: str
+    weights: dict[str, list[str]]
+    homepage: str = ""
+    sha256: dict[str, str] = field(default_factory=dict)
+
+    def find(self, weight: str, root: Path = ROOT) -> Path | None:
+        for name in self.weights.get(weight, []):
+            for d in local_font_dirs(root):
+                if (d / name).is_file():
+                    return d / name
+        return None
+
+    def available(self, root: Path = ROOT) -> dict[str, Path]:
+        found = {w: self.find(w, root) for w in self.weights}
+        return {w: p for w, p in found.items() if p}
+
+
+def local_font_dirs(root: Path = ROOT) -> list[Path]:
+    env = [
+        Path(p).expanduser() for p in os.environ.get("NK_LOCAL_FONTS", "").split(os.pathsep) if p
+    ]
+    return [root / "sources" / "local", *env, *(Path(d).expanduser() for d in SYSTEM_FONT_DIRS)]
+
+
+def local_fonts(root: Path = ROOT) -> dict[str, LocalFont]:
+    path = root / "config" / "local_fonts.toml"
+    if not path.exists():
+        return {}
+    return {f["id"]: LocalFont(**f) for f in _load(path).get("font", [])}
 
 
 def patcher_image(root: Path = ROOT) -> str:
