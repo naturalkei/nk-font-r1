@@ -4,6 +4,7 @@ Fonts are addressed by id:
   nk-edit    NK family built with the parameters being edited (only the requested characters)
   nk-saved   NK family built from config/families/<family>.toml (full build, cached)
   ref:<id>   a reference font from config/lab.toml, at the selected weight
+  ref:local:<id>  a local-only reference from config/local_fonts.toml (installed, not fetched)
 Every outline is normalised to 1000 UPM so fonts with other UPMs line up.
 """
 
@@ -95,6 +96,19 @@ class Lab:
                     "missing": not available,
                 }
             )
+        for lf in config.local_fonts(self.root).values():
+            available = lf.available(self.root)
+            files = ", ".join(sorted({n for v in lf.weights.values() for n in v}))
+            refs.append(
+                {
+                    "id": f"ref:local:{lf.id}",
+                    "label": lf.label,
+                    "weights": sorted(available),
+                    "missing": not available,
+                    "local": True,
+                    "hint": f"로컬 전용: {files} 를 설치하거나 sources/local/ 에 두세요",
+                }
+            )
         return {
             "references": refs,
             "presets": cfg.get("preset", []),
@@ -104,6 +118,12 @@ class Lab:
     def _ref_path(self, ref_id: str, weight: str) -> Path:
         cfg = lab_config(self.root)
         rid = ref_id.removeprefix("ref:")
+        if rid.startswith("local:"):
+            lf = config.local_fonts(self.root)[rid.removeprefix("local:")]
+            available = lf.available(self.root)
+            if not available:
+                raise FileNotFoundError(f"local reference {lf.id} is not installed")
+            return available.get(weight) or next(iter(available.values()))
         r = next(x for x in cfg.get("reference", []) if x["id"] == rid)
         srcs = config.sources(self.root)
         sid = r.get(weight) or next(

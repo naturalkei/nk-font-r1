@@ -169,10 +169,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.cmd == "fetch":
-        from .fetch import fetch_all
+        from .fetch import fetch_all, local_status
 
         for sid in fetch_all():
             print(f"ok  {sid}")
+        for line in local_status():
+            print(line)
         return 0
 
     if args.cmd == "build":

@@ -190,7 +190,7 @@ function buildChips() {
   $("fontChips").innerHTML = Object.entries(fontLabels).map(([id, label]) => {
     const ref = info.references.find(r => r.id === id);
     const miss = ref && ref.missing;
-    return `<label class="chip ${miss ? "missing" : ""}" title="${miss ? "sources/에 없음: nkfont fetch" : ""}"><input type="checkbox" data-f="${id}" ${fontOn[id] && !miss ? "checked" : ""} ${miss ? "disabled" : ""}><i style="background:${color(id)}"></i>${label}</label>`;
+    return `<label class="chip ${miss ? "missing" : ""}" title="${miss ? (ref.hint || "sources/에 없음: nkfont fetch") : ""}"><input type="checkbox" data-f="${id}" ${fontOn[id] && !miss ? "checked" : ""} ${miss ? "disabled" : ""}><i style="background:${color(id)}"></i>${label}</label>`;
   }).join("");
   for (const el of $("fontChips").querySelectorAll("input")) el.onchange = () => { fontOn[el.dataset.f] = el.checked; refresh(); };
   const prevBase = $("base").value;
