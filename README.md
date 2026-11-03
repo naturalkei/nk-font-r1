@@ -24,6 +24,14 @@ OFL 1.1 한글 글꼴 모음입니다. 터미널 갈래 **NK Mono**·**NK Pixel*
 - 소개 페이지(GitHub Pages): https://naturalkei.github.io/nk-font-r1/ — `main`에 병합되면 `.github/workflows/pages.yml`이 다시 빌드해 배포
 - 조절 도구 **NK Studio**: `nkfont studio` → 브라우저에서 한글 크기·세로 위치를 슬라이더로 바꾸며 저장값과 나란히 비교하고,
   "중심 맞춤"·"높이 비율" 규칙 버튼으로 값을 제안받은 뒤 `config/families/*.toml`에 저장합니다.
+- **프리셋 비교**(`/presets`): 가족·굵기·한글 축·OpenType 기능 조합을 `config/presets/*.toml`에 저장해 두고
+  같은 샘플(한글/영문/코드/터미널/직접 입력)로 여러 개를 나란히, JetBrains Mono·D2Coding 같은 기준 글꼴과 함께 봅니다.
+- **스페시먼**(`/specimen`): 가족별 큰 샘플, NK 축(굵기·GRAD·크기·폭·세로 위치·기울기·자간·φ 줄 간격) 패널,
+  φ 비율 스타일(제목 1~3·본문·캡션) 블록을 직접 고쳐 쓰는 워크벤치. 프리셋으로 저장·비교로 바로 이어집니다.
+- **데스크톱 앱**: `make app` (= `pip install -e ".[app]"` + `nkfont app`) → 위 화면을 네이티브 창(macOS WebKit)으로.
+  `make app-install`은 `~/Applications/NK Studio.app` 런처를 만들어 Launchpad·Dock에서 열 수 있게 합니다.
+  업데이트는 메뉴 **업데이트 → 업데이트 확인…**(`/update`): `git pull --ff-only` 후 다시 시작. 커밋하지 않은 변경이나
+  로컬 커밋이 있으면 멈추고, `pyproject.toml`이 바뀌었을 때만 의존성을 다시 설치합니다.
 
 ## 개발
 ```bash
@@ -34,7 +42,8 @@ make check proof    # 터미널 호환 검사 + 교정 시트
 make tune           # 한글 스케일 비교 시트
 make test lint
 nkfont build all     # 여섯 가족 모두 (mono|pixel|sans|serif|novel|comics)
-nkfont studio       # 한글 미세 조절 웹 UI (http://127.0.0.1:8765)
+nkfont studio       # 한글 미세 조절 웹 UI (http://127.0.0.1:8765) · /presets · /specimen · /lab
+nkfont app          # 같은 화면을 데스크톱 창으로 (pywebview, --page specimen|studio|lab|site|update)
 nkfont site         # 소개 페이지 조립: build/site (WOFF2, 다운로드 zip, fonts.json)
 make qa             # 테스트 자동화: 린트·테스트·빌드·검사·재현성·골든 이미지 (docs/TESTING.md)
 ```

@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NK Presets</title>
+<style>
+:root{--bg:#f6f5f1;--panel:#fff;--ink:#1c1b19;--mute:#6d6a63;--line:#e4e1d9;--grid:rgba(40,120,110,.13);--acc:#1f7a6d;--acc2:#c2571a;--term:#15171a;--termink:#e7e5de;--sel:rgba(31,122,109,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#121311;--panel:#1b1c1a;--ink:#ecebe6;--mute:#9a978f;--line:#2d2e2b;--grid:rgba(90,200,180,.12);--acc:#5cc6b4;--acc2:#f08a4b;--term:#0b0c0d;--sel:rgba(92,198,180,.08)}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+header.top{display:flex;align-items:center;gap:18px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+header.top b{font-size:16px;letter-spacing:.02em}
+nav a{color:var(--mute);text-decoration:none;margin-right:14px;font-size:13px}nav a.on{color:var(--ink);font-weight:600;border-bottom:2px solid var(--acc);padding-bottom:3px}nav a:hover{color:var(--acc)}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute);margin-left:auto;white-space:nowrap}
+main{display:grid;grid-template-columns:290px 1fr;min-height:calc(100vh - 50px)}
+aside{border-right:1px solid var(--line);padding:16px 16px 40px;display:flex;flex-direction:column;gap:14px}
+aside h4{margin:6px 0 2px;font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.plist{display:flex;flex-direction:column;gap:2px}
+.pitem{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer}.pitem:hover{background:var(--sel)}
+.pitem span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pitem small{color:var(--mute);font-size:11px}
+.pitem.err span{color:#c0392b}
+label{display:block;font-size:12px;color:var(--mute);margin-bottom:3px}
+select,textarea,button,input[type=text],input[type=number]{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+select,input[type=text]{width:100%}
+button{cursor:pointer}button.primary{background:var(--acc);border-color:var(--acc);color:#fff}button.ghost{background:none;border-color:transparent;color:var(--mute);padding:3px 6px}button.ghost:hover{color:var(--acc)}
+button:disabled{opacity:.45;cursor:default}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+.val{font:12px ui-monospace,monospace;min-width:52px;text-align:right;flex:0 0 auto;color:var(--mute)}
+section.cmp{min-width:0;display:flex;flex-direction:column}
+.bar{position:sticky;top:50px;z-index:4;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.tabs{display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:2px}
+.tabs button{border:0;border-radius:6px;padding:4px 10px;background:none;color:var(--mute)}.tabs button.on{background:var(--acc);color:#fff}
+.ctl{display:flex;align-items:center;gap:8px;min-width:200px}.ctl label{margin:0;white-space:nowrap}.ctl input[type=range]{width:140px}
+.bar .chk{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mute);margin:0}
+#rows{padding:6px 20px 80px;display:grid;grid-template-columns:1fr;gap:0}
+#rows.grid2{grid-template-columns:repeat(auto-fill,minmax(460px,1fr));gap:14px;padding-top:16px}
+.prow{border-bottom:1px solid var(--line);padding:14px 2px 18px;min-width:0}
+#rows.grid2 .prow{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--panel)}
+.prow header{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.prow header b{font-size:14px}.prow header .meta{color:var(--mute);font:11px ui-monospace,monospace}
+.prow header .acts{margin-left:auto;display:flex;gap:2px;opacity:.55}.prow:hover header .acts{opacity:1}
+.prow.editing{background:var(--sel);border-radius:8px;padding-left:10px;padding-right:10px}
+.sample{outline:none;white-space:pre-wrap;word-break:break-word;min-height:1em;overflow-x:auto;overflow-y:hidden}
+.sample.term{background:var(--term);color:var(--termink);border-radius:8px;padding:12px 14px;white-space:pre;overflow-x:auto}
+.sample.cells{background-image:linear-gradient(to right,var(--grid) 1px,transparent 1px);background-size:1ch 100%}
+.sample.term.cells{background-image:linear-gradient(to right,rgba(255,255,255,.07) 1px,transparent 1px)}
+.sample.loading{opacity:.35}
+.tag{font:10px ui-monospace,monospace;border:1px solid var(--line);border-radius:4px;padding:0 4px;color:var(--mute)}
+.tag.ref{border-color:var(--acc2);color:var(--acc2)}.tag.ro{border-color:var(--acc);color:var(--acc)}
+#editor{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel);display:flex;flex-direction:column;gap:10px}
+#editor[hidden]{display:none}
+.feats{display:flex;flex-wrap:wrap;gap:4px}.feats label{margin:0;display:flex;align-items:center;gap:3px;font:11px ui-monospace,monospace;border:1px solid var(--line);border-radius:5px;padding:1px 6px;cursor:pointer}
+.feats label.on{border-color:var(--acc);color:var(--acc)}
+.hint{font-size:12px;color:var(--mute)}.err{color:#c0392b;font-size:12px;white-space:pre-wrap}
+.empty{padding:40px 0;color:var(--mute)}
+@media (max-width:900px){main{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line)}#rows.grid2{grid-template-columns:1fr}.bar{position:static}}
+</style>
+</head>
+<body>
+<header class="top">
+  <b>NK Studio</b>
+  <nav><a href="/specimen">스페시먼</a><a href="/presets" class="on">프리셋 비교</a><a href="/">한글 미세 조절</a><a href="/lab">글리프 랩</a><a href="/site/">미리보기 사이트</a><a href="/update">업데이트</a></nav>
+  <span id="status" class="pill">준비</span>
+</header>
+<main>
+<aside>
+  <div class="row"><button class="primary" id="new">+ 새 프리셋</button><button id="dup" title="선택한 프리셋 복제" disabled>복제</button></div>
+  <div id="editor" hidden>
+    <div><label>이름</label><input type="text" id="eLabel" placeholder="예: Mono 넉넉한 한글"></div>
+    <div class="row"><div><label>가족</label><select id="eFamily"></select></div><div><label>굵기</label><select id="eWeight"></select></div></div>
+    <div id="eKnobs"></div>
+    <div><label>가로 배치 center</label><select id="eCenter"><option value="">가족 저장값</option><option value="advance">advance</option><option value="bbox">bbox</option></select></div>
+    <div><label>OpenType 기능 (켜기)</label><div class="feats" id="eFeats"><span class="hint">불러오는 중…</span></div></div>
+    <div><label>메모</label><input type="text" id="eNote" placeholder="이 조합을 만든 이유"></div>
+    <div class="row"><button id="eCancel">닫기</button><button class="primary" id="eSave">저장</button></div>
+    <div class="hint">저장하면 <code>config/presets/&lt;id&gt;.toml</code>에 기록됩니다. 빌드 값(<code>config/families</code>)은 바뀌지 않습니다.</div>
+    <div id="eErr" class="err"></div>
+  </div>
+  <div><h4>비교할 프리셋</h4><div class="plist" id="plist"></div></div>
+  <div><h4>기준 글꼴</h4><div class="plist" id="rlist"><span class="hint">불러오는 중…</span></div></div>
+  <div id="err" class="err"></div>
+</aside>
+<section class="cmp">
+  <div class="bar">
+    <div class="tabs" id="tabs"></div>
+    <div class="ctl"><label>크기</label><input type="range" id="size" min="10" max="120" step="1" value="28"><span class="val" id="sizeV"></span></div>
+    <div class="ctl"><label>굵기</label><select id="weight" style="width:auto"><option value="">프리셋대로</option></select></div>
+    <div class="ctl"><label>줄 간격</label><select id="lh" style="width:auto"><option value="font">글꼴 기본</option><option value="1.3">1.3</option><option value="1.5">1.5</option><option value="1.618">φ 1.618</option></select></div>
+    <label class="chk"><input type="checkbox" id="cells"> 셀 격자</label>
+    <label class="chk"><input type="checkbox" id="grid2"> 2열 보기</label>
+  </div>
+  <div id="rows"></div>
+</section>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const KNOBS = [ // key, label, min, max, step
+  ["scale", "한글 크기 scale", 0.8, 1.2, 0.005], ["dy", "세로 이동 dy", -120, 120, 1], ["width", "한글 폭 width", 0.85, 1.1, 0.005],
+  ["grade", "한글 굵기 grade", -40, 40, 0.5], ["slant", "기울기 slant (°)", -14, 14, 0.5], ["tracking", "한글 자간 tracking (비례폭)", -80, 80, 1]];
+const TABS = [["hangul", "한글"], ["latin", "영문"], ["code", "코드"], ["terminal", "터미널"], ["custom", "직접 입력"]];
+const LS = { get(k, d) { try { const v = localStorage.getItem("nkp." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+             set(k, v) { try { localStorage.setItem("nkp." + k, JSON.stringify(v)); } catch {} } };
+
+let families = [], presets = [], refs = [], samples = {}, tab = LS.get("tab", "hangul"), custom = LS.get("custom", "NK 폰트로 쓰는 나의 문장 0O1lI");
+let shown = new Set(LS.get("shown", [])), shownRefs = new Set(LS.get("refs", [])), editing = null, seq = 0, timer = null;
+const faceCache = new Map(); // key -> face name
+
+function famOf(id) { return families.find(f => f.id === id); }
+function text() { return tab === "custom" ? custom : samples[tab] || ""; }
+function setStatus(t) { $("status").textContent = t; }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]); }
+
+async function api(path, body) {
+  const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+
+async function addFace(name, src) {
+  const face = new FontFace(name, src);
+  await face.load();
+  document.fonts.add(face);
+  return name;
+}
+
+function weightFor(p) {
+  const w = $("weight").value, f = famOf(p.family);
+  return w && f && f.weights.includes(w) ? w : p.weight;
+}
+
+// One small preview font per (preset values, weight, text): built by the same code as `nkfont build`.
+async function presetFace(p) {
+  const weight = weightFor(p), t = text();
+  const key = JSON.stringify([p.family, weight, p.hangul || {}, t]);
+  if (faceCache.has(key)) return { face: faceCache.get(key), weight, metrics: faceCache.get(key + "m") };
+  const r = await api("/api/preview", { family: p.family, weight, text: t, ...(p.hangul || {}) });
+  const name = "nkp" + faceCache.size;
+  await addFace(name, Uint8Array.from(atob(r.font), c => c.charCodeAt(0)).buffer);
+  faceCache.set(key, name); faceCache.set(key + "m", r.metrics);
+  return { face: name, weight, metrics: r.metrics };
+}
+
+async function refFace(ref) {
+  const fid = families[0]?.id || "mono";
+  const w = $("weight").value && ref.weights.includes($("weight").value) ? $("weight").value : (ref.weights.includes("Regular") ? "Regular" : ref.weights[0]);
+  const key = "ref|" + ref.id + "|" + w;
+  if (!faceCache.has(key)) {
+    const name = "nkr" + faceCache.size;
+    await addFace(name, `url(/api/lab/font?id=${encodeURIComponent(ref.id)}&family=${fid}&weight=${w})`);
+    faceCache.set(key, name);
+  }
+  return { face: faceCache.get(key), weight: w };
+}
+
+function metaFor(p) {
+  const h = p.hangul || {}, parts = [famOf(p.family)?.family || p.family, weightFor(p)];
+  for (const [k] of KNOBS) if (h[k] !== undefined) parts.push(`${k} ${h[k]}`);
+  if (h.center) parts.push(h.center);
+  return parts.join(" · ");
+}
+
+function rowHtml(item, isRef) {
+  const tags = isRef ? '<span class="tag ref">기준</span>' : item.readonly ? '<span class="tag ro">저장값</span>' : "";
+  const feats = (item.features || []).map(f => `<span class="tag">${esc(f)}</span>`).join(" ");
+  const acts = isRef || item.id === "__new__" ? "" : `<span class="acts">
+      ${item.readonly ? "" : `<button class="ghost" data-act="edit">편집</button>`}
+      <button class="ghost" data-act="dup">복제</button>
+      <button class="ghost" data-act="specimen" title="스페시먼(워크벤치) 화면에서 이 프리셋으로 열기">스페시먼</button>
+      <button class="ghost" data-act="studio" title="한글 미세 조절 화면에서 이 값으로 열기">Studio에서 열기</button>
+      ${item.readonly ? "" : `<button class="ghost" data-act="del">삭제</button>`}</span>`;
+  return `<div class="prow ${editing && editing.id === item.id ? "editing" : ""}" data-id="${esc(item.id)}" data-ref="${isRef ? 1 : ""}">
+    <header><b>${esc(item.label || "(새 프리셋)")}</b>${tags} <span class="meta">${isRef ? "" : esc(metaFor(item))}</span> ${feats}${item.note ? ` <span class="hint">${esc(item.note)}</span>` : ""}${acts}</header>
+    <div class="sample loading" contenteditable="plaintext-only" spellcheck="false"></div></div>`;
+}
+
+function visible() {
+  const list = presets.filter(p => !p.error && shown.has(p.id));
+  if (editing && !list.some(p => p.id === editing.id)) list.unshift(editing);
+  return list.map(p => (editing && editing.id === p.id ? editing : p));
+}
+
+async function render() {
+  const my = ++seq, items = visible(), rs = refs.filter(r => shownRefs.has(r.id) && !r.missing);
+  $("rows").className = $("grid2").checked ? "grid2" : "";
+  if (!items.length && !rs.length) { $("rows").innerHTML = '<div class="empty">왼쪽에서 비교할 프리셋을 고르세요.</div>'; return; }
+  $("rows").innerHTML = items.map(p => rowHtml(p, false)).join("") + rs.map(r => rowHtml(r, true)).join("");
+  const t = text(), size = +$("size").value, term = tab === "terminal" || tab === "code";
+  for (const el of $("rows").querySelectorAll(".sample")) {
+    el.textContent = t; el.style.fontSize = size + "px";
+    el.classList.toggle("term", tab === "terminal"); el.classList.toggle("cells", $("cells").checked);
+    el.style.whiteSpace = term ? "pre" : "pre-wrap";
+  }
+  setStatus("빌드 중…");
+  const jobs = [...items.map(p => [p, false]), ...rs.map(r => [r, true])].map(async ([item, isRef]) => {
+    const row = $("rows").querySelector(`.prow[data-id="${CSS.escape(item.id)}"]`);
+    const el = row?.querySelector(".sample");
+    try {
+      const { face, metrics } = isRef ? await refFace(item) : await presetFace(item);
+      if (my !== seq || !el) return;
+      el.style.fontFamily = `"${face}", monospace`;
+      el.style.fontFeatureSettings = (item.features || []).map(f => `"${f}" 1`).join(", ") || "normal";
+      const lh = $("lh").value;
+      // Pixel fonts often have tight vertical metrics: never let lines overlap.
+      el.style.lineHeight = lh !== "font" ? lh : metrics ? Math.max(1.2, (metrics.ascent - metrics.descent) / metrics.upm).toFixed(4) : "normal";
+      el.classList.remove("loading");
+    } catch (e) { if (el) { el.classList.remove("loading"); el.textContent = "⚠ " + e.message; } }
+  });
+  await Promise.all(jobs);
+  if (my === seq) setStatus(`${items.length + rs.length}개 비교 중`);
+}
+
+function schedule(ms = 200) { clearTimeout(timer); timer = setTimeout(render, ms); }
+
+function renderLists() {
+  $("plist").innerHTML = presets.map(p => `<label class="pitem ${p.error ? "err" : ""}" title="${esc(p.error || metaFor(p))}">
+      <input type="checkbox" data-pid="${esc(p.id)}" ${shown.has(p.id) ? "checked" : ""} ${p.error ? "disabled" : ""}>
+      <span>${esc(p.label)}</span><small>${p.readonly ? "저장값" : esc(famOf(p.family)?.family.replace("NK ", "") || "")}</small></label>`).join("");
+  $("rlist").innerHTML = refs.map(r => `<label class="pitem" title="${r.missing ? "nkfont fetch 필요" : ""}">
+      <input type="checkbox" data-rid="${esc(r.id)}" ${shownRefs.has(r.id) ? "checked" : ""} ${r.missing ? "disabled" : ""}>
+      <span>${esc(r.label)}</span><small>${r.missing ? "없음" : r.weights.join("/")}</small></label>`).join("") || '<span class="hint">config/lab.toml 참고 글꼴 없음</span>';
+  for (const c of $("plist").querySelectorAll("input")) c.onchange = () => { c.checked ? shown.add(c.dataset.pid) : shown.delete(c.dataset.pid); LS.set("shown", [...shown]); render(); };
+  for (const c of $("rlist").querySelectorAll("input")) c.onchange = () => { c.checked ? shownRefs.add(c.dataset.rid) : shownRefs.delete(c.dataset.rid); LS.set("refs", [...shownRefs]); render(); };
+  const ws = [...new Set(families.flatMap(f => f.weights))];
+  const cur = $("weight").value;
+  $("weight").innerHTML = '<option value="">프리셋대로</option>' + ws.map(w => `<option ${w === cur ? "selected" : ""}>${w}</option>`).join("");
+}
+
+// ---- editor ------------------------------------------------------------------------------
+function openEditor(base, asNew) {
+  const f = famOf(base.family) || families[0];
+  editing = { id: asNew ? "__new__" : base.id, label: asNew ? (base.label ? base.label.replace(" (저장값)", "") + " 사본" : "") : base.label,
+              family: f.id, weight: base.weight || f.weights[0], hangul: { ...(base.hangul || {}) }, features: [...(base.features || [])], note: base.note || "", isNew: asNew };
+  $("editor").hidden = false; $("eErr").textContent = "";
+  $("eLabel").value = editing.label; $("eNote").value = editing.note;
+  $("eFamily").innerHTML = families.map(x => `<option value="${x.id}" ${x.id === f.id ? "selected" : ""}>${esc(x.family)}</option>`).join("");
+  editorFamily(false); render();
+  $("eLabel").focus();
+}
+
+function editorFamily(reset) {
+  const f = famOf($("eFamily").value);
+  editing.family = f.id;
+  if (reset) { editing.hangul = {}; editing.features = []; editing.weight = f.weights[0]; }
+  $("eWeight").innerHTML = f.weights.map(w => `<option ${w === editing.weight ? "selected" : ""}>${w}</option>`).join("");
+  editing.weight = $("eWeight").value;
+  const pixel = f.kind === "pixel";
+  const knobs = KNOBS.filter(([k]) => k !== "tracking" || f.kind === "text");
+  $("eKnobs").innerHTML = pixel ? '<div class="hint">NK Pixel은 원본 픽셀 글꼴 그대로라 한글 조절값이 없습니다.</div>' : knobs.map(([k, label, lo, hi, step]) => {
+    const v = editing.hangul[k] ?? f.hangul[k] ?? { scale: 0.96, width: 1, dy: 0, grade: 0, slant: 0, tracking: 0 }[k];
+    return `<div><label>${label} <small>${editing.hangul[k] === undefined ? "(저장값)" : ""}</small></label>
+      <div class="row"><input type="range" data-k="${k}" min="${lo}" max="${hi}" step="${step}" value="${v}"><span class="val" id="v_${k}">${v}</span></div></div>`;
+  }).join("");
+  $("eCenter").value = editing.hangul.center || ""; $("eCenter").disabled = pixel;
+  for (const r of $("eKnobs").querySelectorAll("input[type=range]")) r.oninput = () => {
+    editing.hangul[r.dataset.k] = +r.value; $("v_" + r.dataset.k).textContent = r.value;
+    r.closest("div").previousElementSibling.querySelector("small").textContent = ""; schedule(250);
+  };
+  loadFeatures();
+}
+
+async function loadFeatures() {
+  const box = $("eFeats"), f = editing.family, w = editing.weight;
+  box.innerHTML = '<span class="hint">기능 목록 읽는 중… (첫 회는 전체 빌드라 몇 초 걸립니다)</span>';
+  try {
+    const r = await api("/api/lab/features", { font: "nk-saved", family: f, weight: w });
+    if (!editing || editing.family !== f) return;
+    const tags = [...new Set(r.features.map(x => x.tag))].filter(t => !["aalt", "ccmp", "locl", "mark", "mkmk", "kern"].includes(t));
+    box.innerHTML = tags.map(t => {
+      const x = r.features.find(y => y.tag === t), on = editing.features.includes(t);
+      return `<label class="${on ? "on" : ""}" title="${esc(x.name || "")}"><input type="checkbox" value="${t}" ${on ? "checked" : ""} hidden>${t}</label>`;
+    }).join("") || '<span class="hint">GSUB 기능 없음</span>';
+    for (const c of box.querySelectorAll("input")) c.onchange = () => {
+      c.parentElement.classList.toggle("on", c.checked);
+      editing.features = c.checked ? [...editing.features, c.value] : editing.features.filter(x => x !== c.value); render();
+    };
+  } catch (e) { box.innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+}
+
+function closeEditor() { editing = null; $("editor").hidden = true; render(); }
+
+async function saveEditor() {
+  const body = { label: $("eLabel").value.trim(), family: editing.family, weight: $("eWeight").value, hangul: { ...editing.hangul },
+                 features: editing.features, note: $("eNote").value.trim() };
+  if ($("eCenter").value) body.hangul.center = $("eCenter").value;
+  if (!editing.isNew) body.id = editing.id;
+  try {
+    const r = await api("/api/presets/save", body);
+    shown.add(r.preset.id); LS.set("shown", [...shown]);
+    editing = null; $("editor").hidden = true;
+    await reload(); setStatus("저장됨 → config/presets/" + r.preset.id + ".toml");
+  } catch (e) { $("eErr").textContent = e.message; }
+}
+
+async function reload() {
+  const r = await api("/api/presets");
+  presets = r.presets; samples = r.samples;
+  if (!shown.size) presets.slice(0, 3).forEach(p => shown.add(p.id));
+  const h = decodeURIComponent(location.hash.slice(1)); // from Studio "프리셋으로 저장"
+  if (h && presets.some(p => p.id === h)) { shown.add(h); LS.set("shown", [...shown]); history.replaceState(null, "", "/presets"); }
+  renderLists(); render();
+}
+
+// ---- wiring --------------------------------------------------------------------------------
+$("tabs").innerHTML = TABS.map(([k, l]) => `<button data-tab="${k}" class="${k === tab ? "on" : ""}">${l}</button>`).join("");
+$("tabs").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.tab; LS.set("tab", tab);
+  for (const x of $("tabs").children) x.classList.toggle("on", x === b);
+  if (tab === "terminal" && +$("size").value > 24) { $("size").value = 16; } syncSize(); render(); };
+function syncSize() { $("sizeV").textContent = $("size").value + "px"; LS.set("size", +$("size").value); }
+$("size").value = LS.get("size", 28); syncSize();
+$("size").oninput = () => { syncSize(); for (const el of document.querySelectorAll(".sample")) el.style.fontSize = $("size").value + "px"; };
+$("cells").checked = LS.get("cells", false); $("grid2").checked = LS.get("grid2", false);
+for (const id of ["cells", "grid2"]) $(id).onchange = () => { LS.set(id, $(id).checked); render(); };
+for (const id of ["weight", "lh"]) $(id).onchange = render;
+$("rows").addEventListener("input", (e) => { // typing in one row types in all (custom text)
+  if (!e.target.classList.contains("sample")) return;
+  custom = e.target.textContent; LS.set("custom", custom);
+  if (tab !== "custom") { tab = "custom"; for (const x of $("tabs").children) x.classList.toggle("on", x.dataset.tab === "custom"); }
+  for (const el of $("rows").querySelectorAll(".sample")) if (el !== e.target) el.textContent = custom;
+  clearTimeout(timer); timer = setTimeout(() => { if (document.activeElement?.classList.contains("sample")) refreshFonts(); else render(); }, 500);
+});
+// Rebuild fonts for new characters without re-rendering rows (keeps the caret where it is).
+async function refreshFonts() {
+  for (const row of $("rows").querySelectorAll(".prow")) {
+    const id = row.dataset.id, isRef = !!row.dataset.ref; if (isRef) continue;
+    const p = visible().find(x => x.id === id); if (!p) continue;
+    try { const { face } = await presetFace(p); row.querySelector(".sample").style.fontFamily = `"${face}", monospace`; } catch {}
+  }
+}
+$("rows").onclick = async (e) => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const id = b.closest(".prow").dataset.id, p = presets.find(x => x.id === id) || editing;
+  if (b.dataset.act === "edit") openEditor(p, false);
+  if (b.dataset.act === "dup") openEditor(p, true);
+  if (b.dataset.act === "specimen") location.href = "/specimen?preset=" + encodeURIComponent(p.id);
+  if (b.dataset.act === "studio") {
+    const q = new URLSearchParams({ family: p.family, weight: weightFor(p), ...Object.fromEntries(Object.entries(p.hangul || {}).map(([k, v]) => [k, String(v)])) });
+    location.href = "/?" + q;
+  }
+  if (b.dataset.act === "del" && confirm(`"${p.label}" 프리셋을 삭제할까요? (config/presets/${p.id}.toml)`)) {
+    try { await api("/api/presets/delete", { id }); shown.delete(id); LS.set("shown", [...shown]); await reload(); } catch (err) { $("err").textContent = err.message; }
+  }
+};
+$("plist").addEventListener("click", (e) => { const l = e.target.closest(".pitem"); if (!l || e.target.tagName === "INPUT") return;
+  $("dup").disabled = false; $("dup").dataset.pid = l.querySelector("input").dataset.pid; });
+$("new").onclick = () => openEditor({ family: families[0].id }, true);
+$("dup").onclick = () => { const p = presets.find(x => x.id === $("dup").dataset.pid); if (p) openEditor(p, true); };
+$("eFamily").onchange = () => { editorFamily(true); render(); };
+$("eWeight").onchange = () => { editing.weight = $("eWeight").value; loadFeatures(); render(); };
+$("eCenter").onchange = () => { $("eCenter").value ? (editing.hangul.center = $("eCenter").value) : delete editing.hangul.center; render(); };
+$("eLabel").oninput = () => { editing.label = $("eLabel").value || "(이름 없음)"; const b = document.querySelector(".prow.editing header b"); if (b) b.textContent = editing.label; };
+$("eCancel").onclick = closeEditor; $("eSave").onclick = saveEditor;
+
+(async () => {
+  try {
+    const [f, lab] = await Promise.all([api("/api/families"), api("/api/lab/info").catch(() => ({ references: [] }))]);
+    families = f.families; refs = lab.references;
+    await reload();
+  } catch (e) { $("err").textContent = e.message; setStatus("오류"); }
+})();
+</script>
+</body>
+</html>

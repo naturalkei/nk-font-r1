@@ -3,11 +3,20 @@ PY ?= .venv/bin/python
 NK ?= .venv/bin/nkfont
 FAMILY ?= mono
 
-.PHONY: setup fetch build patch check proof tune test lint qa qa-ci all clean
+.PHONY: setup app app-install fetch build patch check proof tune test lint qa qa-ci all clean
 
 setup:
 	python3 -m venv .venv
 	$(PY) -m pip install -q -e ".[dev]"
+
+# NK Studio desktop window (pywebview). `make app-install` also adds ~/Applications/NK Studio.app.
+app:
+	$(PY) -m pip install -q -e ".[dev,app]"
+	$(NK) app
+
+app-install:
+	$(PY) -m pip install -q -e ".[dev,app]"
+	$(NK) app --install-mac-app
 
 fetch:
 	$(NK) fetch

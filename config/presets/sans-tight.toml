@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans 조밀한 본문"
+family = "sans"
+weight = "Regular"
+note = "문서 본문용: 한글 자간을 더 당기고 폭을 살짝 줄임"
+features = []
+
+[hangul]
+tracking = -40
+width = 0.98

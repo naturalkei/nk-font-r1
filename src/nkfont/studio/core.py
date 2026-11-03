@@ -81,6 +81,8 @@ class Studio:
     def __init__(self, root: Path = config.ROOT):
         self.root = root
         self._hangul_cache: dict[str, TTFont] = {}
+        # Preset comparison asks for the same few previews again and again: keep the last ones.
+        self._previews: dict[tuple, Preview] = {}
 
     def families(self) -> list[dict]:
         out = []
@@ -109,13 +111,23 @@ class Studio:
         self, family: str, weight: str, text: str = DEFAULT_TEXT, **params
     ) -> Preview:
         fam = config.family(family, self.root)
+        params = {k: v for k, v in params.items() if v is not None}
+        key = (
+            family,
+            weight,
+            text,
+            repr(sorted(fam.get("hangul", {}).items())),
+            repr(sorted(params.items())),
+        )
+        if key in self._previews:
+            return self._previews[key]
         w = next(x for x in fam["weight"] if x["name"] == weight)
         chars = set(text) | set(_PROBES.values()) | {"0"}
         if fam.get("kind") == "pixel":
             font = build_master(fam, w)
         else:
             srcs = config.sources(self.root)
-            hp = hangul_params(fam, **{k: v for k, v in params.items() if v is not None})
+            hp = hangul_params(fam, **params)
             ranges = [(ord(c), ord(c)) for c in chars]
             font = build_master(
                 fam,
@@ -136,7 +148,11 @@ class Studio:
         sub.subset(font)
         buf = io.BytesIO()
         font.save(buf)
-        return Preview(base64.b64encode(buf.getvalue()).decode(), metrics)
+        preview = Preview(base64.b64encode(buf.getvalue()).decode(), metrics)
+        if len(self._previews) >= 64:
+            self._previews.pop(next(iter(self._previews)))
+        self._previews[key] = preview
+        return preview
 
 
 logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
