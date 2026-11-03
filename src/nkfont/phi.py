@@ -7,7 +7,7 @@ Every ratio NK derives on purpose is a power of φ, so the families share one pr
   φ^0.5 = 1.272  line height of NK Comics (tight speech-bubble lettering)
   φ^-1  = 0.618  reserved for the tuning rules (e.g. Hangul optical-centre offsets)
 
-Terminal families (Sans, Serif, Mono, Pixel) keep the Latin base's line metrics: terminals size
+Terminal families (Mono, Pixel) keep the Latin base's line metrics: terminals size
 cells from them, and Powerline separators must meet without seams (CLAUDE.md invariants).
 Config values like `line_height = "phi"` or `"phi^0.5"` are resolved here, never hard-coded.
 """

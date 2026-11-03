@@ -1,11 +1,11 @@
 """Master build: Latin + Hangul -> NK master TTF (before Nerd Fonts patching).
 
 Family kinds:
-  merge (default)  terminal monospace: Latin mono + Hangul on the 1:2 cell grid (Sans, Serif, Mono)
+  merge (default)  terminal monospace: Latin mono + Hangul on the 1:2 cell grid (Mono)
   pixel            one pixel font that already holds Latin and Hangul on one grid; renamed and
                    terminal-flagged instead of merged (Pixel)
   text             proportional reading face: Latin text face + Hangul with its own spacing,
-                   no terminal grid and no Nerd Fonts icons (Novel, Comics)
+                   no terminal grid and no Nerd Fonts icons (Sans, Serif, Novel, Comics)
 """
 
 from __future__ import annotations

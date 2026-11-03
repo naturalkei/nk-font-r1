@@ -57,9 +57,9 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 * **완료 기준:** 마인크래프트 Java 최신판, 테라리아(tModLoader)에서 한글 표시 확인
 
 ### M4 NK Serif (약 4주)
-* IBM Plex Mono + 본명조 KR, 작은 크기를 위한 weight 한 단계 올림 매핑
-* 사이트에 세 가족 비교 화면
-* **완료 기준:** NK Mono와 같은 QA 기준 통과
+* 2026-11-03 전환: 터미널 세리프 대신 **문서용 비례폭 명조** (IBM Plex Serif + 본명조 KR, `kind = "text"`, 줄 높이 φ^5/6). NK Sans와 같은 Plex 뼈대라 제목·본문 짝으로 쓰도록 설계
+* 명조 한글은 작은 크기에서 가로획이 사라지지 않도록 영문보다 한 단계 굵게 매핑 (Regular ↔ Medium)
+* **완료 기준:** `text-metrics`·`hangul-coverage`·본문 골든 통과, 12px 획 소실 검사
 
 ### M4.5 가족 재편과 Mono · Novel · Comics (프로토타입 완료 2026-11-02, 상세: [FAMILIES.md](FAMILIES.md))
 * NK Mono: JetBrains Mono + D2Coding 한글, 터미널 대표 가족 (Nerd Font, 터미널 QA)

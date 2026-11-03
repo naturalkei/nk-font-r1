@@ -48,6 +48,8 @@ SIL Open Font License 1.1, see OFL.txt. {copyright}
 """
 
 TEXT_USE = {
+    "sans": "documents, UI and slides",
+    "serif": "reports, papers, letters and print layouts",
     "novel": "books, novels, news and long-form articles",
     "comics": "comics, webtoons and speech bubbles",
 }

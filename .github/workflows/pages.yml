@@ -40,7 +40,7 @@ jobs:
       - name: Check every shipped font
         run: |
           nkfont check build/master/NKMono-*.ttf dist/NKMono*.ttf --base sources/JetBrainsMono-Regular.ttf --master build/master/NKMono-Regular.ttf
-          nkfont check build/master/NKSerif-*.ttf dist/NKSerif*.ttf --base sources/IBMPlexMono-Regular.ttf --master build/master/NKSerif-Regular.ttf
+          nkfont check build/master/NKSerif-*.ttf --kind text --base sources/IBMPlexSerif-Regular.ttf
           nkfont check build/master/NKPixel-*.ttf dist/NKPixel*.ttf --base sources/neodgm_code.ttf --master build/master/NKPixel-Regular.ttf
           nkfont check build/master/NKSans-*.ttf --kind text --base sources/IBMPlexSans-Regular.ttf
           nkfont check build/master/NKNovel-*.ttf --kind text --base sources/CrimsonText-Regular.ttf

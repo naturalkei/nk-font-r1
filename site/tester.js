@@ -80,7 +80,7 @@ func main() { fmt.Println(메시지(404), "->", 0xFF) }`,
 # 빌드하고 결과를 확인합니다
 set -euo pipefail
 
-for 가족 in sans serif pixel; do
+for 가족 in mono pixel; do
   nkfont build "$가족" && echo "✔ $가족 완료"
 done
 nkfont check dist/*.ttf --base sources/JetBrainsMono-Regular.ttf || exit 1
