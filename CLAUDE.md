@@ -24,6 +24,7 @@ nkfont tune mono --scale 0.92:1.04:0.04 --dy -30:10:20
 nkfont studio         # NK Studio web UI: live Hangul tuning, saves [hangul] in config/families
                       #   /lab = Glyph Lab core view: control glyphs (noHO 한국을를) + a few design targets
                       #     (height, width, stem, centre... config/lab.toml [core]); the solver derives [hangul]
+                      #     every save is a numbered version in config/versions/<family>.toml (restorable)
                       #   /lab/advanced = overlay vs JetBrains Mono/D2Coding, stems, scanlines, OT features
                       #   /presets = side-by-side style presets (config/presets/*.toml, never a build input)
                       #   /specimen = per-family specimen workbench (NK axes, φ type scale)

@@ -42,7 +42,7 @@ aside{border-left:1px solid var(--line)}
 .dot.ok{background:var(--ok)}.dot.no{background:var(--warn)}
 .checks{display:grid;grid-template-columns:1fr auto auto;gap:3px 10px;font-size:12px}
 .checks .n{font-family:ui-monospace,monospace;text-align:right}
-.row{display:flex;gap:6px;flex-wrap:wrap}.row>*{flex:1}
+.row{display:flex;gap:6px;flex-wrap:wrap}.row>*{flex:1}.row input{min-width:0}
 details.adv summary{cursor:pointer;color:var(--acc);font-size:12px}
 .raws{display:grid;grid-template-columns:1fr 90px;gap:4px 8px;margin-top:8px;align-items:center;font-size:12px}
 .raws span{font-family:ui-monospace,monospace;color:var(--mute)}
@@ -55,6 +55,13 @@ details.adv summary{cursor:pointer;color:var(--acc);font-size:12px}
 .sample.text pre{white-space:pre-wrap}
 .hint{font-size:11px;color:var(--mute)}.err{color:#c0392b;font-size:12px;white-space:pre-wrap}
 .note{font-size:12px;color:var(--warn)}
+.vers{display:flex;flex-direction:column;max-height:320px;overflow:auto}
+.ver{display:grid;grid-template-columns:auto 1fr auto auto;gap:2px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:12px}
+.ver:last-child{border-bottom:0}
+.ver b{font-family:ui-monospace,monospace}.ver .when{color:var(--mute);font-size:11px}
+.ver .diff{grid-column:1/-1;font:11px ui-monospace,monospace;color:var(--mute)}
+.ver button{font-size:11px;padding:1px 6px}.ver.cur b{color:var(--acc)}
+.tag{font-size:10px;border:1px solid var(--acc);color:var(--acc);border-radius:99px;padding:0 6px;margin-left:4px}
 @media (max-width:1100px){main{grid-template-columns:1fr}aside{border-left:0;border-top:1px solid var(--line)}}
 </style>
 </head>
@@ -93,7 +100,8 @@ details.adv summary{cursor:pointer;color:var(--acc);font-size:12px}
   <div class="card"><h3>점검 <span class="r hint">황금비 규칙 · 읽기 전용</span></h3><div class="checks" id="checks"></div></div>
   <div class="card">
     <h3>저장</h3>
-    <div class="row"><button id="reset">저장값으로</button><button class="primary" id="save" title="config/families/&lt;가족&gt;.toml 의 [hangul] 에 기록합니다 (빌드에 반영)">빌드 설정에 저장</button></div>
+    <div class="row"><button id="undo" title="되돌리기 (⌘Z / Ctrl+Z)">↶ 되돌리기</button><button id="redo" title="다시 실행 (⇧⌘Z / Ctrl+Y)">↷ 다시</button><button id="reset">저장값으로</button></div>
+    <div class="row" style="margin-top:6px"><input id="saveNote" type="text" placeholder="버전 메모 (예: 한글 높이 φ로)"><button class="primary" id="save" style="flex:0 0 auto" title="config/families/&lt;가족&gt;.toml 의 [hangul] 에 기록하고 새 버전으로 남깁니다 (빌드에 반영)">빌드 설정에 저장</button></div>
     <div class="row" style="margin-top:6px"><input id="presetLabel" type="text" placeholder="프리셋 이름 (예: Mono 넉넉한 한글)"><button id="savePreset" style="flex:0 0 auto">프리셋으로 저장</button></div>
     <div class="hint" id="saveMsg" style="margin-top:6px"></div>
     <details class="adv" style="margin-top:10px">
@@ -101,6 +109,11 @@ details.adv summary{cursor:pointer;color:var(--acc);font-size:12px}
       <div class="raws" id="raws"></div>
       <div class="hint" style="margin-top:6px">여기서 바꾸면 위 목표값이 측정값으로 다시 채워집니다. 글리프별 측정·스캔라인·OpenType 비교는 <a href="/lab/advanced" id="advLink2">고급 측정</a>에 있습니다.</div>
     </details>
+  </div>
+  <div class="card">
+    <h3>버전 <span class="r hint">config/versions/&lt;가족&gt;.toml · git으로 함께 관리</span></h3>
+    <div id="versions" class="vers"><span class="hint">불러오는 중…</span></div>
+    <div class="hint" style="margin-top:6px"><b>불러오기</b>는 편집기로만 가져오고, <b>복원</b>은 빌드 설정에 다시 쓰고 새 버전으로 남깁니다. 기록은 지워지지 않습니다.</div>
   </div>
   <div id="err" class="err"></div>
 </aside>
@@ -111,6 +124,7 @@ const DEFAULTS = { scale: 0.96, dy: 0, width: 1, slant: 0, grade: 0, tracking: 0
 const RAW = [["scale", 0.001], ["width", 0.001], ["grade", 0.1], ["dy", 1], ["slant", 0.1], ["tracking", 1]];
 const EDIT = "#e8743b", CMP = "#3b82f6";
 let families = [], info = null, core = null, samples = {}, saved = {}, params = {}, targets = {};
+let hist = [], histAt = -1, fromHist = false, versionsList = [];
 let cmpChosen = false, solveSeq = 0, glyphSeq = 0, prevSeq = 0, timer = null, lastGlyphs = null;
 
 async function api(path, body) {
@@ -152,7 +166,7 @@ function buildControls() {
   };
   const off = pixel();
   $("pixelNote").hidden = !off;
-  for (const el of document.querySelectorAll("#controls input, #controls button, #raws input, #raws select, #phiAll, #save, #reset")) el.disabled = off;
+  for (const el of document.querySelectorAll("#controls input, #controls button, #raws input, #raws select, #phiAll, #save, #reset, #saveNote")) el.disabled = off;
 }
 function setTarget(c, v) {
   targets[c.id] = v;
@@ -183,7 +197,7 @@ async function measure() {
       const c = core.controls.find(k => k.id === x.id);
       if (x.actual != null) setTarget(c, x.actual);
     }
-    showResult(r); status(`측정 ${r.ms} ms`); redraw();
+    showResult(r); pushHist(); status(`측정 ${r.ms} ms`); redraw();
   } catch (e) { fail(e); }
 }
 // Meet every target: the solver moves the raw params, a few build-and-measure rounds.
@@ -192,10 +206,67 @@ async function solve() {
   try {
     const r = await api("/api/lab/solve", { family: fam().id, weight: $("weight").value, params, targets });
     if (my !== solveSeq) return;
-    params = r.params; showResult(r); status(`${r.rounds}회 맞춤 · ${r.ms} ms`); redraw();
+    params = r.params; showResult(r); pushHist(); status(`${r.rounds}회 맞춤 · ${r.ms} ms`); redraw();
   } catch (e) { fail(e); }
 }
 function schedule() { clearTimeout(timer); timer = setTimeout(solve, 160); }
+
+// ---------- undo / redo (this session's edits) ----------
+function pushHist() {
+  const s = JSON.stringify(params);
+  if (fromHist) { fromHist = false; } else if (hist[histAt] !== s) { hist = hist.slice(0, histAt + 1); hist.push(s); histAt = hist.length - 1; }
+  $("undo").disabled = histAt <= 0 || pixel(); $("redo").disabled = histAt >= hist.length - 1 || pixel();
+  markVersions();
+}
+function stepHist(d) {
+  const i = histAt + d; if (i < 0 || i >= hist.length) return;
+  histAt = i; params = JSON.parse(hist[i]); fromHist = true; measure();
+}
+$("undo").onclick = () => stepHist(-1);
+$("redo").onclick = () => stepHist(1);
+document.addEventListener("keydown", (e) => {
+  if (!(e.metaKey || e.ctrlKey) || ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName) && e.target.type !== "range") return;
+  const k = e.key.toLowerCase();
+  if (k === "z" && !e.shiftKey) { e.preventDefault(); stepHist(-1); }
+  else if ((k === "z" && e.shiftKey) || k === "y") { e.preventDefault(); stepHist(1); }
+});
+
+// ---------- versions (saved [hangul] history) ----------
+const VKEYS = ["scale", "width", "grade", "dy", "slant", "tracking", "center"];
+const same = (a, b) => VKEYS.every(k => (a[k] ?? DEFAULTS[k]) === (b[k] ?? DEFAULTS[k]));
+async function loadVersions() {
+  try {
+    versionsList = (await api("/api/versions", { family: fam().id })).versions.slice().reverse();
+    markVersions();
+  } catch (e) { fail(e); }
+}
+function markVersions() {
+  if (!core) return;
+  const f = fam(), cur = { ...DEFAULTS, ...f.hangul };
+  if (!versionsList.length) { $("versions").innerHTML = '<span class="hint">아직 버전이 없습니다. "빌드 설정에 저장"하면 v1(저장 전 값)과 v2가 생깁니다.</span>'; return; }
+  $("versions").innerHTML = versionsList.map(v => {
+    const h = { ...DEFAULTS, ...v.hangul }, isCur = same(h, cur), isEdit = same(h, params);
+    const diff = VKEYS.filter(k => h[k] !== cur[k]).map(k => `${k} ${cur[k]}→${h[k]}`).join(" · ");
+    return `<div class="ver ${isCur ? "cur" : ""}"><b>v${v.n}</b><span>${(v.note || "").replace(/</g, "&lt;") || '<span class="hint">메모 없음</span>'}${isCur ? '<span class="tag">현재 저장값</span>' : ""}${isEdit && !isCur ? '<span class="tag">편집 중</span>' : ""}</span>
+      <button data-load="${v.n}" title="편집기로 가져옵니다 (저장하지 않음)">불러오기</button><button data-restore="${v.n}" ${isCur || pixel() ? "disabled" : ""} title="빌드 설정에 다시 씁니다">복원</button>
+      <span class="when" style="grid-column:1/-1">${v.saved_at}${v.restored_from ? ` · v${v.restored_from}에서 복원` : ""}</span>${diff ? `<span class="diff">현재 대비: ${diff}</span>` : ""}</div>`;
+  }).join("");
+  for (const b of $("versions").querySelectorAll("button[data-load]")) b.onclick = () => {
+    const v = versionsList.find(x => x.n === +b.dataset.load); params = { ...DEFAULTS, ...v.hangul }; measure();
+    $("saveMsg").textContent = `v${v.n}을 편집기로 불러왔습니다 (아직 저장 안 됨)`;
+  };
+  for (const b of $("versions").querySelectorAll("button[data-restore]")) b.onclick = async () => {
+    const n = +b.dataset.restore;
+    if (!confirm(`v${n} 값을 빌드 설정(config/families/${fam().id}.toml)에 다시 쓸까요? 새 버전으로 기록됩니다.`)) return;
+    try {
+      const r = await api("/api/versions/restore", { family: fam().id, n });
+      const f = fam(); f.hangul = { ...f.hangul, ...r.version.hangul };
+      params = { ...DEFAULTS, ...f.hangul }; saved = { ...params };
+      $("saveMsg").textContent = `v${n} 복원 → ${r.saved} (v${r.version.n}로 기록)`;
+      await loadVersions(); measure();
+    } catch (e) { fail(e); }
+  };
+}
 
 // ---------- control glyphs ----------
 const NS = "http://www.w3.org/2000/svg";
@@ -292,9 +363,10 @@ $("save").onclick = async () => {
   const f = fam();
   try {
     const h = changedHangul();
-    const r = await api("/api/save", { family: f.id, ...h });
-    f.hangul = { ...f.hangul, ...h }; saved = { ...params };
-    $("saveMsg").textContent = `저장됨 → ${r.saved} · nkfont build ${f.id} 로 빌드에 반영됩니다`;
+    const r = await api("/api/save", { family: f.id, ...h, note: $("saveNote").value });
+    f.hangul = { ...f.hangul, ...h }; saved = { ...params }; $("saveNote").value = "";
+    $("saveMsg").textContent = `저장됨 → ${r.saved} (v${r.version.n}) · nkfont build ${f.id} 로 빌드에 반영됩니다`;
+    await loadVersions();
   } catch (e) { fail(e); }
 };
 $("savePreset").onclick = async () => {
@@ -324,7 +396,8 @@ async function onFamily() {
     if (!$("latinCtl").value) $("latinCtl").value = core.latin;
     if (!$("hangulCtl").value) $("hangulCtl").value = core.hangul;
     buildControls(); buildSamples();
-    await measure();
+    hist = []; histAt = -1;
+    await Promise.all([measure(), loadVersions()]);
   } catch (e) { fail(e); }
 }
 $("family").onchange = onFamily;

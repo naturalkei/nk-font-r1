@@ -192,3 +192,87 @@ def test_solver_on_real_fonts_meets_phi_targets():
     # The derived params are ordinary [hangul] values a build accepts.
     assert set(out["params"]) >= {"scale", "width", "grade", "dy"}
     assert {c["id"] for c in out["checks"]} >= {"hangul_cell", "line_height"}
+
+
+# ---- versions: every studio save is numbered and restorable (studio/versions.py) ------------
+FAMILY_TOML = """status = "active"
+family = "NK Test"
+
+[hangul]
+# hand-written comment stays
+scale = 1.08
+dy = 40
+center = "advance"
+
+[[weight]]
+name = "Regular"
+"""
+
+
+@pytest.fixture
+def vroot(tmp_path):
+    d = tmp_path / "config" / "families"
+    d.mkdir(parents=True)
+    (d / "t.toml").write_text(FAMILY_TOML)
+    return tmp_path
+
+
+def test_first_save_keeps_the_old_values_as_v1(vroot):
+    from nkfont.studio import versions
+
+    out = versions.save("t", {"scale": 0.945, "grade": 12, "dy": 85}, "높이 φ", vroot)
+    hist = versions.load("t", vroot)
+    assert [v["n"] for v in hist] == [1, 2] and out["version"]["n"] == 2
+    assert hist[0]["hangul"] == {"scale": 1.08, "dy": 40, "center": "advance"}
+    assert hist[1]["hangul"]["grade"] == 12 and hist[1]["note"] == "높이 φ"
+    # Saving the same values again adds nothing.
+    versions.save("t", {"scale": 0.945}, "", vroot)
+    assert len(versions.load("t", vroot)) == 2
+
+
+def test_restore_writes_back_and_is_recorded(vroot):
+    from nkfont import config as cfg
+    from nkfont.studio import versions
+
+    versions.save("t", {"scale": 0.945, "grade": 12, "dy": 85}, "", vroot)
+    out = versions.restore("t", 1, vroot)
+    h = cfg.family("t", vroot)["hangul"]
+    # v1 never set grade: it goes back to the identity, so the build matches v1 again.
+    assert (h["scale"], h["dy"], h["grade"]) == (1.08, 40, 0.0)
+    assert out["version"]["n"] == 3 and out["version"]["restored_from"] == 1
+    assert "# hand-written comment stays" in (vroot / "config/families/t.toml").read_text()
+    with pytest.raises(ValueError):
+        versions.restore("t", 99, vroot)
+    with pytest.raises(ValueError):
+        versions.load("../t", vroot)
+
+
+def test_versions_api_over_http(vroot):
+    from http.server import ThreadingHTTPServer
+
+    from nkfont.studio.core import Studio
+    from nkfont.studio.server import make_handler
+
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), make_handler(Studio(vroot)))
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{httpd.server_address[1]}"
+
+    def call(path, body):
+        req = urllib.request.Request(base + path, json.dumps(body).encode())
+        with urllib.request.urlopen(req) as r:
+            return json.loads(r.read())
+
+    try:
+        saved = call("/api/save", {"family": "t", "scale": 1.0, "note": "http"})
+        assert saved["saved"] == "config/families/t.toml" and saved["version"]["n"] == 2
+        assert [v["n"] for v in call("/api/versions", {"family": "t"})["versions"]] == [1, 2]
+        assert call("/api/versions/restore", {"family": "t", "n": 1})["version"]["n"] == 3
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
+
+def test_lab_page_has_versions_and_undo():
+    page = resources.files("nkfont.studio").joinpath("static", "lab.html").read_text()
+    assert "/api/versions" in page and "/api/versions/restore" in page
+    assert 'id="undo"' in page and 'id="redo"' in page
