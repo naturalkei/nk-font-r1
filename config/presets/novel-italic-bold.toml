@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 기울임 Bold"
+family = "novel"
+weight = "Bold"
+note = "Bold 기울임, 세로획 +26(stem)"
+features = []
+
+[hangul]
+stem = 26.0
+
+[style]
+slant = 8.0

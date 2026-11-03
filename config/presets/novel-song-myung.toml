@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 송명 비율"
+family = "novel"
+weight = "Regular"
+note = "송명(Song Myung) 실측(높이 1.27·중심 +74·자간 0.71): 붓맛 바탕의 높은 중심"
+features = []
+
+[hangul]
+scale = 0.8938
+dy = 38
+grade = 3.2
+tracking = -25

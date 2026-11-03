@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 신문"
+family = "novel"
+weight = "Regular"
+note = "신문 단: 한글 폭 0.84, 자간 바짝(여백 0.5), 획 0.96으로 작은 크기 회색도 유지"
+features = []
+
+[hangul]
+width = 0.84
+grade = 13.1
+tracking = -22

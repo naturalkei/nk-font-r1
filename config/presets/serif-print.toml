@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 작은 인쇄"
+family = "serif"
+weight = "Regular"
+note = "작은 크기 인쇄: 한글 획 0.98, 한·영 함께 +20 굵게"
+features = []
+
+[hangul]
+grade = 8.5
+tracking = -5
+
+[style]
+grade = 20.0

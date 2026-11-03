@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 본명조 원본 비율"
+family = "serif"
+weight = "Regular"
+note = "본명조(Source Han Serif KR) 원본의 높이 1.28·중심 +22·획 0.94"
+features = []
+
+[hangul]
+scale = 0.953
+dy = 2
+grade = 1.1

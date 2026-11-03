@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 한글만 성글게"
+family = "serif"
+weight = "Regular"
+note = "한글 자간만 +40 (영문 그대로): 한자·영문이 섞인 문서에서 한글 낱자를 또렷하게"
+features = []
+
+[hangul]
+tracking = 40

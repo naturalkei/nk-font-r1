@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 넓은 명조"
+family = "serif"
+weight = "Regular"
+note = "한글 폭 1.05·자간 +10: 시원한 제목·표지"
+features = []
+
+[hangul]
+width = 1.05
+tracking = 10

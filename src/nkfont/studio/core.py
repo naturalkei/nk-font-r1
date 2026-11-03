@@ -173,12 +173,12 @@ class Studio:
 
 logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
 
-_KEYS = ("scale", "dy", "center", "width", "slant", "grade")
+_KEYS = ("scale", "dy", "center", "width", "slant", "grade", "stem")
 _SAVE_KEYS = (*_KEYS, "tracking")
 
 
 def update_hangul_config(family: str, values: dict, root: Path = config.ROOT) -> Path:
-    """Rewrite [hangul] values (scale, dy, center, width, slant, grade, tracking) of a family TOML.
+    """Rewrite [hangul] values (scale, dy, center, width, slant, grade, stem, tracking) of a family.
 
     Only the value tokens change; comments and layout stay, so diffs stay reviewable.
     """
@@ -195,7 +195,7 @@ def update_hangul_config(family: str, values: dict, root: Path = config.ROOT) ->
         if key in ("scale", "width"):
             token = f"{float(v):.3f}".rstrip("0").rstrip(".")
             token = token if "." in token else token + ".0"
-        elif key in ("slant", "grade"):
+        elif key in ("slant", "grade", "stem"):
             token = f"{float(v):.1f}"
         elif key in ("dy", "tracking"):
             token = str(int(round(float(v))))

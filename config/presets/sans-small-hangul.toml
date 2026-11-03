@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 영문 위주"
+family = "sans"
+weight = "Regular"
+note = "영문 위주 문서: 한글을 대문자의 1.08배로 낮춰 영문 회색도에 묻히게"
+features = []
+
+[hangul]
+scale = 0.8491
+dy = 24
+grade = 2.0

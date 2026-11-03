@@ -1,54 +1,74 @@
 # Glyph Lab (`nkfont studio` -> /lab): comparison fonts and glyph presets.
 # Reference fonts come from sources.lock (`nkfont fetch`); they are only measured and shown,
-# never merged or shipped.
+# never merged or shipped. Besides `id`, `label` and the weights (Lab weight = sources.lock id):
+#   families  NK families the reference is meant for; the Lab and /presets list those first
+#   role      what it is compared for: "hangul", "latin" or "both"
 
 [[reference]]
 id = "jetbrains-mono"
+families = ["mono"]
+role = "latin"
 label = "JetBrains Mono"
 Regular = "jetbrains-mono-regular"
 Bold = "jetbrains-mono-bold"
 
 [[reference]]
 id = "d2coding"
+families = ["mono"]
+role = "hangul"
 label = "D2Coding"
 Regular = "d2coding-regular"
 Bold = "d2coding-bold"
 
 [[reference]]
 id = "plex-mono"
+families = ["mono"]
+role = "latin"
 label = "IBM Plex Mono"
 Regular = "plex-mono-regular"
 Bold = "plex-mono-bold"
 
 [[reference]]
 id = "source-han-sans"
+families = ["sans", "mono"]
+role = "hangul"
 label = "Source Han Sans KR (원본)"
 Regular = "source-han-sans-kr-regular"
 Bold = "source-han-sans-kr-bold"
 
 [[reference]]
 id = "neodgm-code"
+families = ["pixel"]
+role = "both"
 label = "Neo Dunggeunmo Code"
 Regular = "neodgm-code"
 
 # Pixel references (OFL-1.1, RFN names; measured and shown only).
 [[reference]]
 id = "neodgm"
+families = ["pixel"]
+role = "both"
 label = "Neo Dunggeunmo"
 Regular = "neodgm"
 
 [[reference]]
 id = "neodgm-pro"
+families = ["pixel"]
+role = "both"
 label = "Neo Dunggeunmo Pro"
 Regular = "neodgm-pro"
 
 [[reference]]
 id = "mulmaru"
+families = ["pixel"]
+role = "both"
 label = "Mulmaru (물마루)"
 Regular = "mulmaru"
 
 [[reference]]
 id = "mulmaru-mono"
+families = ["pixel"]
+role = "both"
 label = "Mulmaru Mono (물마루 Mono)"
 Regular = "mulmaru-mono"
 
@@ -64,6 +84,143 @@ Bold = "gaegu-bold"
 id = "nanum-pen"
 label = "나눔손글씨 펜 (필기)"
 Regular = "nanum-pen-script"
+
+# NK Sans references (document sans). Licenses verified 2026-11-03 from each upstream OFL.txt.
+[[reference]]
+id = "plex-sans"
+families = ["sans"]
+role = "latin"
+label = "IBM Plex Sans (원본)"
+Regular = "plex-sans-regular"
+Bold = "plex-sans-bold"
+
+[[reference]]
+# Plex's own Hangul companion: what the Plex skeleton looks like drawn for Korean.
+id = "plex-sans-kr"
+families = ["sans"]
+role = "hangul"
+label = "IBM Plex Sans KR"
+Regular = "plex-sans-kr-regular"
+Bold = "plex-sans-kr-bold"
+
+[[reference]]
+# The most used Korean UI/document sans today (Inter-based Latin + Source Han Sans-like Hangul).
+id = "pretendard"
+families = ["sans"]
+role = "both"
+label = "Pretendard"
+Regular = "pretendard-regular"
+Bold = "pretendard-bold"
+
+[[reference]]
+id = "gothic-a1"
+families = ["sans"]
+role = "hangul"
+label = "Gothic A1 (고딕 A1)"
+Regular = "gothic-a1-regular"
+Bold = "gothic-a1-bold"
+
+[[reference]]
+id = "inter"
+families = ["sans"]
+role = "latin"
+label = "Inter"
+Regular = "inter-regular"
+Bold = "inter-bold"
+
+# NK Serif references (document serif).
+[[reference]]
+id = "plex-serif"
+families = ["serif"]
+role = "latin"
+label = "IBM Plex Serif (원본)"
+Regular = "plex-serif-regular"
+Bold = "plex-serif-bold"
+
+[[reference]]
+id = "source-han-serif"
+families = ["serif"]
+role = "hangul"
+label = "Source Han Serif KR (원본)"
+Regular = "source-han-serif-kr-medium"
+Bold = "source-han-serif-kr-bold"
+
+[[reference]]
+# The classic Korean document myeongjo (word processors, government forms).
+id = "nanum-myeongjo"
+families = ["serif", "novel"]
+role = "hangul"
+label = "나눔명조"
+Regular = "nanum-myeongjo-regular"
+Bold = "nanum-myeongjo-bold"
+
+[[reference]]
+# Contemporary high-contrast myeongjo (2,788 syllables in the Google Fonts build).
+id = "hahmlet"
+families = ["serif"]
+role = "both"
+label = "Hahmlet (함렛)"
+Regular = "hahmlet-regular"
+Bold = "hahmlet-bold"
+
+[[reference]]
+id = "source-serif"
+families = ["serif"]
+role = "latin"
+label = "Source Serif 4"
+Regular = "source-serif-4-regular"
+Bold = "source-serif-4-bold"
+
+# NK Novel references (books, long-form reading).
+[[reference]]
+id = "crimson-text"
+families = ["novel"]
+role = "latin"
+label = "Crimson Text (원본)"
+Regular = "crimson-text-regular"
+Bold = "crimson-text-bold"
+
+[[reference]]
+id = "gowun-batang"
+families = ["novel"]
+role = "hangul"
+label = "고운바탕 (원본)"
+Regular = "gowun-batang-regular"
+Bold = "gowun-batang-bold"
+
+[[reference]]
+# Brush-based batang with a calligraphic rhythm (2,350 syllables, Regular only).
+id = "song-myung"
+families = ["novel"]
+role = "hangul"
+label = "송명 (Song Myung)"
+Regular = "song-myung"
+
+[[reference]]
+# Crimson Text's redrawn successor: the same book voice, more even colour.
+id = "crimson-pro"
+families = ["novel"]
+role = "latin"
+label = "Crimson Pro"
+Regular = "crimson-pro-regular"
+Bold = "crimson-pro-bold"
+
+[[reference]]
+# Drawn for e-book reading (Google Play Books).
+id = "literata"
+families = ["novel"]
+role = "latin"
+label = "Literata"
+Regular = "literata-regular"
+Bold = "literata-bold"
+
+[[reference]]
+id = "eb-garamond"
+families = ["novel"]
+role = "latin"
+label = "EB Garamond"
+Regular = "eb-garamond-regular"
+Bold = "eb-garamond-bold"
 
 # Glyph sets to compare in one click. MonoLisa-style legibility pairs first.
 [[preset]]

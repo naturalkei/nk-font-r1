@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 기울임"
+family = "serif"
+weight = "Regular"
+note = "한·영을 함께 9° 기울인 인용·강조용"
+features = []
+
+[style]
+slant = 9.0

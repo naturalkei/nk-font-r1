@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 나눔명조 비율 Bold"
+family = "serif"
+weight = "Bold"
+note = "나눔명조 Bold 실측(높이 1.25·획 0.99·자간 0.86); 세로획 +24(stem)에 나머지는 grade로, 명조 가로획 대비를 지킴"
+features = []
+
+[hangul]
+scale = 0.8943
+dy = 4
+grade = 25.8
+stem = 24.0
+tracking = 57

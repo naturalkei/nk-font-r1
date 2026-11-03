@@ -238,13 +238,30 @@ def test_shared_proportion_rules_use_known_measurements():
 
 
 def test_lab_config_references_are_pinned():
-    from nkfont.studio.lab import lab_config
+    from nkfont.studio.lab import REF_META, lab_config
 
     srcs = config.sources()
+    fams = set(config.family_ids())
     for ref in lab_config()["reference"]:
         for key, sid in ref.items():
-            if key not in ("id", "label"):
+            if key not in REF_META:
                 assert sid in srcs, f"{ref['id']}: {sid} not in sources.lock"
+        assert set(ref.get("families", [])) <= fams, ref["id"]
+    for lf in config.local_fonts().values():
+        assert set(lf.families) <= fams, lf.id
+
+
+def test_every_family_has_references():
+    """Each NK family has at least one Hangul and one Latin reference in the Glyph Lab."""
+    from nkfont.studio.lab import lab_config
+
+    refs = lab_config()["reference"]
+    for fid in ("mono", "pixel", "sans", "serif", "novel"):  # comics: handwriting refs, untagged
+        roles = set()
+        for r in refs:
+            if fid in r.get("families", []):
+                roles |= {"hangul", "latin"} if r.get("role") == "both" else {r.get("role")}
+        assert {"hangul", "latin"} <= roles, f"{fid}: references cover {roles or 'nothing'}"
 
 
 def test_lab_page_is_packaged():

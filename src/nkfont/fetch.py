@@ -2,6 +2,9 @@
 
 Entries with `member` come from an archive (zip, or an npm-style .tgz): the archive is downloaded
 once per run, its `archive_sha256` checked, and the member extracted to sources/.
+Entries with `instance` come from a variable font: the download is checked against `sha256`, then
+pinned to one static instance (sources/<id>.ttf) with a sidecar <id>.ttf.sha256 recording the
+digest of the variable font it came from.
 """
 
 from __future__ import annotations
@@ -46,12 +49,47 @@ def extract_member(archive: Path, member: str, dest: Path) -> Path:
     return dest
 
 
+def instantiate(var_path: Path, axes: dict, dest: Path) -> Path:
+    """Write the static instance of `var_path` at `axes` (unnamed axes at their default)."""
+    from fontTools.ttLib import TTFont
+    from fontTools.varLib import instancer
+
+    font = TTFont(var_path)
+    limits = {a.axisTag: a.defaultValue for a in font["fvar"].axes}
+    unknown = set(axes) - set(limits)
+    if unknown:
+        raise RuntimeError(f"{var_path.name}: no axis {', '.join(sorted(unknown))}")
+    limits.update({k: float(v) for k, v in axes.items()})
+    instancer.instantiateVariableFont(font, limits, inplace=True)
+    font.save(dest)
+    return dest
+
+
+def _fetch_instance(src: config.SourceFont, cache: dict[str, Path], tmp: Path, force: bool):
+    pin = src.pin_path
+    if not force and src.path.exists() and pin.exists() and pin.read_text().strip() == src.sha256:
+        return
+    if src.url not in cache:
+        dest = tmp / f"var{len(cache)}"
+        urllib.request.urlretrieve(src.url, dest)
+        digest = sha256(dest)
+        if digest != src.sha256:
+            raise RuntimeError(f"{src.id}: SHA256 mismatch ({digest} != {src.sha256})")
+        cache[src.url] = dest
+    instantiate(cache[src.url], src.instance, src.path)
+    pin.write_text(src.sha256 + "\n")
+
+
 def fetch_all(force: bool = False) -> list[str]:
     config.SOURCES_DIR.mkdir(exist_ok=True)
     done = []
     archives: dict[str, Path] = {}
     with tempfile.TemporaryDirectory() as tmp:
         for src in config.sources().values():
+            if src.instance:
+                _fetch_instance(src, archives, Path(tmp), force)
+                done.append(src.id)
+                continue
             if force or not src.path.exists() or sha256(src.path) != src.sha256:
                 if src.member:
                     extract_member(_archive(src, archives, Path(tmp)), src.member, src.path)

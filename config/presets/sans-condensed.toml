@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 좁은 한글"
+family = "sans"
+weight = "Regular"
+note = "표·각주용: 한글 폭 0.82, 자간을 여백 비율 0.42까지 당겨 칸에 많이 담음"
+features = []
+
+[hangul]
+width = 0.82
+grade = 5.0
+tracking = -26

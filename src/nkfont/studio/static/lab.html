@@ -388,8 +388,15 @@ async function onFamily() {
   if (f.weights.includes(prevW)) $("weight").value = prevW;
   saved = { ...DEFAULTS, ...f.hangul }; params = { ...saved }; targets = {};
   const prevCmp = $("cmp").value;
-  const opts = [["nk-saved", `${f.family} (저장값)`], ...info.references.filter(r => !r.missing).map(r => [r.id, r.label]), ["", "없음"]];
-  $("cmp").innerHTML = opts.map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
+  // This family's references first (config/lab.toml `families`), then the rest.
+  const avail = info.references.filter(r => !r.missing);
+  const mine = avail.filter(r => (r.families || []).includes(f.id)), other = avail.filter(r => !mine.includes(r));
+  const opts = [["nk-saved", `${f.family} (저장값)`], ...mine.map(r => [r.id, r.label]), ...other.map(r => [r.id, r.label]), ["", "없음"]];
+  const optHtml = (list) => list.map(r => `<option value="${r.id}">${r.label}</option>`).join("");
+  $("cmp").innerHTML = `<option value="nk-saved">${f.family} (저장값)</option>`
+    + (mine.length ? `<optgroup label="${f.family.replace("NK ", "")} 레퍼런스">${optHtml(mine)}</optgroup>` : "")
+    + (other.length ? `<optgroup label="다른 레퍼런스">${optHtml(other)}</optgroup>` : "")
+    + '<option value="">없음</option>';
   $("cmp").value = cmpChosen && opts.some(([v]) => v === prevCmp) ? prevCmp : "nk-saved";
   try {
     core = await api("/api/lab/core", { family: f.id });

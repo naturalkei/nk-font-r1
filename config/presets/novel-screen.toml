@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 세로획 강조"
+family = "novel"
+weight = "Regular"
+note = "세로획만 +40 (stem), 가로획은 그대로: 대비를 낮춘 화면용 바탕"
+features = []
+
+[hangul]
+stem = 40.0
+tracking = -1

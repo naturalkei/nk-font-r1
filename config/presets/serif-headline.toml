@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 제목"
+family = "serif"
+weight = "Bold"
+note = "Bold 제목: 한·영 자간을 함께 좁히고 한글 세로획을 채움(획 0.88)"
+features = []
+
+[hangul]
+grade = 14.2
+stem = 24.0
+tracking = 16
+
+[style]
+tracking = -15

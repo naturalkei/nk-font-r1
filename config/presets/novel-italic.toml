@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 기울임"
+family = "novel"
+weight = "Regular"
+note = "인용·대사 강조: 한·영 함께 8° 기울임"
+features = []
+
+[style]
+slant = 8.0

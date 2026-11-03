@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 여유 있는 본문"
+family = "sans"
+weight = "Regular"
+note = "한·영 함께 자간 +35, 한글 자간 0: 화면에서 긴 글을 천천히 읽을 때"
+features = []
+
+[hangul]
+tracking = 0
+
+[style]
+tracking = 35

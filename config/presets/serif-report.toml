@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 보고서"
+family = "serif"
+weight = "Regular"
+note = "보고서·논문: 한글을 1.08로 낮추고 폭 0.95, 자간을 당겨(여백 비율 0.42) 줄당 글자 수를 늘림"
+features = []
+
+[hangul]
+scale = 0.8021
+width = 0.95
+grade = 5.3
+tracking = -17

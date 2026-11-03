@@ -20,7 +20,7 @@ from pathlib import Path
 from .. import config
 
 # Hangul knobs a preset may override; same names as [hangul] in config/families/*.toml.
-HANGUL_KEYS = ("scale", "dy", "center", "width", "slant", "grade", "tracking")
+HANGUL_KEYS = ("scale", "dy", "center", "width", "slant", "grade", "stem", "tracking")
 # Loose sanity bounds so a typo cannot produce a degenerate preview font.
 _BOUNDS = {
     "scale": (0.5, 1.5),
@@ -28,6 +28,7 @@ _BOUNDS = {
     "width": (0.5, 1.5),
     "slant": (-30, 30),
     "grade": (-80, 80),
+    "stem": (-60, 60),
     "tracking": (-300, 300),
 }
 # Whole-face knobs of proportional (kind = "text") families: Latin and Hangul move together.

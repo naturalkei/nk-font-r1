@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 큰 한글 제목"
+family = "sans"
+weight = "Bold"
+note = "한글 위주 제목 Bold: 한글을 대문자의 1.30배, 획 0.92, 한·영 자간 −10"
+features = []
+
+[hangul]
+scale = 0.9914
+grade = 5.7
+tracking = -25
+
+[style]
+tracking = -10

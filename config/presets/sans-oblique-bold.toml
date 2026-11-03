@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 기울임 Bold"
+family = "sans"
+weight = "Bold"
+note = "Bold 오블리크, 한·영 같은 각도 (한글 획 0.88)"
+features = []
+
+[hangul]
+grade = 10.3
+tracking = -10
+
+[style]
+slant = 11.0

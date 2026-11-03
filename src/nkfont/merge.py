@@ -34,6 +34,9 @@ class HangulParams:
     width: float = 1.0  # extra horizontal scale (1.0 = keep proportions)
     slant: float = 0.0  # degrees, positive leans right (for italics; skewed about the ink centre)
     grade: float = 0.0  # font units added to stem weight without changing the advance
+    # Font units added to vertical stems only (x direction), bars untouched: lowers the stroke
+    # contrast while darkening, e.g. a soft batang next to a high-contrast old-style Latin.
+    stem: float = 0.0
     advance: str = "cell"  # "cell" (terminal grid) or "proportional" (reading faces)
     tracking: float = 0.0  # proportional only: target units added to each Hangul advance
 
@@ -43,14 +46,17 @@ def is_cubic(font: TTFont) -> bool:
     return "CFF " in font or "CFF2" in font
 
 
-def embolden(glyph, amount: float) -> None:
+def embolden(glyph, amount: float, amount_y: float | None = None) -> None:
     """Thicken (amount > 0) or thin a TrueType glyph's strokes by `amount` font units in total.
 
     Every point moves along the bisector of its two edge normals by amount/2, the method
     FreeType's FT_Outline_Embolden uses. Outer contours are clockwise and holes counter-clockwise
     in TrueType, so holes shrink while outlines grow. Advances are not touched (like a GRAD axis).
+    `amount_y` (FT_Outline_EmboldenXY) gives horizontal bars their own amount; `amount` then only
+    acts on vertical stems (x offsets).
     """
-    if not amount or glyph.numberOfContours <= 0:
+    ay_amount = amount if amount_y is None else amount_y
+    if (not amount and not ay_amount) or glyph.numberOfContours <= 0:
         return
     coords = glyph.coordinates
     contours, start = [], 0
@@ -65,7 +71,8 @@ def embolden(glyph, amount: float) -> None:
     # The biggest contour is an outline: if it runs counter-clockwise the whole glyph is
     # reversed (not TrueType convention), so flip the normals to keep "outward" outward.
     outer = max((signed_area(a, b) for a, b in contours), key=abs)
-    half = amount / 2 if outer >= 0 else -amount / 2
+    sign = 1 if outer >= 0 else -1
+    half, half_y = sign * amount / 2, sign * ay_amount / 2
     new = list(coords)
     for start, end in contours:
         pts = [coords[i] for i in range(start, end + 1)]
@@ -83,7 +90,7 @@ def embolden(glyph, amount: float) -> None:
             n1 = (-ay / la, ax / la)
             n2 = (-by / lb, bx / lb)
             d = max(1 + n1[0] * n2[0] + n1[1] * n2[1], 0.35)  # clamp spikes at sharp corners
-            new[start + k] = (cx + (n1[0] + n2[0]) * half / d, cy + (n1[1] + n2[1]) * half / d)
+            new[start + k] = (cx + (n1[0] + n2[0]) * half / d, cy + (n1[1] + n2[1]) * half_y / d)
     for i, (x, y) in enumerate(new):
         coords[i] = (round(x), round(y))
 
@@ -182,7 +189,7 @@ def merge_hangul(latin: TTFont, hangul: TTFont, ranges, params: HangulParams) ->
         out = TransformPen(cu2qu, matrix)
         src_glyphs[src_name].draw(DecomposingFilterPen(out, src_glyphs))
         glyph = tt_pen.glyph()
-        embolden(glyph, params.grade)
+        embolden(glyph, params.grade + params.stem, params.grade)
         glyph.program = ttProgram.Program()
         glyph.program.fromBytecode(b"")
 

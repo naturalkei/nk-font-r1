@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 함렛 비율 Bold"
+family = "serif"
+weight = "Bold"
+note = "Hahmlet Bold 실측(높이 1.20·중심 −28·획 0.96); 세로획 +24(stem)에 나머지는 grade"
+features = []
+
+[hangul]
+scale = 0.8665
+dy = -14
+grade = 25.0
+stem = 24.0
+tracking = 78

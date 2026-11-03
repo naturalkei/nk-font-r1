@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 가는 바탕"
+family = "novel"
+weight = "Regular"
+note = "한·영 획을 함께 20 단위 가늘게(한글 획 0.9 유지)"
+features = []
+
+[hangul]
+grade = 6.0
+
+[style]
+grade = -20.0

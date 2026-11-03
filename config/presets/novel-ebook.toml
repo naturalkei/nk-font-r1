@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 전자책"
+family = "novel"
+weight = "Regular"
+note = "화면 독서(Literata 방향): 한글 폭 1.05로 넓히고 세로획 +30, 한·영 자간 +15"
+features = []
+
+[hangul]
+width = 1.05
+stem = 30.0
+
+[style]
+tracking = 15

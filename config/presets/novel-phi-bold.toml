@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · φ 정합 Bold"
+family = "novel"
+weight = "Bold"
+note = "Bold에서도 φ 목표, 세로획 +26(stem)"
+features = []
+
+[hangul]
+scale = 0.8022
+dy = -4
+grade = 17.1
+stem = 26.0
+tracking = 17

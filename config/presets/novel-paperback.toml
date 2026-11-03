@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 문고본"
+family = "novel"
+weight = "Regular"
+note = "문고본 조판: 한글 폭 0.94, 자간을 여백 비율 0.5까지 당김"
+features = []
+
+[hangul]
+width = 0.94
+tracking = -33

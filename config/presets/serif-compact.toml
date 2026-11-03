@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 촘촘한 단"
+family = "serif"
+weight = "Regular"
+note = "다단 편집: 한글 폭 0.86, 자간을 여백 비율 0.42까지 당김"
+features = []
+
+[hangul]
+width = 0.86
+grade = 3.0
+tracking = -20
