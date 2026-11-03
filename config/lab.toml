@@ -31,6 +31,19 @@ id = "neodgm-code"
 label = "Neo Dunggeunmo Code"
 Regular = "neodgm-code"
 
+# NK Comics handwriting references (pen-script direction; HCL 리얼노트필기 is local-only).
+[[reference]]
+id = "gaegu"
+label = "Gaegu 개구 (필기)"
+Light = "gaegu-light"
+Regular = "gaegu-regular"
+Bold = "gaegu-bold"
+
+[[reference]]
+id = "nanum-pen"
+label = "나눔손글씨 펜 (필기)"
+Regular = "nanum-pen-script"
+
 # Glyph sets to compare in one click. MonoLisa-style legibility pairs first.
 [[preset]]
 label = "혼동 쌍"

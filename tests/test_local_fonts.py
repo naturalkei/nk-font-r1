@@ -1,5 +1,6 @@
 """Local-only reference fonts (config/local_fonts.toml): found on disk, never fetched or shipped."""
 
+import fnmatch
 import subprocess
 
 import pytest
@@ -70,7 +71,7 @@ def test_uninstalled_local_font_cannot_be_opened(root):
 def test_repo_local_fonts_are_never_pinned_built_or_committed():
     """Non-redistributable references must stay out of sources.lock, builds and git."""
     local = config.local_fonts()
-    assert "komacon" in local
+    assert {"komacon", "hcl-realnote"} <= set(local)
     pinned = set(config.sources())
     names = {n.lower() for lf in local.values() for v in lf.weights.values() for n in v}
     for lf in local.values():
@@ -78,8 +79,42 @@ def test_repo_local_fonts_are_never_pinned_built_or_committed():
         assert lf.license and lf.weights
     for fid in config.family_ids():
         text = (config.ROOT / "config" / "families" / f"{fid}.toml").read_text().lower()
-        assert not any(n in text for n in names), fid
+        assert not any(n in text for n in names if "*" not in n), fid
     tracked = subprocess.run(
         ["git", "ls-files"], cwd=config.ROOT, capture_output=True, text=True, check=True
     ).stdout.lower()
-    assert not any(line.rsplit("/", 1)[-1] in names for line in tracked.splitlines())
+    for line in tracked.splitlines():
+        base = line.rsplit("/", 1)[-1]
+        assert not any(fnmatch.fnmatch(base, n) for n in names), line
+
+
+def test_glob_pattern_finds_installed_file_with_unknown_name(root, latin):
+    (root / "config" / "local_fonts.toml").write_text(
+        """[[font]]
+id = "note"
+label = "Note"
+license = "unverified"
+weights = { Regular = ["HCL*노트*.ttf", "*RealNote*.ttf"] }
+"""
+    )
+    d = root / "sources" / "local"
+    d.mkdir(parents=True)
+    latin.save(d / "HCLRealNoteR.ttf")
+    assert config.local_fonts(root)["note"].find("Regular", root) == d / "HCLRealNoteR.ttf"
+    assert _ref_ids(Lab(root)) == ["ref:local:note"]
+
+
+def _ref_ids(lab):
+    return [r["id"] for r in lab.info()["references"] if not r["missing"]]
+
+
+def test_handwriting_references_are_pinned_and_in_the_lab():
+    """NK Comics pen-script direction: Gaegu and Nanum Pen pinned (OFL), shown in the Lab."""
+    srcs = config.sources()
+    for sid in ("gaegu-light", "gaegu-regular", "gaegu-bold", "nanum-pen-script"):
+        assert srcs[sid].sha256 and srcs[sid].license.startswith("OFL-1.1")
+    assert "Nanum" in srcs["nanum-pen-script"].license  # RFN: compare only, never in our names
+    from nkfont.studio.lab import lab_config
+
+    ids = {r["id"] for r in lab_config()["reference"]}
+    assert {"gaegu", "nanum-pen"} <= ids
