@@ -20,6 +20,17 @@ over sample words in both scripts:
   gaps      NK Pixel: share of the one-pixel white gaps between strokes (를's bars, m's stems)
             that survive, per script, the lower of the two
   broken    contours that turned inside out (e.g. too much negative grade)
+  distinct  knob distance to the nearest other preset of the same family, in steps
+            (config/preset_qa.toml [steps]; seed is ignored, a different weight counts
+            [steps] weight, each differing OpenType feature [steps] feature)
+  look      rendered difference to the nearest other preset of the same family: the sample
+            words drawn with the real build, sum of |ink difference| over the mean ink, in %
+            Both make every preset show its own character: a preset too close to another fails.
+            Saved families are not compared (they are the starting point, not a variant).
+  fill_weight, fill_centre
+            families whose weights name a `fill` source (NK Comics: Nanum Pen Script under
+            Gaegu): stroke width ratio and ink-centre offset of fill-in syllables (FILL_WORDS
+            the main Hangul source lacks) against the main source's HANGUL_WORDS
 
 Hand-lettering wobble ([style] bounce / tilt) is random per glyph by design and a pixel italic
 shifts every glyph alike, so size, weight and lean are measured on the same preset without
@@ -45,6 +56,8 @@ from .glyphmetrics import area, font_guides, glyph_geometry, hruns, vruns
 LATIN_WORDS = "Hamburgefontsiv"
 HANGUL_WORDS = "다람쥐헌쳇바퀴에타고파한국을를"
 QA_TEXT = "H x l I ㅣ ㅏ ㅡ 0 " + LATIN_WORDS + " " + HANGUL_WORDS
+# Modern syllables outside KS X 1001 (2,350): drawn by a family's `fill` source, if it has one.
+FILL_WORDS = "똠뷁햏쀍횽쌰뙇"
 WOBBLE = ("bounce", "tilt")
 PIXEL_SHAPE = ("bold", "heavy", "italic", "shadow")
 
@@ -96,12 +109,14 @@ def script_stats(font: TTFont, text: str) -> dict:
 
 
 def _stem_angle(font: TTFont, chars: str) -> float | None:
-    """Lean of a single-stem probe in degrees (positive leans right).
+    """Lean of single-stem probes in degrees (positive leans right), the median over `chars`.
 
     Fits the centre of the widest ink run on rows between 20 % and 80 % of the ink height with
     a Theil-Sen median, so it works for heavy display faces too (glyphmetrics.slant_fit skips
-    runs as wide as the glyph). The first probe that has an outline is used.
+    runs as wide as the glyph). Handwriting leans each stroke a little differently, so every
+    probe that has an outline counts and the median of their angles is returned.
     """
+    angles = []
     for ch in chars:
         geo = next(_geos(font, ch), None)
         if geo is None:
@@ -119,8 +134,8 @@ def _stem_angle(font: TTFont, chars: str) -> float | None:
         slopes = sorted(
             (q[0] - p[0]) / (q[1] - p[1]) for i, p in enumerate(pts) for q in pts[i + 1 :]
         )
-        return round(math.degrees(math.atan(slopes[len(slopes) // 2])), 2)
-    return None
+        angles.append(math.degrees(math.atan(slopes[len(slopes) // 2])))
+    return round(statistics.median(angles), 2) if angles else None
 
 
 def _signed_areas(font: TTFont, name: str) -> list[float]:
@@ -192,7 +207,21 @@ def _ratio(a, b, nd: int = 3):
     return round(a / b, nd) if a is not None and b else None
 
 
-def measure(font: TTFont, kind: str, px: int | None = None) -> dict:
+def _ink_centre(font: TTFont, text: str) -> float | None:
+    ys = [(geo.bounds[1] + geo.bounds[3]) / 2 for geo in _geos(font, text)]
+    return statistics.mean(ys) if ys else None
+
+
+def fill_chars(fam: dict, weight: str, root: Path = config.ROOT) -> str:
+    """FILL_WORDS that this weight's main Hangul source lacks ("" without a `fill` source)."""
+    w = next((x for x in fam.get("weight", []) if x["name"] == weight), {})
+    if not w.get("fill") or not w.get("hangul"):
+        return ""
+    cmap = TTFont(config.sources(root)[w["hangul"]].path, lazy=True).getBestCmap()
+    return "".join(c for c in FILL_WORDS if ord(c) not in cmap)
+
+
+def measure(font: TTFont, kind: str, px: int | None = None, fill: str = "") -> dict:
     """Size, weight, colour and lean of Hangul relative to Latin (see the module docstring)."""
     k = 1000 / font["head"].unitsPerEm
     g = font_guides(font, k)
@@ -211,8 +240,14 @@ def measure(font: TTFont, kind: str, px: int | None = None) -> dict:
     if kind == "text":
         m["spacing"] = _ratio(han["gap"], lat["gap"])
     if kind != "pixel":  # pixel italics are applied to every glyph alike (see `split`)
-        a_l, a_h = _stem_angle(font, "lIi"), _stem_angle(font, "ㅣㅏ")
+        a_l, a_h = _stem_angle(font, "lIi"), _stem_angle(font, "ㅣㅏㅓ")
         m["slant"] = round(a_h - a_l, 2) if a_l is not None and a_h is not None else None
+    if fill:
+        f = script_stats(font, fill)
+        m["fill_weight"] = _ratio(f["stroke"], han["stroke"])
+        c_f, c_h = _ink_centre(font, fill), _ink_centre(font, HANGUL_WORDS)
+        if c_f is not None and c_h is not None:
+            m["fill_centre"] = round(c_f - c_h, 1)
     return m
 
 
@@ -264,6 +299,7 @@ class Result:
     metrics: dict
     checks: list[Check] = field(default_factory=list)
     error: str | None = None
+    render: object = field(default=None, repr=False)  # greyscale sample (PIL), for `look`
 
     @property
     def ok(self) -> bool:
@@ -288,10 +324,20 @@ class Checker:
         self.studio = studio or Studio(root)
         self.bands = load_bands(root)
         self._plain: dict[tuple[str, str], TTFont] = {}
+        self._fills: dict[tuple[str, str], str] = {}
+        self._peers: dict[str, Result] = {}
+
+    def _fill(self, p: dict) -> str:
+        key = (p["family"], p["weight"])
+        if key not in self._fills:
+            fam = config.family(p["family"], self.root)
+            self._fills[key] = fill_chars(fam, p["weight"], self.root)
+        return self._fills[key]
 
     def _build(self, p: dict, style: dict | None, pixel: dict | None) -> TTFont:
+        text = QA_TEXT + (" " + self._fill(p) if self._fill(p) else "")
         prev = self.studio.build_preview(
-            p["family"], p["weight"], QA_TEXT, style=style, pixel=pixel, **p.get("hangul", {})
+            p["family"], p["weight"], text, style=style, pixel=pixel, **p.get("hangul", {})
         )
         return TTFont(io.BytesIO(base64.b64decode(prev.font_b64)))
 
@@ -312,7 +358,7 @@ class Checker:
                 # A stair-step italic cuts every scanline into one-pixel pieces; it moves every
                 # glyph alike (see `split`), so measure the upright build.
                 steady = self._build(p, style, {**pixel, "italic": 0})
-            m = measure(steady, kind, px)
+            m = measure(steady, kind, px, self._fill(p))
             m.update(grid_metrics(font, kind, px))
             key = (p["family"], p["weight"])
             if key not in self._plain:
@@ -330,9 +376,165 @@ class Checker:
                 m["broken"] = broken_contours(self._plain[key], font, QA_TEXT)
         except Exception as exc:  # report, keep going
             return Result(p, {}, error=f"{type(exc).__name__}: {exc}")
+        band = self.band(p, kind)
+        # `look` compares the steady build: hand-lettering wobble differs per seed by design
+        # (its size is in the knob distance); a pixel italic is the real, fixed shape.
+        sample = render_sample(steady if any(style.get(k) for k in WOBBLE) else font)
+        return Result(p, m, evaluate(m, band), render=sample)
+
+    def check_in_family(self, p: dict) -> Result:
+        """`check` plus `distinct` / `look` against the other preset files of its family
+        (the /presets page; the peers' measurements are cached per preset content)."""
+        from .studio import presets as presets_mod
+
+        peers = [
+            q
+            for q in presets_mod.load(self.root)
+            if q.get("family") == p.get("family")
+            and q.get("id") != p.get("id")
+            and not q.get("readonly")
+            and "error" not in q
+        ]
+        results = []
+        for q in peers:
+            key = repr(sorted(q.items()))
+            if key not in self._peers:
+                self._peers[key] = self.check(q)
+            results.append(self._peers[key])
+        mine = self.check(p)
+        distinctness([*results, mine], self.root)
+        return mine
+
+    def band(self, p: dict, kind: str | None = None) -> dict:
         b = self.bands
-        band = {**b.get("all", {}), **b.get(kind, {}), **b.get(p["family"], {})}
-        return Result(p, m, evaluate(m, band))
+        kind = kind or config.family(p["family"], self.root).get("kind", "merge")
+        return {**b.get("all", {}), **b.get(kind, {}), **b.get(p["family"], {})}
+
+
+LOOK_TEXT = "Hamburgefontsiv0lj" + HANGUL_WORDS
+LOOK_CELL = 56
+
+
+def render_sample(font: TTFont, size: int = 36):
+    """LOOK_TEXT one glyph per fixed cell, black on white, greyscale (for the `look` metric).
+
+    Each glyph starts at its own cell's origin, so tracking (already in the knob distance)
+    does not pile up along the line; size, weight, slant and position do show.
+    """
+    from PIL import Image, ImageDraw, ImageFilter, ImageFont
+
+    buf = io.BytesIO()
+    font.save(buf)
+    buf.seek(0)
+    face = ImageFont.truetype(buf, size)
+    img = Image.new("L", (LOOK_CELL * len(LOOK_TEXT), LOOK_CELL + 16), 255)
+    draw = ImageDraw.Draw(img)
+    for i, ch in enumerate(LOOK_TEXT):
+        draw.text((i * LOOK_CELL + 6, LOOK_CELL - 8), ch, font=face, fill=0, anchor="ls")
+    # A light blur so a sub-pixel shift reads as a small change and shape/weight as a big one.
+    return img.filter(ImageFilter.GaussianBlur(1.5))
+
+
+def look_difference(a, b) -> float:
+    """Sum of |ink difference| over the mean ink of two samples, in % (0 = identical)."""
+    from PIL import ImageChops
+
+    def total(hist, invert: bool) -> int:
+        return sum((255 - v if invert else v) * n for v, n in enumerate(hist))
+
+    ink = (total(a.histogram(), True) + total(b.histogram(), True)) / 2
+    diff = total(ImageChops.difference(a, b).histogram(), False)
+    return round(diff / ink * 100, 1) if ink else 0.0
+
+
+def _knobs(p: dict, fam: dict, steps: dict) -> dict:
+    """A preset as {knob: value in steps}; absent knobs are the family default."""
+    out: dict = {}
+    hangul = {**fam.get("hangul", {}), **p.get("hangul", {})}
+    for table, values, defaults in (
+        ("hangul", hangul, {"scale": 0.96, "width": 1.0}),
+        ("style", p.get("style") or {}, {}),
+        ("pixel", p.get("pixel") or {}, {}),
+    ):
+        st = steps.get(table, {})
+        for key, v in values.items():
+            if key in ("seed", "replace"):
+                continue
+            if isinstance(v, str):  # center, scope: categorical
+                out[f"{table}.{key}"] = v
+                continue
+            if table == "pixel" and key == "italic":  # rows per pixel -> slope
+                v = 1 / v if v else 0.0
+            out[f"{table}.{key}"] = (v - defaults.get(key, 0)) / st.get(key, 1)
+    return out
+
+
+def knob_distance(a: dict, b: dict, steps: dict) -> float:
+    """Distance between two presets' knob vectors (see `_knobs`) plus weight and features."""
+    ka, kb = a["knobs"], b["knobs"]
+    d2 = 0.0
+    for key in set(ka) | set(kb):
+        va, vb = ka.get(key, 0.0), kb.get(key, 0.0)
+        if isinstance(va, str) or isinstance(vb, str):
+            d2 += float(va != vb)
+        else:
+            d2 += (va - vb) ** 2
+    if a["weight"] != b["weight"]:
+        d2 += steps.get("weight", 1.5) ** 2
+    d2 += steps.get("feature", 1.0) ** 2 * len(set(a["features"]) ^ set(b["features"]))
+    return round(math.sqrt(d2), 2)
+
+
+def distinctness(results: list[Result], root: Path = config.ROOT) -> None:
+    """Add `distinct`, `look` and `nearest` to every measured preset file (not saved:*) and
+    check them against the bands; compares presets of the same family only."""
+    bands = load_bands(root)
+    steps = bands.get("steps", {})
+    rows = []
+    for r in results:
+        p = r.preset
+        if r.error or p.get("readonly") or str(p.get("id", "")).startswith("saved:"):
+            continue
+        fam = config.family(p["family"], root)
+        rows.append(
+            (
+                r,
+                {
+                    "family": p["family"],
+                    "weight": p.get("weight"),
+                    "features": p.get("features") or [],
+                    "knobs": _knobs(p, fam, steps),
+                },
+            )
+        )
+    for r, a in rows:
+        peers = [(o, b) for o, b in rows if o is not r and b["family"] == a["family"]]
+        if not peers:
+            continue
+        dist = {o.preset["id"]: knob_distance(a, b, steps) for o, b in peers}
+        nearest = min(dist, key=dist.get)
+        r.metrics["distinct"] = dist[nearest]
+        r.metrics["nearest"] = nearest
+        if r.render is not None:
+            looks = {
+                o.preset["id"]: look_difference(r.render, o.render)
+                for o, _ in peers
+                if o.render is not None
+            }
+            if looks:
+                r.metrics["look"] = min(looks.values())
+                r.metrics["look_nearest"] = min(looks, key=looks.get)
+        fam_kind = config.family(r.preset["family"], root).get("kind", "merge")
+        band = {
+            **bands.get("all", {}),
+            **bands.get(fam_kind, {}),
+            **bands.get(r.preset["family"], {}),
+        }
+        r.checks = [c for c in r.checks if c.key not in ("distinct", "look")]
+        r.checks += evaluate(
+            {k: r.metrics.get(k) for k in ("distinct", "look")},
+            {k: band[k] for k in ("distinct", "look") if k in band},
+        )
 
 
 def as_dict(r: Result) -> dict:
@@ -353,14 +555,34 @@ def run(root: Path = config.ROOT, only: list[str] | None = None) -> list[Result]
     from .studio import presets as presets_mod
 
     checker = Checker(root)
-    return [
-        checker.check(p)
-        for p in presets_mod.load(root)
-        if not only or p.get("family") in only or p["id"] in only
+    # Distinctness compares a preset with its whole family, so measure whole families.
+    fams = None
+    if only:
+        every = presets_mod.load(root)
+        fams = {p.get("family") for p in every if p.get("family") in only or p["id"] in only}
+    results = [
+        checker.check(p) for p in presets_mod.load(root) if fams is None or p.get("family") in fams
     ]
+    distinctness(results, root)
+    if only:
+        results = [r for r in results if r.preset.get("family") in only or r.preset["id"] in only]
+    return results
 
 
-COLUMNS = ("height", "centre", "weight", "contrast", "colour", "slant", "spacing", "overflow")
+COLUMNS = (
+    "height",
+    "centre",
+    "weight",
+    "contrast",
+    "colour",
+    "slant",
+    "spacing",
+    "fill_weight",
+    "fill_centre",
+    "distinct",
+    "look",
+    "overflow",
+)
 
 
 def _fmt(v) -> str:

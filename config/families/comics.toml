@@ -1,24 +1,39 @@
-# NK Comics: exaggerated lettering for comics, webtoons, speech bubbles and sound effects.
-# Regular = Bagel Fat One (bouncy, heavy, round), Black = Gasoek One (condensed shout). Each source
-# already pairs its own Latin and Hangul; they cover 2,780 syllables, and the remaining modern
-# syllables are filled from Source Han Sans KR Heavy (scaled to match) so no text falls back.
+# NK Comics: pen-handwritten lettering for comics, webtoons, speech bubbles and diaries.
+# Light/Regular/Bold = Gaegu (개구, OFL, no RFN): one felt-pen hand that draws both Latin and
+# Hangul. Gaegu covers the 2,350 KS X 1001 syllables; the other 8,822 modern syllables are filled
+# from Nanum Pen Script (나눔손글씨 펜, OFL) scaled to match, so no text falls back to another font.
+# Gaegu's own Hangul is imported again (`replace`) so [hangul] can line it up with the Latin:
+# Gaegu's Latin leans right while its Hangul stands upright, and its Hangul sits tall.
 # kind = "text": no terminal grid, no Nerd Fonts icons.
 status = "active"
 kind = "text"
 family = "NK Comics"
 file_prefix = "NKComics"
-version = "0.2.0"
+version = "0.3.0"
 copyright = """Copyright 2026 naturalk (nk-font). \
-Copyright 2022 The Bagel Fat Project Authors. \
-Copyright 2022 The Gasoek Project Authors. \
-Copyright 2014-2025 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'."""
+Copyright 2018 The Gaegu Project Authors (https://github.com/JAMO-TYPEFACE/Gaegu). \
+Copyright 2010 NAVER Corporation, with Reserved Font Name 'Nanum', 'NanumPen'."""
 
 [hangul]
-# Fill-in syllables only (the "latin" source already has the common 2,780). Source Han Sans Heavy
-# 가 is ~904 tall; Bagel Fat One's is ~863.
+# Gaegu's Hangul, imported again: 0.95 brings it to 1.27 × the cap height (band 1.05-1.32),
+# dy -25 sets its centre ~45 units above the caps' instead of ~70, slant 4.5° matches the lean
+# of the Latin (l I i lean ~4.5° right, the Hangul stands upright), tracking opens the
+# Hangul spacing towards the Latin's.
+replace = true
 scale = 0.95
-dy = 0
-tracking = -40
+dy = -25
+slant = 4.5
+tracking = 20
+
+[fill]
+# Nanum Pen Script relative to the Gaegu Hangul above (scale multiplies, dy/grade/slant add).
+# Its syllables are drawn smaller (0.96 × cap height at the same scale), lower in the em,
+# a little left-leaning and tighter; one Regular source serves all weights (fill_adjust).
+scale = 1.33
+dy = -108
+slant = 3
+grade = -13
+tracking = 40
 
 [metrics]
 # Speech bubbles are set tight: default line = √φ = 1.272 em (phi.py). Display ascent/descent.
@@ -28,12 +43,23 @@ line_height = "phi^0.5"
 
 [[weight]]
 name = "Regular"
-latin = "bagel-fat-one"
-hangul = "source-han-sans-kr-heavy"
+latin = "gaegu-regular"
+hangul = "gaegu-regular"
+fill = "nanum-pen-script"
 weight_class = 400
 
 [[weight]]
-name = "Black"
-latin = "gasoek-one"
-hangul = "source-han-sans-kr-heavy"
-weight_class = 900
+name = "Light"
+latin = "gaegu-light"
+hangul = "gaegu-light"
+fill = "nanum-pen-script"
+fill_adjust = { grade = -37 }
+weight_class = 300
+
+[[weight]]
+name = "Bold"
+latin = "gaegu-bold"
+hangul = "gaegu-bold"
+fill = "nanum-pen-script"
+fill_adjust = { grade = 8 }
+weight_class = 700

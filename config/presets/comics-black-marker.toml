@@ -1,14 +1,13 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
-label = "Comics 굵은 마커"
+label = "Comics 굵은 유성 마커"
 family = "comics"
-weight = "Black"
-note = "Black을 조금 기울이고 흔든 굵은 유성 마커 (Gasoek 한글이 영문보다 가벼워 획은 깎지 않고 살짝 보강)"
+weight = "Bold"
+note = "Bold 위에 획을 더 올린 유성 매직"
 features = []
 
 [style]
-slant = 4.0
-grade = 10.0
-tracking = 30
-bounce = 10.0
-tilt = 1.5
+grade = 18.0
+tracking = 20
+bounce = 8.0
+tilt = 1.0
 seed = 18

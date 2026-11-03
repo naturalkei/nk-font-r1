@@ -19,7 +19,7 @@ OFL 1.1 한글 글꼴 모음입니다. 터미널 갈래 **NK Mono**·**NK Pixel*
 | NK Sans | 문서 | IBM Plex Sans | 본고딕 KR (Source Han Sans KR) | Regular, Bold |
 | NK Serif | 문서 | IBM Plex Serif | 본명조 KR (Source Han Serif KR), 한 단계 굵게 | Regular, Bold |
 | NK Novel | 읽기 | Crimson Text | 고운바탕 | Regular, Bold |
-| NK Comics | 만화 | Bagel Fat One · Gasoek One | 같은 소스 + 본고딕 Heavy 보충 | Regular, Black |
+| NK Comics | 만화·손글씨 | 개구 Gaegu (펜 필기) | 같은 소스 + 나눔손글씨 펜 보충 | Light, Regular, Bold |
 
 - 소개 페이지(GitHub Pages): https://naturalkei.github.io/nk-font-r1/ — `main`에 병합되면 `.github/workflows/pages.yml`이 다시 빌드해 배포
 - 조절 도구 **NK Studio**: `nkfont studio` → 브라우저에서 한글 크기·세로 위치를 슬라이더로 바꾸며 저장값과 나란히 비교하고,

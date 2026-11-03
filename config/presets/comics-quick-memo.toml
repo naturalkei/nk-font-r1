@@ -1,14 +1,13 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
-label = "Comics 빠른 메모"
+label = "Comics 급한 메모"
 family = "comics"
-weight = "Regular"
-note = "급하게 쓴 메모처럼 많이 기울임"
+weight = "Light"
+note = "급하게 흘려 쓴 메모: 많이 기울이고 좁게, 크게 흔들림"
 features = []
 
 [style]
-slant = 12.0
-grade = -80.0
-tracking = 0
-bounce = 8.0
-tilt = 1.0
-seed = 9
+slant = 10.0
+tracking = -10
+bounce = 18.0
+tilt = 3.0
+seed = 17

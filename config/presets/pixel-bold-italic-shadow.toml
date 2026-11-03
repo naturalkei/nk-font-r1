@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 굵은 이탤릭 그림자"
+family = "pixel"
+weight = "Regular"
+note = "게임 타이틀: 1px 굵게 + 4줄마다 1px 이탤릭 + 그림자"
+features = []
+
+[pixel]
+bold = 1
+italic = 4
+shadow = 1

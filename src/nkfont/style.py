@@ -1,7 +1,7 @@
 """Whole-face style knobs for proportional families: one transform for Latin *and* Hangul.
 
 `[hangul]` only reshapes the Hangul glyphs NK imports. A family whose Latin source already draws
-its own Hangul (NK Comics: Bagel Fat One / Gasoek One carry 2,780 syllables) needs knobs that move
+its own Hangul (NK Comics: Gaegu draws 2,350 syllables with its Latin) needs knobs that move
 both scripts together, or the two drift apart. `[style]` does that, after merging:
 
   slant     degrees, positive leans right; every glyph is skewed about y = 0 (the baseline), so

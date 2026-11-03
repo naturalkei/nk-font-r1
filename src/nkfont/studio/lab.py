@@ -162,6 +162,7 @@ class Lab:
             ranges=[(ord(c), ord(c)) for c in probes],
             latin=TTFont(io.BytesIO(srcs[w["latin"]].path.read_bytes())),
             hangul=_load(str(srcs[w["hangul"]].path)),
+            fill=_load(str(srcs[w["fill"]].path)) if w.get("fill") else None,
         )
 
     def font(self, fid: str, family: str, weight: str, chars: str = "", params=None) -> TTFont:

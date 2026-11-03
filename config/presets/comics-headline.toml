@@ -1,12 +1,14 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
-label = "Comics 정돈된 제목"
+label = "Comics 손글씨 제목"
 family = "comics"
-weight = "Regular"
-note = "흔들림을 아주 조금: 손맛만 남긴 표지 제목"
+weight = "Bold"
+note = "컷 제목용: 굵게, 똑바로, 흔들림 적게"
 features = []
 
 [style]
-tracking = -30
+slant = -2.0
+grade = 24.0
+tracking = 10
 bounce = 4.0
 tilt = 0.5
-seed = 15
+seed = 2

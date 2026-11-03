@@ -35,7 +35,7 @@ nkfont app            # same pages in a native window (pywebview, `pip install -
                       #   --install-mac-app writes ~/Applications/NK Studio.app
                       #   /update = self-update: git pull --ff-only (stops on local edits), then restart
 nkfont phi [FILES]    # golden-ratio proportion report (config/proportions.toml, shared by families)
-nkfont presets [FAMILY|ID ...] [--proof DIR]   # Hangul/Latin harmony QA of every style preset
+nkfont presets [FAMILY|ID ...] [--proof DIR]   # Hangul/Latin harmony + distinctness QA of every preset
                       #   (config/preset_qa.toml bands; also the qa stage "preset harmony")
 nkfont site           # build/site: prototype site (WOFF2 + zips); deployed by .github/workflows/pages.yml
 python -m pytest -q   # unit tests use synthetic fonts; real-font tests skip without sources/
@@ -64,7 +64,10 @@ ruff check src tests && ruff format --check src tests
   to the identity so existing builds stay byte-identical. The same holds for `[style]` (text families: one transform
   for Latin and Hangul together, src/nkfont/style.py) and `[pixel]` (NK Pixel: whole-pixel bitmap knobs that never
   close a one-pixel gap, src/nkfont/pixelstyle.py).
-- Every preset in `config/presets/` must stay inside its Hangul/Latin harmony bands (`nkfont presets`).
+- Every preset in `config/presets/` must stay inside its Hangul/Latin harmony bands and be distinct from
+  every other preset of its family (`distinct` knob steps and rendered `look` difference, `nkfont presets`).
+- A family whose Latin source draws its own Hangul can re-import it (`[hangul] replace = true`) and fill the
+  missing syllables from a second source (weight `fill`, `[fill]` relative knobs, per-weight `fill_adjust`).
 - Pin every upstream input in `sources.lock` (URL + SHA256, patcher image tag + digest).
   Reference fonts whose terms don't clearly allow redistribution (e.g. 만화진흥원체/KOMACON) go in
   `config/local_fonts.toml` instead: found on the owner's disk, shown in the Lab, never committed,

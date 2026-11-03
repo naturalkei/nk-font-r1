@@ -2,12 +2,11 @@
 label = "Comics 말풍선 촘촘"
 family = "comics"
 weight = "Regular"
-note = "말풍선에 많이 넣는 대사: 자간을 줄이고 흔들림은 조금"
+note = "말풍선에 대사를 많이 넣을 때: 자간을 줄이고 흔들림은 조금"
 features = []
 
 [style]
-grade = -30.0
 tracking = -20
-bounce = 6.0
+bounce = 5.0
 tilt = 1.0
 seed = 12

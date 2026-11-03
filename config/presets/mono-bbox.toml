@@ -2,12 +2,10 @@
 label = "Mono 잉크 중심 정렬"
 family = "mono"
 weight = "Regular"
-note = "글자마다 잉크 상자 기준 가운데 정렬(advance 대신 bbox): 좌우 치우침 제거 (목표 높이 1.32)"
+note = "글자마다 잉크 상자 기준 가운데 정렬(advance 대신 bbox): 좌우 치우침 제거"
 features = []
 
 [hangul]
 scale = 1.08
 dy = 40
 center = "bbox"
-width = 1.0
-grade = 0.0

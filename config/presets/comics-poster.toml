@@ -1,10 +1,13 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
-label = "Comics 포스터"
+label = "Comics 손글씨 포스터"
 family = "comics"
-weight = "Black"
-note = "흔들림 없이 넓게, 한글 획을 영문 무게에 가깝게 보강: 포스터·표지"
+weight = "Bold"
+note = "포스터 손글씨: 아주 굵고 자간 넓게"
 features = []
 
 [style]
-grade = 15.0
+grade = 30.0
 tracking = 30
+bounce = 6.0
+tilt = 1.0
+seed = 14
