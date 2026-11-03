@@ -28,6 +28,7 @@ from ..glyphmetrics import (
     single_substitutions,
 )
 from ..proportions import evaluate, load_rules, proportion_metrics
+from . import controls as core_controls
 
 # Unicode blocks shown in the glyph browser (name, first, last). Covers what NK fonts carry.
 BLOCKS = [
@@ -181,7 +182,11 @@ class Lab:
         out = {}
         for fid in req.get("fonts", ["nk-edit"]):
             try:
-                font = self.font(fid, family, weight, chars, params)
+                if fid == "nk-saved" and req.get("partial"):
+                    # Saved values, but only the requested glyphs: no full build (core view).
+                    font = self.nk_edit(family, weight, chars, {})
+                else:
+                    font = self.font(fid, family, weight, chars, params)
             except (StopIteration, KeyError, FileNotFoundError) as exc:
                 out[fid] = {"error": f"{type(exc).__name__}: {exc}"}
                 continue
@@ -209,4 +214,40 @@ class Lab:
                 "proportions": evaluate(proportion_metrics(guides, harm), rules, fam),
                 "glyphs": items,
             }
+        return out
+
+    # ---- core view: design targets -> raw params -------------------------------------------
+    def core(self, family: str) -> dict:
+        """Control glyphs, controls and read-only checks for the default (core) view."""
+        return core_controls.load_controls(self.root, config.family(family, self.root))
+
+    def core_metrics(self, family: str, weight: str, params: dict) -> dict:
+        """Proportion metrics of an edit build (only the probe glyphs), plus `han_center`."""
+        font = self.nk_edit(family, weight, "Hx한", params)
+        k = UPM / font["head"].unitsPerEm
+        guides = font_guides(font, k)
+        harm = harmony(font, lab_config(self.root).get("harmony", {}))
+        return core_controls.with_centre(proportion_metrics(guides, harm), guides)
+
+    def solve(self, req: dict) -> dict:
+        """POST /api/lab/solve: {family, weight, params, targets} -> derived params."""
+        family, weight = req["family"], req["weight"]
+        core = self.core(family)
+        fam = config.family(family, self.root)
+        given = {k: v for k, v in (req.get("params") or {}).items() if v is not None}
+        # Start from the full parameter set (saved [hangul] + defaults) so nothing starts at 0.
+        hp = hangul_params(fam, **given)
+        start = {k: getattr(hp, k) for k in core_controls.PARAM_BOUNDS}
+        start["center"] = hp.center
+        out = core_controls.solve(
+            core["controls"],
+            req.get("targets") or {},
+            start,
+            lambda p: self.core_metrics(family, weight, p),
+        )
+        out["checks"] = [
+            r
+            for r in evaluate(out["metrics"], load_rules(self.root), fam)
+            if r["id"] in core["checks"]
+        ]
         return out

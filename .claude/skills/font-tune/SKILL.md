@@ -8,8 +8,13 @@ description: Fine-tune NK font parameters (Hangul scale, offset, width, slant, g
 All tunables live in `config/families/<family>.toml` under `[hangul]` (and per `[[weight]]`).
 Never hard-code a tuned number in Python.
 
-0. Measure first: `nkfont phi` (golden-ratio rules from `config/proportions.toml`, shared by every
-   family) and the Glyph Lab (`nkfont studio` -> http://127.0.0.1:8765/lab): overlay NK glyphs on
+0. Tune by targets, not numbers: the Glyph Lab's default view (`nkfont studio` -> /lab) shows the
+   control glyphs (n o H O, 한 국 을 를) and a few design variables declared in `config/lab.toml`
+   `[core]` (Hangul height × caps, width × height, stem × Latin, optical centre, slant, tracking).
+   Each is a *target*; `studio/controls.py` solves the raw `[hangul]` values that meet all of them
+   at once, so moving one keeps the others. Add a control there, never a hard-coded number.
+   Measure: `nkfont phi` (golden-ratio rules from `config/proportions.toml`, shared by every
+   family) and the advanced lab (`/lab/advanced`): overlay NK glyphs on
    JetBrains Mono / D2Coding, read stems on scanlines, stroke slant, side bearings, ink coverage,
    and toggle OpenType features. `[hangul]` knobs: `scale`, `dy`, `center`, `width` (horizontal
    ratio), `slant` (degrees, italics), `grade` (stroke weight in units, advances unchanged).

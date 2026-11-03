@@ -20,6 +20,7 @@ from .lab import Lab
 PAGES = {
     "/": "index.html",
     "/lab": "lab.html",
+    "/lab/advanced": "lab-advanced.html",
     "/presets": "presets.html",
     "/specimen": "specimen.html",
     "/update": "update.html",
@@ -154,6 +155,14 @@ def make_handler(studio: Studio, lab: Lab | None = None, restart=None):
                         out = lab.glyphs(req)
                     ms = round((time.perf_counter() - t0) * 1000)
                     return self._json({"fonts": out, "ms": ms})
+                if self.path == "/api/lab/core":
+                    return self._json(lab.core(req["family"]))
+                if self.path == "/api/lab/solve":
+                    t0 = time.perf_counter()
+                    with _LOCK:
+                        out = lab.solve(req)
+                    out["ms"] = round((time.perf_counter() - t0) * 1000)
+                    return self._json(out)
                 if self.path == "/api/lab/charset":
                     return self._json({"blocks": lab.charset(req["family"], req["weight"])})
                 if self.path == "/api/lab/features":

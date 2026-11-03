@@ -248,7 +248,8 @@ def test_lab_config_references_are_pinned():
 
 
 def test_lab_page_is_packaged():
-    page = resources.files("nkfont.studio").joinpath("static", "lab.html").read_text()
+    static = resources.files("nkfont.studio").joinpath("static")
+    page = static.joinpath("lab-advanced.html").read_text()  # measurements moved behind /lab
     assert "/api/lab/glyphs" in page and "/api/lab/features" in page
 
 

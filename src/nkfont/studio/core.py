@@ -158,10 +158,11 @@ class Studio:
 logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
 
 _KEYS = ("scale", "dy", "center", "width", "slant", "grade")
+_SAVE_KEYS = (*_KEYS, "tracking")
 
 
 def update_hangul_config(family: str, values: dict, root: Path = config.ROOT) -> Path:
-    """Rewrite [hangul] values (scale, dy, center, width, slant, grade) of a family TOML.
+    """Rewrite [hangul] values (scale, dy, center, width, slant, grade, tracking) of a family TOML.
 
     Only the value tokens change; comments and layout stay, so diffs stay reviewable.
     """
@@ -171,7 +172,7 @@ def update_hangul_config(family: str, values: dict, root: Path = config.ROOT) ->
     if not m:
         raise ValueError(f"{path} has no [hangul] table")
     body = m.group(1)
-    for key in _KEYS:
+    for key in _SAVE_KEYS:
         if key not in values or values[key] is None:
             continue
         v = values[key]
@@ -180,7 +181,7 @@ def update_hangul_config(family: str, values: dict, root: Path = config.ROOT) ->
             token = token if "." in token else token + ".0"
         elif key in ("slant", "grade"):
             token = f"{float(v):.1f}"
-        elif key == "dy":
+        elif key in ("dy", "tracking"):
             token = str(int(round(float(v))))
         else:
             if v not in ("advance", "bbox"):

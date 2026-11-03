@@ -27,6 +27,7 @@ PAGES = {
     "specimen": "/specimen",
     "studio": "/",
     "lab": "/lab",
+    "lab-advanced": "/lab/advanced",
     "site": "/site/",
     "update": "/update",
 }
@@ -50,7 +51,8 @@ def _menu(webview, base: str):
                 MenuAction("프리셋 비교", go(PAGES["presets"])),
                 MenuAction("스페시먼 (워크벤치)", go(PAGES["specimen"])),
                 MenuAction("한글 미세 조절 (Studio)", go(PAGES["studio"])),
-                MenuAction("글리프 랩", go(PAGES["lab"])),
+                MenuAction("글리프 랩 (기준 글자)", go(PAGES["lab"])),
+                MenuAction("글리프 랩 · 고급 측정", go(PAGES["lab-advanced"])),
                 MenuAction("미리보기 사이트", go(PAGES["site"])),
             ],
         ),

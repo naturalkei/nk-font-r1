@@ -66,3 +66,77 @@ latin_stem = "l"     # vertical stem read at mid x-height
 latin_bar = "H"      # crossbar read at the glyph centre
 hangul_stem = "ㅣ"
 hangul_bar = "ㅡ"
+
+# Core view (the Glyph Lab's default screen): control glyphs and the few design variables every
+# Hangul glyph is derived from. A control with `rule` takes its phi target and tolerance from
+# config/proportions.toml; `drives` names the [hangul] parameter the solver moves to meet it
+# (`solve = "mul"` scales it, `"add"` shifts it). `param` controls are copied as they are.
+# `checks` are phi rules shown read-only next to the controls.
+[core]
+latin = "noHO"
+hangul = "한국을를"
+checks = ["hangul_contrast", "hangul_cell", "x_to_cap", "line_height"]
+
+[[core.control]]
+id = "height"
+label = "한글 높이"
+hint = "한글 잉크 높이 ÷ 영문 대문자 높이"
+unit = "× 대문자"
+rule = "hangul_height"
+drives = "scale"
+solve = "mul"
+range = [1.0, 1.4]
+step = 0.005
+
+[[core.control]]
+id = "aspect"
+label = "한글 폭"
+hint = "한글 잉크 폭 ÷ 잉크 높이 (작을수록 좁은 글자)"
+unit = "× 높이"
+rule = "hangul_aspect"
+drives = "width"
+solve = "mul"
+range = [0.8, 1.1]
+step = 0.005
+
+[[core.control]]
+id = "stem"
+label = "세로획 두께"
+hint = "한글 ㅣ 두께 ÷ 영문 l 두께 (회색도 맞춤)"
+unit = "× 영문"
+rule = "hangul_stem"
+drives = "grade"
+solve = "add"
+range = [0.7, 1.25]
+step = 0.005
+
+[[core.control]]
+id = "center"
+label = "세로 중심"
+hint = "한글 중심 − 대문자 중심 (0 = 같은 높이, + 는 위로)"
+unit = "단위"
+numerator = "han_center"
+target = 0
+drives = "dy"
+solve = "add"
+range = [-80, 80]
+step = 1
+
+[[core.control]]
+id = "slant"
+label = "기울기"
+hint = "한글을 오른쪽(+)으로 기울입니다 (이탤릭용)"
+unit = "°"
+param = "slant"
+range = [-5, 15]
+step = 0.1
+
+[[core.control]]
+id = "tracking"
+label = "한글 자간"
+hint = "글자마다 더하는 폭 (문서용 비례폭 가족만)"
+unit = "단위"
+param = "tracking"
+text_only = true
+range = [-120, 120]
+step = 1
