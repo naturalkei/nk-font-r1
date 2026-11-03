@@ -1,5 +1,6 @@
 // Tester: write code in NK fonts with live size / weight / line height / OpenType / editor theme.
 import { $, esc, initTheme, getJSON, loadFonts, stack, seg } from "./common.js";
+import { indentUnit, indent, outdent, newline } from "./editkeys.js";
 
 initTheme();
 const [manifest, data] = await Promise.all([getJSON("fonts.json"), getJSON("compare.json")]);
@@ -188,6 +189,75 @@ $("#tFeat").onchange = (e) => {
 };
 for (const id of ["#tSize", "#tLh", "#tGrid"]) $(id).oninput = applyStyle;
 $("#tCode").oninput = gutter;
+
+// Editor keys: Tab indents, Shift+Tab outdents, Enter keeps the indent. Esc releases Tab so
+// keyboard users can still leave the editor (Esc, then Tab / Shift+Tab).
+const codeEl = $("#tCode");
+let released = false;
+function offsetOf(node, off) {
+  const r = document.createRange();
+  r.selectNodeContents(codeEl);
+  r.setEnd(node, off);
+  return r.toString().length;
+}
+function getSel() {
+  const s = getSelection();
+  if (!s.rangeCount || !codeEl.contains(s.anchorNode)) return null;
+  const r = s.getRangeAt(0);
+  return { start: offsetOf(r.startContainer, r.startOffset), end: offsetOf(r.endContainer, r.endOffset) };
+}
+function pointAt(pos) {
+  const walk = document.createTreeWalker(codeEl, NodeFilter.SHOW_TEXT);
+  let last = null;
+  for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+    if (pos <= n.length) return [n, pos];
+    pos -= n.length; last = n;
+  }
+  return last ? [last, last.length] : [codeEl, codeEl.childNodes.length];
+}
+function setSel(start, end) {
+  const r = document.createRange();
+  r.setStart(...pointAt(start));
+  r.setEnd(...pointAt(end));
+  const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+}
+function apply(res) {
+  // Simple insertions go through the browser so undo keeps working; block edits re-highlight.
+  // Newlines are inserted as text by hand: insertText would add <br>/<div> in a contenteditable.
+  if (res.insert != null && !res.insert.includes("\n") && document.execCommand("insertText", false, res.insert)) return;
+  if (res.insert != null) {
+    const r = getSelection().getRangeAt(0), node = document.createTextNode(res.insert);
+    r.deleteContents(); r.insertNode(node);
+    codeEl.normalize();
+    setSel(res.start, res.end);
+    gutter();
+    return;
+  }
+  codeEl.innerHTML = highlight(res.text, st.lang);
+  setSel(res.start, res.end);
+  gutter();
+}
+codeEl.addEventListener("focus", () => { released = false; });
+codeEl.addEventListener("keydown", (e) => {
+  if (e.isComposing || e.keyCode === 229) return; // let the Hangul IME finish its syllable
+  if (e.key === "Escape") { released = true; return; }
+  if (["Shift", "Control", "Alt", "Meta"].includes(e.key)) return; // Esc, then Shift+Tab
+  const wasReleased = released;
+  released = false;
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === "Tab" && wasReleased) return; // default: move focus out of the editor
+  if (e.key !== "Tab" && e.key !== "Enter") return;
+  const sel = getSel(); if (!sel) return;
+  e.preventDefault();
+  const text = codeEl.textContent, unit = indentUnit(st.lang);
+  if (e.key === "Enter") apply(newline(text, sel.start, sel.end));
+  else apply((e.shiftKey ? outdent : indent)(text, sel.start, sel.end, unit));
+});
+// Paste as plain text so the editor never picks up markup from elsewhere.
+codeEl.addEventListener("paste", (e) => {
+  e.preventDefault();
+  document.execCommand("insertText", false, e.clipboardData.getData("text/plain"));
+});
 if (innerWidth < 640) $("#tSize").value = 13;
 pickFont(st.font.id);
 setCode();

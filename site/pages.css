@@ -151,4 +151,5 @@ em.ok{color:var(--acc)}em.bad{color:var(--rose)}
 .themes button[aria-checked=true]{border-color:var(--acc);color:var(--ink)}
 .themes button:focus-visible{outline:2px solid var(--acc)}
 .tester-note{color:var(--mute);font-size:13px;margin:10px 0 0}
+.tester-note kbd{font:inherit;font-size:12px;padding:1px 6px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px}
 @media (max-width:600px){.tbody{font-size:11px;padding:12px}.srow{min-width:560px;grid-template-columns:110px repeat(3,minmax(140px,1fr))}}
