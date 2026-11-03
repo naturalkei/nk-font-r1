@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 살짝 기울임"
+family = "sans"
+weight = "Regular"
+note = "한·영을 함께 5°만 기울인 손글씨 같은 강조: 11° 오블리크보다 차분하게, 한글 폭 0.96"
+features = []
+
+[hangul]
+width = 0.96
+
+[style]
+slant = 5.0

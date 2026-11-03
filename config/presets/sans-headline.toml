@@ -2,12 +2,13 @@
 label = "Sans · 헤드라인"
 family = "sans"
 weight = "Bold"
-note = "슬라이드·제목용 Bold: 한·영 자간 −20으로 단단한 덩어리, 한글 획은 영문 Bold의 0.9"
+note = "슬라이드·제목용 Bold: 한글을 1.24로 키우고 획을 영문 Bold와 같게(1.0), 한·영 자간 −20"
 features = []
 
 [hangul]
-grade = 13.0
-tracking = -12
+scale = 0.9232
+grade = 25.0
+tracking = 0
 
 [style]
 tracking = -20

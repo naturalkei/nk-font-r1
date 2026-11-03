@@ -2,11 +2,12 @@
 label = "Serif · 편지"
 family = "serif"
 weight = "Regular"
-note = "편지·청첩장: 한·영 함께 자간 +30, 한글 폭 0.97"
+note = "편지·청첩장: 한글을 1.24로 키우고 폭 0.94로 좁혀 세로로 긴 글자, 한·영 자간 +30"
 features = []
 
 [hangul]
-width = 0.97
+scale = 0.9296
+width = 0.94
 
 [style]
 tracking = 30
