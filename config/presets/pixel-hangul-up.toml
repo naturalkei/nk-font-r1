@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 한글 1px 올림"
+family = "pixel"
+weight = "Regular"
+note = "한글 중심을 영문 대문자 중심에 맞춤(-31→+31 단위, 대칭)"
+features = []
+
+[pixel]
+hangul_dy = 1

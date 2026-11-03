@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 굵게"
+family = "pixel"
+weight = "Regular"
+note = "세로획 +1px(비트맵 볼드): 게임 UI 강조"
+features = []
+
+[pixel]
+bold = 1

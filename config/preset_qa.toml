@@ -1,0 +1,36 @@
+# Hangul/Latin harmony bands for style presets (`nkfont presets`, qa stage "preset harmony").
+# A preset may move a family anywhere inside these bands; outside them Hangul and Latin stop
+# reading as one face. Each value is [min, max]. Ratios are Hangul ÷ Latin over sample words,
+# lengths are 1000-UPM units, NK Pixel overflow is whole pixels. See src/nkfont/presetqa.py.
+# Tables: [all] for every family, then [<kind>] (merge = terminal Mono, pixel, text), then
+# [<family id>] for one family; later tables win. Saved families (saved:<id>) are reported
+# with the same bands but do not fail the stage: their values are changed in the Glyph Lab.
+
+[all]
+weight = [0.84, 1.15]     # mean stroke width; φ^(-1/6) = 0.923 is the Glyph Lab's stem target
+contrast = [0.75, 1.35]   # bar/stem relation of the two scripts
+colour = [0.85, 1.45]     # Hangul packs more strokes per em, so it may read a little darker
+slant = [-1.5, 1.5]       # both scripts lean the same way (degrees)
+broken = [0, 0]           # no contour may turn inside out
+
+[merge]                   # NK Mono: two-cell Hangul next to JetBrains Mono
+height = [1.17, 1.40]     # φ^(2/6) = 1.174 is the floor; D2Coding itself is 1.29
+centre = [-20, 70]        # Hangul centre vs cap centre; a little above the caps reads right in code
+overflow = [0, 0]         # Hangul ink stays inside its two cells
+grid = [0, 0]             # advances stay 600 / 1200
+
+[pixel]                   # NK Pixel: whole pixels only
+height = [1.15, 1.45]
+centre = [-130, 70]       # 1 px = 62.5 units: about -2..+1 px
+overflow = [0, 2]         # bold / italic / shadow may spill up to 2 px, as bitmap terminals do
+grid = [0, 0]
+pixels = [0, 0]           # every point on the 64-unit pixel grid
+split = [0, 0]            # shape knobs act on both scripts
+gaps = [0.97, 1.5]        # one-pixel gaps between strokes stay open (를 must not turn into a blob)
+weight = [0.84, 1.2]      # one pixel is the smallest step: +1 px on bars darkens Hangul more
+contrast = [0.7, 1.45]    # 1-px steps: one pixel more is a big relative change
+
+[text]                    # proportional families
+height = [1.05, 1.32]
+centre = [-60, 90]
+spacing = [0.4, 2.4]      # Hangul side bearings vs Latin side bearings (share of advance)

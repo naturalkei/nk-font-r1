@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 효과음"
+family = "comics"
+weight = "Black"
+note = "크게 튀는 효과음 레터링"
+features = []
+
+[style]
+slant = 14.0
+tracking = 20
+bounce = 40.0
+tilt = 7.0
+seed = 17

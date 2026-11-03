@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 바른 펜글씨"
+family = "comics"
+weight = "Regular"
+note = "기울지 않은 또박또박 펜글씨"
+features = []
+
+[style]
+slant = 0.0
+grade = -80.0
+tracking = 20
+bounce = 12.0
+tilt = 1.5
+seed = 10

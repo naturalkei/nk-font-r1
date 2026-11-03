@@ -1,6 +1,8 @@
 """Style presets for side-by-side comparison (`nkfont studio` -> /presets, `nkfont app`).
 
-A preset is a named combination of family, weight, Hangul tuning values and OpenType features.
+A preset is a named combination of family, weight, Hangul tuning values and OpenType features,
+plus whole-face `[style]` knobs (proportional families, see nkfont/style.py) or `[pixel]` grid
+knobs (NK Pixel, see nkfont/pixelstyle.py).
 Each one lives in `config/presets/<id>.toml` so presets are reviewable and shareable in git.
 Presets never change a build: only `[hangul]` in config/families/*.toml does (Studio "save").
 
@@ -28,6 +30,27 @@ _BOUNDS = {
     "grade": (-80, 80),
     "tracking": (-300, 300),
 }
+# Whole-face knobs of proportional (kind = "text") families: Latin and Hangul move together.
+STYLE_KEYS = ("slant", "grade", "tracking", "bounce", "tilt", "seed")
+_STYLE_BOUNDS = {
+    "slant": (-15, 15),
+    "grade": (-120, 80),
+    "tracking": (-100, 200),
+    "bounce": (0, 60),
+    "tilt": (0, 8),
+    "seed": (0, 9999),
+}
+# Pixel-grid knobs of NK Pixel (whole pixels only).
+PIXEL_KEYS = ("bold", "heavy", "italic", "shadow", "dy", "hangul_dy", "scope")
+_PIXEL_BOUNDS = {
+    "bold": (-1, 1),
+    "heavy": (0, 1),
+    "italic": (0, 8),
+    "shadow": (0, 1),
+    "dy": (-4, 4),
+    "hangul_dy": (-4, 4),
+}
+_PIXEL_SCOPES = ("all", "hangul", "latin")
 _ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,47}$")
 _FEATURE = re.compile(r"^[a-z0-9]{4}$")
 SAVED_PREFIX = "saved:"
@@ -72,7 +95,30 @@ def dumps(preset: dict) -> str:
                 continue
             v = hangul[key]
             lines.append(f"{key} = {_toml_str(v) if key == 'center' else _toml_num(v)}")
+    for table, keys in (("style", STYLE_KEYS), ("pixel", PIXEL_KEYS)):
+        values = preset.get(table, {})
+        if values:
+            lines += ["", f"[{table}]"]
+            for key in keys:
+                if key in values:
+                    v = values[key]
+                    lines.append(f"{key} = {_toml_str(v) if isinstance(v, str) else _toml_num(v)}")
     return "\n".join(lines) + "\n"
+
+
+def _numbers(table: str, values: dict, bounds: dict, ints: tuple[str, ...]) -> dict:
+    out = {}
+    for key, v in (values or {}).items():
+        if v is None or v == "":
+            continue
+        if key not in bounds:
+            raise ValueError(f"unknown {table} key {key!r}")
+        x = float(v)
+        lo, hi = bounds[key]
+        if not math.isfinite(x) or not lo <= x <= hi:
+            raise ValueError(f"{table}.{key} = {v} is outside {lo}..{hi}")
+        out[key] = int(round(x)) if key in ints else round(x, 4)
+    return out
 
 
 def validate(data: dict, root: Path = config.ROOT) -> dict:
@@ -115,12 +161,29 @@ def validate(data: dict, root: Path = config.ROOT) -> dict:
         if not math.isfinite(x) or not lo <= x <= hi:
             raise ValueError(f"hangul.{key} = {v} is outside {lo}..{hi}")
         hangul[key] = int(round(x)) if key in ("dy", "tracking") else round(x, 4)
+    kind = fam.get("kind", "merge")
+    style = _numbers("style", data.get("style"), _STYLE_BOUNDS, ("seed", "tracking"))
+    if style and kind != "text":
+        raise ValueError('[style] is for proportional (kind = "text") families only')
+    raw_pixel = dict(data.get("pixel") or {})
+    scope = raw_pixel.pop("scope", None)
+    pixel = _numbers("pixel", raw_pixel, _PIXEL_BOUNDS, tuple(_PIXEL_BOUNDS))
+    if scope not in (None, ""):
+        if scope not in _PIXEL_SCOPES:
+            raise ValueError(f"pixel.scope must be one of {', '.join(_PIXEL_SCOPES)}")
+        pixel["scope"] = scope
+    if pixel and kind != "pixel":
+        raise ValueError('[pixel] is for pixel (kind = "pixel") families only')
     out = {"id": pid, "label": label[:80], "family": fid, "weight": weight, "features": feats}
     note = str(data.get("note") or "").strip()
     if note:
         out["note"] = note[:200]
     if hangul:
         out["hangul"] = hangul
+    if style:
+        out["style"] = style
+    if pixel:
+        out["pixel"] = pixel
     return out
 
 
@@ -148,6 +211,8 @@ def saved_presets(root: Path = config.ROOT) -> list[dict]:
                 "weight": fam["weight"][0]["name"],
                 "features": [],
                 "hangul": {k: h[k] for k in HANGUL_KEYS if k in h},
+                **({"style": dict(fam["style"])} if fam.get("style") else {}),
+                **({"pixel": dict(fam["pixel"])} if fam.get("pixel") else {}),
                 "readonly": True,
             }
         )

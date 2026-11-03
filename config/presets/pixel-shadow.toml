@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 그림자"
+family = "pixel"
+weight = "Regular"
+note = "오른쪽 아래 1px 같은 색 그림자: 게임 대사창·HUD"
+features = []
+
+[pixel]
+shadow = 1

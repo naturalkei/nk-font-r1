@@ -15,7 +15,7 @@ from fontTools.pens.boundsPen import BoundsPen
 from fontTools.ttLib import TTFont
 
 from .. import config
-from ..build import build_master, hangul_params
+from ..build import build_master, hangul_params, pixel_params, style_params
 
 DEFAULT_TEXT = (
     "가나다라마바사 한글 ABCD abcd 0O1lI\n"
@@ -108,23 +108,37 @@ class Studio:
         return self._hangul_cache[source_id]
 
     def build_preview(
-        self, family: str, weight: str, text: str = DEFAULT_TEXT, **params
+        self,
+        family: str,
+        weight: str,
+        text: str = DEFAULT_TEXT,
+        style: dict | None = None,
+        pixel: dict | None = None,
+        **params,
     ) -> Preview:
+        """`params` are [hangul] overrides; `style` / `pixel` override [style] / [pixel]."""
         fam = config.family(family, self.root)
         params = {k: v for k, v in params.items() if v is not None}
+        style = {k: v for k, v in (style or {}).items() if v is not None}
+        pixel = {k: v for k, v in (pixel or {}).items() if v is not None}
         key = (
             family,
             weight,
             text,
             repr(sorted(fam.get("hangul", {}).items())),
+            repr(sorted(fam.get("style", {}).items())),
+            repr(sorted(fam.get("pixel", {}).items())),
             repr(sorted(params.items())),
+            repr(sorted(style.items())),
+            repr(sorted(pixel.items())),
         )
         if key in self._previews:
             return self._previews[key]
         w = next(x for x in fam["weight"] if x["name"] == weight)
         chars = set(text) | set(_PROBES.values()) | {"0"}
+        unicodes = {ord(c) for c in chars}
         if fam.get("kind") == "pixel":
-            font = build_master(fam, w)
+            font = build_master(fam, w, pixel=pixel_params(fam, **pixel), unicodes=unicodes)
         else:
             srcs = config.sources(self.root)
             hp = hangul_params(fam, **params)
@@ -136,6 +150,8 @@ class Studio:
                 ranges=ranges,
                 latin=_font_from(srcs[w["latin"]].path),
                 hangul=self._hangul(w["hangul"]),
+                style=style_params(fam, **style),
+                unicodes=unicodes,
             )
         metrics = measure(font)
         opts = subset.Options()

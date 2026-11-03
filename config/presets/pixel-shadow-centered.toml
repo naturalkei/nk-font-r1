@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 그림자·한글 중심"
+family = "pixel"
+weight = "Regular"
+note = "그림자 + 한글 1px 올림: 대사창"
+features = []
+
+[pixel]
+shadow = 1
+hangul_dy = 1

@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono 세로로 긴 한글"
+family = "mono"
+weight = "Regular"
+note = "좁고 높은 한글: 두 칸 안 좌우 여백이 넉넉해 글자 사이가 또렷함 (목표 높이 1.36 · 폭/높이 0.88 · 획 1.06 · 중심 35)"
+features = []
+
+[hangul]
+scale = 1.11
+dy = 31
+width = 0.9111
+grade = 2.8

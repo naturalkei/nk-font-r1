@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Comics 볼펜 메모"
+family = "comics"
+weight = "Regular"
+note = "가장 가는 쪽 펜: 획을 크게 깎아 볼펜 메모처럼 (QA 한계 grade -95)"
+features = []
+
+[style]
+slant = 7.0
+grade = -95.0
+tracking = 30
+bounce = 20.0
+tilt = 2.5
+seed = 3

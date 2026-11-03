@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 굵은 그림자"
+family = "pixel"
+weight = "Regular"
+note = "볼드 + 그림자: 타이틀·버튼"
+features = []
+
+[pixel]
+bold = 1
+shadow = 1

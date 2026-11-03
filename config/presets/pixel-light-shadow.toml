@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 가는 그림자"
+family = "pixel"
+weight = "Regular"
+note = "1px 획 + 그림자: 밝은 배경 위 게임 텍스트"
+features = []
+
+[pixel]
+bold = -1
+shadow = 1

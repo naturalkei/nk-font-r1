@@ -25,6 +25,8 @@ from .flags import (
 from .merge import HangulParams, half_width, merge_hangul
 from .names import COPYRIGHT, set_names
 from .phi import line_metrics
+from .pixelstyle import PixelParams, apply_pixel
+from .style import StyleParams, apply_style
 
 # Seconds between 1904-01-01 (OpenType epoch) and 1970-01-01 (Unix epoch).
 MAC_EPOCH_OFFSET = 2082844800
@@ -93,11 +95,28 @@ def finish(font: TTFont, fam: dict, weight: dict, ascent: int, descent: int) -> 
     return font
 
 
-def build_pixel(fam: dict, weight: dict) -> TTFont:
+def pixel_params(fam: dict, **override) -> PixelParams:
+    """`[pixel]` of a pixel family (bitmap-level knobs, see pixelstyle.py), identity by default."""
+    return PixelParams.from_dict({**fam.get("pixel", {}), **override})
+
+
+def style_params(fam: dict, **override) -> StyleParams:
+    """`[style]` of a text family (whole-face knobs, see style.py), identity by default."""
+    return StyleParams.from_dict({**fam.get("style", {}), **override})
+
+
+def build_pixel(
+    fam: dict,
+    weight: dict,
+    pixel: PixelParams | None = None,
+    unicodes: set[int] | None = None,
+) -> TTFont:
     font = TTFont(config.sources()[weight["source"]].path)
     term = fam.get("terminal", {})
     if term.get("unmap_width_conflicts", True):
         unmap_width_conflicts(font, half_width(font), [tuple(r) for r in term.get("unmap", [])])
+    px = fam.get("grid", {}).get("units_per_pixel", 64)
+    apply_pixel(font, pixel or pixel_params(fam), px, unicodes)
     return finish(font, fam, weight, font["hhea"].ascent, font["hhea"].descent)
 
 
@@ -108,10 +127,14 @@ def build_master(
     ranges: list[tuple[int, int]] | None = None,
     latin: TTFont | None = None,
     hangul: TTFont | None = None,
+    style: StyleParams | None = None,
+    pixel: PixelParams | None = None,
+    unicodes: set[int] | None = None,
 ) -> TTFont:
-    """`ranges`, `latin` and `hangul` let the tuning studio build small previews quickly."""
+    """`ranges`, `latin`, `hangul` and `unicodes` let the tuning studio build small previews
+    quickly; `style` / `pixel` override the family's `[style]` / `[pixel]` tables."""
     if fam.get("kind") == "pixel":
-        return build_pixel(fam, weight)
+        return build_pixel(fam, weight, pixel, unicodes)
     srcs = config.sources()
     latin = latin or TTFont(srcs[weight["latin"]].path)
     hangul = hangul or TTFont(srcs[weight["hangul"]].path)
@@ -120,6 +143,7 @@ def build_master(
     merge_hangul(latin, hangul, ranges or config.ranges(), params or hangul_params(fam))
     if is_terminal(fam):
         return finish(latin, fam, weight, ascent, descent)
+    apply_style(latin, style or style_params(fam), unicodes)
     return finish_text(latin, fam, weight, ascent, descent, line_gap)
 
 

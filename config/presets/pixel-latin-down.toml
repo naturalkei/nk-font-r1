@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 영문 1px 내림"
+family = "pixel"
+weight = "Regular"
+note = "영문을 내려 한글과 중심을 맞춤: 한글 기준선은 그대로"
+features = []
+
+[pixel]
+dy = -1
+scope = "latin"

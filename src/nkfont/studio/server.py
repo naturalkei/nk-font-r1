@@ -145,6 +145,8 @@ def make_handler(studio: Studio, lab: Lab | None = None, restart=None):
                             req["family"],
                             req["weight"],
                             req.get("text") or DEFAULT_TEXT,
+                            style=req.get("style"),
+                            pixel=req.get("pixel"),
                             **{k: req.get(k) for k in (*_KEYS, "tracking")},
                         )
                     ms = round((time.perf_counter() - t0) * 1000)
@@ -180,6 +182,13 @@ def make_handler(studio: Studio, lab: Lab | None = None, restart=None):
                         )
                     threading.Timer(0.3, restart).start()  # answer before the window closes
                     return self._json({"restarting": True})
+                if self.path == "/api/presets/qa":  # Hangul/Latin harmony of one preset
+                    from ..presetqa import Checker, as_dict
+
+                    preset = presets.validate({**req, "id": req.get("id") or "check"}, studio.root)
+                    with _LOCK:
+                        checker = studio.__dict__.setdefault("_qa", Checker(studio.root, studio))
+                        return self._json(as_dict(checker.check(preset)))
                 if self.path == "/api/presets/save":
                     return self._json({"preset": presets.save(req, studio.root)})
                 if self.path == "/api/presets/delete":

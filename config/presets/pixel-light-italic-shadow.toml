@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 가는 이탤릭 그림자"
+family = "pixel"
+weight = "Regular"
+note = "1px 획 + 완만한 기울임 + 그림자"
+features = []
+
+[pixel]
+bold = -1
+italic = 6
+shadow = 1

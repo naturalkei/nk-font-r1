@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 굵은 이탤릭"
+family = "pixel"
+weight = "Regular"
+note = "볼드 + 이탤릭"
+features = []
+
+[pixel]
+bold = 1
+italic = 4

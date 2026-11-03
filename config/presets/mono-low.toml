@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono 낮게 앉은 한글"
+family = "mono"
+weight = "Regular"
+note = "한글을 조금 작게, 영문 기준선 쪽으로: 영문 소문자 문장과 섞일 때 차분함 (목표 높이 1.25 · 중심 -10)"
+features = []
+
+[hangul]
+scale = 1.0202
+dy = 16
+width = 1.0
+grade = 0.0
