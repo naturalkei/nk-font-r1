@@ -42,7 +42,7 @@ make check proof    # 터미널 호환 검사 + 교정 시트
 make tune           # 한글 스케일 비교 시트
 make test lint
 nkfont build all     # 여섯 가족 모두 (mono|pixel|sans|serif|novel|comics)
-nkfont studio       # 한글 미세 조절 웹 UI (http://127.0.0.1:8765) · /presets · /specimen · /lab
+nkfont studio       # 한글 미세 조절 웹 UI (http://127.0.0.1:8765) · /presets · /specimen · /lab (기준 글자 + 핵심 변수) · /lab/advanced
 nkfont app          # 같은 화면을 데스크톱 창으로 (pywebview, --page specimen|studio|lab|site|update)
 nkfont site         # 소개 페이지 조립: build/site (WOFF2, 다운로드 zip, fonts.json)
 make qa             # 테스트 자동화: 린트·테스트·빌드·검사·재현성·골든 이미지 (docs/TESTING.md)

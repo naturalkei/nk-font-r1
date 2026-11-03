@@ -5,162 +5,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NK Glyph Lab</title>
 <style>
-:root{--bg:#f6f5f1;--panel:#fff;--ink:#1c1b19;--mute:#6d6a63;--line:#e4e1d9;--soft:#efede7;--acc:#1f7a6d;--guide:rgba(40,40,40,.28);--guide2:rgba(31,122,109,.55);--scan:#c2571a}
-@media (prefers-color-scheme:dark){:root{--bg:#10141c;--panel:#161c27;--ink:#e7ebf2;--mute:#8b96a8;--line:#263044;--soft:#1c2433;--acc:#5cc6b4;--guide:rgba(200,210,230,.25);--guide2:rgba(92,198,180,.55);--scan:#f0b84b}}
+:root{--bg:#f6f5f1;--panel:#fff;--ink:#1c1b19;--mute:#6d6a63;--line:#e4e1d9;--soft:#efede7;--acc:#1f7a6d;--acc2:#c2571a;--guide:rgba(40,40,40,.28);--guide2:rgba(31,122,109,.6);--ok:#1f9e60;--warn:#c98a12;--term:#15171a;--termink:#e7e5de}
+@media (prefers-color-scheme:dark){:root{--bg:#121311;--panel:#1b1c1a;--ink:#ecebe6;--mute:#9a978f;--line:#2d2e2b;--soft:#23241f;--acc:#5cc6b4;--acc2:#f08a4b;--guide:rgba(220,220,210,.25);--guide2:rgba(92,198,180,.6);--ok:#4cc38a;--warn:#e0b04a;--term:#0b0c0d}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.45 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
-header{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-header b{font-size:15px}header a{color:var(--acc);text-decoration:none}header .sub{color:var(--mute)}
-.pill{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute)}
-.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 18px;border-bottom:1px solid var(--line);background:var(--panel)}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+header.top{display:flex;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+header.top b{font-size:15px}
+nav a{color:var(--mute);text-decoration:none;margin-right:12px;font-size:13px}nav a.on{color:var(--ink);font-weight:600;border-bottom:2px solid var(--acc);padding-bottom:3px}nav a:hover{color:var(--acc)}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute);margin-left:auto}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
 .bar label{color:var(--mute);font-size:12px}
-select,input[type=number],input[type=text],textarea,button{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+select,input[type=number],input[type=text],button{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
 button{cursor:pointer}button.primary{background:var(--acc);border-color:var(--acc);color:#fff}button:disabled{opacity:.45;cursor:default}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
-.seg button{border:0;border-radius:0;border-right:1px solid var(--line);padding:4px 10px;background:transparent}
-.seg button:last-child{border-right:0}.seg button.on{background:var(--soft);color:var(--acc);font-weight:600}
-.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:2px 10px 2px 6px;cursor:pointer;user-select:none;font-size:12px}
-.chip input{margin:0}.chip i{width:10px;height:10px;border-radius:50%;display:inline-block}
-.chip.missing{opacity:.45}
-main{display:grid;grid-template-columns:250px minmax(0,1fr) 380px;min-height:calc(100vh - 100px)}
-aside,section{padding:12px 14px;display:flex;flex-direction:column;gap:12px;min-width:0}
-aside.left{border-right:1px solid var(--line)}aside.right{border-left:1px solid var(--line)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:0}
+section,aside{padding:14px 18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+aside{border-left:1px solid var(--line)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
 .card h3{margin:0 0 8px;font-size:11px;font-weight:600;color:var(--mute);text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;gap:8px}
 .card h3 .r{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:400}
-.presets{display:flex;flex-wrap:wrap;gap:6px}.presets button{font-size:12px;padding:2px 8px}
-#focus{width:100%;font-size:18px;font-family:ui-monospace,monospace}
-.blocks details{border-top:1px solid var(--line);padding:4px 0}
-.blocks summary{cursor:pointer;font-size:12px;color:var(--acc)}.blocks summary span{color:var(--mute);margin-left:4px}
-.cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:2px;margin-top:6px}
-.cells div{font:20px/34px "NKFull",monospace;text-align:center;border:1px solid var(--line);border-radius:4px;cursor:pointer;height:36px;overflow:hidden}
-.cells div:hover,.cells div.sel{border-color:var(--acc);color:var(--acc)}
-.more{grid-column:1/-1;font-size:11px}
-#stage{position:relative}
-#stage svg{width:100%;display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;touch-action:none}
-#coord{position:absolute;right:10px;top:8px;font:11px ui-monospace,monospace;color:var(--mute);pointer-events:none}
-.ctl{display:grid;grid-template-columns:92px 1fr 64px;gap:6px;align-items:center;margin:4px 0}
-.ctl span{font-size:12px;color:var(--mute)}.ctl input[type=range]{width:100%;accent-color:var(--acc)}
-.ctl input[type=number]{width:64px;padding:2px 4px;font-family:ui-monospace,monospace}
-.row{display:flex;gap:6px;flex-wrap:wrap}.row>button{flex:1}
-table{border-collapse:collapse;width:100%;font:12px ui-monospace,monospace}
-th,td{padding:3px 5px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-th:first-child,td:first-child{text-align:left;font-family:system-ui,sans-serif;color:var(--mute)}
-td small{display:block;font-size:10px}.up{color:#c0392b}.dn{color:#2e86de}
-.phi{display:flex;flex-wrap:wrap;gap:3px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
-.phi .lbl{flex:1 1 100%}.phi .num{flex:1}
-.phi .lbl{font-size:12px}.phi .num{font:12px ui-monospace,monospace;text-align:right}
-.phi .meter{flex:1 1 100%;position:relative;height:8px;background:var(--soft);border-radius:4px}
-.phi .meter i{position:absolute;top:0;bottom:0;border-radius:4px;background:rgba(31,158,137,.25)}
-.phi .meter b{position:absolute;top:-3px;width:3px;height:14px;border-radius:2px}
-.phi .meter em{position:absolute;top:-3px;left:50%;width:1px;height:14px;background:var(--mute)}
-.phi button{font-size:11px;padding:1px 6px}
-.harm{display:grid;grid-template-columns:1fr auto auto auto;gap:2px 10px;font:12px ui-monospace,monospace}
-.harm b{font-family:system-ui,sans-serif;font-weight:500}
-.feat{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
-.fcard{border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.fcard header{padding:4px 8px;border:0;font-size:11px;color:var(--mute);display:flex;gap:6px}
-.fcard header b{font-size:11px;color:var(--ink)}
-.fcard header label{margin-left:auto;font-size:11px}
-.fcard .pair{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
-.fcard .pair div{font-size:22px;padding:6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:clip}
-.fcard .pair div+div{border-left:1px solid var(--line);color:var(--acc)}
-.fcard.on{border-color:var(--acc)}
-pre.code{margin:0;font-size:15px;line-height:1.5;overflow:auto;white-space:pre}
+.steps{display:flex;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--mute)}
+.steps span{border:1px solid var(--line);border-radius:99px;padding:2px 10px;background:var(--panel)}
+.steps span b{color:var(--acc);margin-right:4px}
+#svg{width:100%;display:block}
+.ctl{padding:8px 0 10px;border-bottom:1px solid var(--line)}
+.ctl:last-child{border-bottom:0}
+.ctl .t{display:flex;align-items:center;gap:8px}
+.ctl .t b{font-size:13px;font-weight:600}
+.ctl .t input{width:78px;margin-left:auto;font-family:ui-monospace,monospace;text-align:right;padding:2px 6px}
+.ctl .t .u{color:var(--mute);font-size:11px;min-width:48px}
+.ctl input[type=range]{width:100%;accent-color:var(--acc);margin:6px 0 2px}
+.ctl .f{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mute)}
+.ctl .f .raw{margin-left:auto;font-family:ui-monospace,monospace}
+.ctl .f button,.ctl .f .raw{white-space:nowrap;flex:0 0 auto}.ctl .f>span:first-child{flex:1}
+.ctl .f button{font-size:11px;padding:0 6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--line)}
+.dot.ok{background:var(--ok)}.dot.no{background:var(--warn)}
+.checks{display:grid;grid-template-columns:1fr auto auto;gap:3px 10px;font-size:12px}
+.checks .n{font-family:ui-monospace,monospace;text-align:right}
+.row{display:flex;gap:6px;flex-wrap:wrap}.row>*{flex:1}.row input{min-width:0}
+details.adv summary{cursor:pointer;color:var(--acc);font-size:12px}
+.raws{display:grid;grid-template-columns:1fr 90px;gap:4px 8px;margin-top:8px;align-items:center;font-size:12px}
+.raws span{font-family:ui-monospace,monospace;color:var(--mute)}
+.raws input,.raws select{width:100%;font-family:ui-monospace,monospace;padding:2px 6px}
+.samples{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:10px}
+.sample{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.sample h4{margin:0;padding:4px 10px;font-size:11px;font-weight:600;color:var(--mute);border-bottom:1px solid var(--line);display:flex}
+.sample pre{margin:0;padding:10px 12px;white-space:pre;overflow:auto;font-family:"NKEdit",monospace;font-feature-settings:"calt" 1}
+.sample.term pre{background:var(--term);color:var(--termink)}
+.sample.text pre{white-space:pre-wrap}
 .hint{font-size:11px;color:var(--mute)}.err{color:#c0392b;font-size:12px;white-space:pre-wrap}
-@media (max-width:1180px){main{grid-template-columns:1fr}aside.left,aside.right{border:0;border-bottom:1px solid var(--line)}}
+.note{font-size:12px;color:var(--warn)}
+.vers{display:flex;flex-direction:column;max-height:320px;overflow:auto}
+.ver{display:grid;grid-template-columns:auto 1fr auto auto;gap:2px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:12px}
+.ver:last-child{border-bottom:0}
+.ver b{font-family:ui-monospace,monospace}.ver .when{color:var(--mute);font-size:11px}
+.ver .diff{grid-column:1/-1;font:11px ui-monospace,monospace;color:var(--mute)}
+.ver button{font-size:11px;padding:1px 6px}.ver.cur b{color:var(--acc)}
+.tag{font-size:10px;border:1px solid var(--acc);color:var(--acc);border-radius:99px;padding:0 6px;margin-left:4px}
+@media (max-width:1100px){main{grid-template-columns:1fr}aside{border-left:0;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
-<header>
-  <b>NK Glyph Lab</b><span class="sub">획 두께·기울기·크기를 기준 폰트와 겹쳐 비교하고 한글 조절값을 다듬습니다</span>
-  <a href="/">← 한글 미세 조절(Studio)</a> <a href="/presets">프리셋 비교</a> <a href="/specimen">스페시먼</a>
-  <span id="status" class="pill" style="margin-left:auto">준비</span>
+<header class="top">
+  <b>NK Glyph Lab</b>
+  <nav><a href="/specimen">스페시먼</a><a href="/presets">프리셋 비교</a><a href="/">한글 미세 조절</a><a href="/lab" class="on">글리프 랩</a><a href="/lab/advanced" id="advLink">고급 측정</a></nav>
+  <span id="status" class="pill">준비</span>
 </header>
 <div class="bar">
   <label>가족</label><select id="family"></select>
   <label>굵기</label><select id="weight"></select>
-  <span id="fontChips" style="display:flex;gap:6px;flex-wrap:wrap"></span>
-  <label>Δ 기준</label><select id="base"></select>
+  <label>겹쳐 볼 글꼴</label><select id="cmp"></select>
+  <label>기준 글자</label><input id="latinCtl" type="text" size="6"><input id="hangulCtl" type="text" size="6">
+  <div class="steps" style="margin-left:auto"><span><b>1</b>기준 글자를 보고</span><span><b>2</b>핵심 변수만 정하면</span><span><b>3</b>모든 글자가 따라옵니다</span></div>
 </div>
 <main>
-<aside class="left">
-  <div class="card">
-    <h3>비교할 글자</h3>
-    <input id="focus" type="text" value="Il1가">
-    <div class="presets" id="presets" style="margin-top:8px"></div>
-    <div class="hint" style="margin-top:6px">아래 표에서 글자를 누르면 바꾸고, Shift+클릭이면 덧붙입니다.</div>
-  </div>
-  <div class="card blocks"><h3>글리프 <span class="r" id="glyphCount"></span></h3><div id="blocks" class="hint">전체 빌드 중… (처음 한 번, 약 6초)</div></div>
-</aside>
 <section>
-  <div class="bar" style="border:1px solid var(--line);border-radius:10px">
-    <div class="seg" id="mode"><button data-v="overlay" class="on">겹쳐보기</button><button data-v="side">나란히</button></div>
-    <div class="seg" id="align"><button data-v="center" class="on">셀 가운데</button><button data-v="left">셀 왼쪽</button><button data-v="ink">잉크 가운데</button></div>
-    <div class="seg" id="paint"><button data-v="fill" class="on">채움</button><button data-v="outline">외곽선</button></div>
-    <label><input type="checkbox" id="showGuides" checked> 가이드</label>
-    <label><input type="checkbox" id="showScan" checked> 스캔라인</label>
-    <label><input type="checkbox" id="showSlant" checked> 기울기 축</label>
-    <label><input type="checkbox" id="showCell"> 셀 경계</label>
-  </div>
-  <div id="stage"><svg id="svg"></svg><div id="coord"></div></div>
   <div class="card">
-    <h3>스캔라인 <span class="r hint">높이는 1000 UPM 기준 단위, 세로선은 잉크 폭 비율</span></h3>
-    <div class="ctl"><span>가로선 1 (y)</span><input type="range" id="sy1" min="-200" max="900" value="275"><input type="number" id="sy1n" value="275"></div>
-    <div class="ctl"><span>가로선 2 (y)</span><input type="range" id="sy2" min="-200" max="900" value="640"><input type="number" id="sy2n" value="640"></div>
-    <div class="ctl"><span>세로선 (x %)</span><input type="range" id="sx" min="0" max="100" value="50"><input type="number" id="sxn" value="50"></div>
+    <h3>기준 글자 <span class="r hint">채움 = 편집 중 · 점선 = 겹쳐 볼 글꼴 · 1000 UPM</span></h3>
+    <svg id="svg"></svg>
   </div>
   <div class="card">
-    <h3>OpenType 기능 전후 비교 <span class="r"><select id="featFont"></select> <label><input type="checkbox" id="featAll"> 내부 기능도 보기</label></span></h3>
-    <div class="hint" style="margin-bottom:8px">왼쪽은 끈 상태, 오른쪽은 켠 상태입니다. "큰 보기"를 체크하면 위 비교 화면의 글리프에도 그 기능(1:1 치환)이 적용됩니다.</div>
-    <div class="feat" id="feats"></div>
-    <h3 style="margin-top:12px">코드 미리보기 <span class="r hint">위에서 켠 기능이 적용됩니다</span></h3>
-    <textarea id="code" style="width:100%;min-height:70px;font-family:ui-monospace,monospace">// 한글 주석: 다람쥐 헌 쳇바퀴
-if (a != b && c >= d) { return x => x * 0x1F; } /* 0O Il1 */
-~/프로젝트 ❯ git:(main) ✔ === !== <= >= -> |></textarea>
-    <pre class="code" id="codeView"></pre>
+    <h3>전체 미리보기 <span class="r"><label class="hint">크기 <select id="size"><option>13</option><option selected>16</option><option>20</option><option>28</option></select></label></span></h3>
+    <div class="samples" id="samples"></div>
+    <div class="hint" style="margin-top:8px">편집 중인 값으로 바로 다시 빌드한 글꼴입니다. 기준 글자만 맞추면 한글 11,172자 전체가 같은 값을 따릅니다.</div>
   </div>
 </section>
-<aside class="right">
+<aside>
   <div class="card">
-    <h3>한글 조절 <span class="r hint">편집 중 폰트에만 적용</span></h3>
-    <div class="ctl"><span>크기 scale</span><input type="range" id="p_scale" min="0.80" max="1.10" step="0.005"><input type="number" id="p_scale_n" step="0.005"></div>
-    <div class="ctl"><span>세로 dy</span><input type="range" id="p_dy" min="-120" max="100" step="1"><input type="number" id="p_dy_n" step="1"></div>
-    <div class="ctl"><span>가로 비율 width</span><input type="range" id="p_width" min="0.80" max="1.15" step="0.005"><input type="number" id="p_width_n" step="0.005"></div>
-    <div class="ctl"><span>기울기 slant°</span><input type="range" id="p_slant" min="-5" max="15" step="0.1"><input type="number" id="p_slant_n" step="0.1"></div>
-    <div class="ctl"><span>굵기 grade</span><input type="range" id="p_grade" min="-40" max="40" step="0.5"><input type="number" id="p_grade_n" step="0.5"></div>
-    <div class="ctl"><span>가로 배치</span><select id="p_center" style="grid-column:2/4"><option value="advance">advance (원본 여백)</option><option value="bbox">bbox (잉크 가운데)</option></select></div>
-    <div class="row" style="margin-top:6px">
-      <button id="ruleGrade" title="한글 세로획 두께를 영문 l 세로획 두께에 맞춥니다">규칙: 획 굵기 맞춤</button>
-      <button id="ruleCenter" title="한글 중심을 영문 대문자 중심에 맞춥니다">규칙: 중심 맞춤</button>
-    </div>
-    <div class="row" style="margin-top:6px">
-      <button id="ruleCap" title="한글 높이를 대문자 높이의 비율로 맞춥니다">규칙: 높이 비율</button>
-      <input id="capTarget" type="number" step="0.01" value="1.16" style="width:70px" title="목표 한글/대문자 높이 비율">
-    </div>
-    <div class="row" style="margin-top:10px"><button id="reset">저장값으로</button><button class="primary" id="save">설정 저장</button></div>
-    <div class="hint" id="saveMsg"></div>
+    <h3>핵심 변수 <span class="r"><button id="phiAll" title="φ 목표가 있는 변수를 모두 황금비 목표로 맞춥니다">모두 φ로</button></span></h3>
+    <div id="pixelNote" class="note" hidden>NK Pixel은 원본 비트맵을 그대로 쓰므로 조절할 변수가 없습니다.</div>
+    <div id="controls"></div>
+    <div class="hint" style="margin-top:4px">값은 <b>목표</b>입니다. 하나를 바꾸면 나머지 목표는 그대로 지키도록 원시 수치(오른쪽 아래 회색 글씨)를 다시 계산합니다.</div>
   </div>
-  <div class="card"><h3>황금비 규칙 φ <span class="r"><button id="phiAll" title="움직일 수 있는 규칙을 모두 목표값에 맞춥니다">모두 맞춤</button></span></h3>
-    <div id="phi"></div>
-    <div class="hint" style="margin-top:6px">목표 = φ^(단계/6), φ ≈ 1.618 · config/proportions.toml (모든 가족 공용). 🔒 은 터미널 격자·영문 메트릭 규칙이라 표시만 합니다.</div></div>
-  <div class="card"><h3>영문·한글 획 조화 <span class="r hint">l·H 대 ㅣ·ㅡ</span></h3><div class="harm" id="harmony"></div></div>
-  <div class="card"><h3>측정 <span class="r" id="activeLbl"></span></h3><div style="overflow:auto"><table id="table"></table></div>
-    <div class="hint" style="margin-top:6px">모든 값은 1000 UPM으로 환산했습니다. 작은 글씨는 Δ 기준 폰트와의 차이입니다. 기울기는 왼쪽/오른쪽 첫 획 축의 추정값(°, + 는 오른쪽으로 기움)입니다.</div></div>
+  <div class="card"><h3>점검 <span class="r hint">황금비 규칙 · 읽기 전용</span></h3><div class="checks" id="checks"></div></div>
+  <div class="card">
+    <h3>저장</h3>
+    <div class="row"><button id="undo" title="되돌리기 (⌘Z / Ctrl+Z)">↶ 되돌리기</button><button id="redo" title="다시 실행 (⇧⌘Z / Ctrl+Y)">↷ 다시</button><button id="reset">저장값으로</button></div>
+    <div class="row" style="margin-top:6px"><input id="saveNote" type="text" placeholder="버전 메모 (예: 한글 높이 φ로)"><button class="primary" id="save" style="flex:0 0 auto" title="config/families/&lt;가족&gt;.toml 의 [hangul] 에 기록하고 새 버전으로 남깁니다 (빌드에 반영)">빌드 설정에 저장</button></div>
+    <div class="row" style="margin-top:6px"><input id="presetLabel" type="text" placeholder="프리셋 이름 (예: Mono 넉넉한 한글)"><button id="savePreset" style="flex:0 0 auto">프리셋으로 저장</button></div>
+    <div class="hint" id="saveMsg" style="margin-top:6px"></div>
+    <details class="adv" style="margin-top:10px">
+      <summary>고급: 원시 수치 직접 입력</summary>
+      <div class="raws" id="raws"></div>
+      <div class="hint" style="margin-top:6px">여기서 바꾸면 위 목표값이 측정값으로 다시 채워집니다. 글리프별 측정·스캔라인·OpenType 비교는 <a href="/lab/advanced" id="advLink2">고급 측정</a>에 있습니다.</div>
+    </details>
+  </div>
+  <div class="card">
+    <h3>버전 <span class="r hint">config/versions/&lt;가족&gt;.toml · git으로 함께 관리</span></h3>
+    <div id="versions" class="vers"><span class="hint">불러오는 중…</span></div>
+    <div class="hint" style="margin-top:6px"><b>불러오기</b>는 편집기로만 가져오고, <b>복원</b>은 빌드 설정에 다시 쓰고 새 버전으로 남깁니다. 기록은 지워지지 않습니다.</div>
+  </div>
   <div id="err" class="err"></div>
 </aside>
 </main>
 <script>
 const $ = (id) => document.getElementById(id);
-const COLORS = { "nk-edit": "#e8743b", "nk-saved": "#1f9e89" };
-const REF_COLORS = ["#3b82f6", "#a855f7", "#64748b", "#d946ef", "#84cc16"];
-const PARAMS = ["scale", "dy", "width", "slant", "grade"];
-const DEFAULTS = { scale: 0.96, dy: 0, width: 1, slant: 0, grade: 0, center: "advance" };
-const HIDDEN_FEATS = new Set(["aalt", "ccmp", "locl", "mark", "mkmk", "kern", "rclt", "rlig", "dist", "abvm", "blwm", "ljmo", "vjmo", "tjmo"]);
-const FEAT_NAMES = { calt: "문맥 대체", liga: "합자", dlig: "선택 합자", zero: "빗금 0", case: "대문자용 기호", frac: "분수", sups: "위 첨자", subs: "아래 첨자", sinf: "과학 아래 첨자", onum: "옛 숫자", ordn: "서수", salt: "대체 글자", numr: "분자", dnom: "분모", tnum: "고정폭 숫자", pnum: "비례 숫자" };
-let families = [], info = null, last = null, active = 0, seq = 0, timer = null, saved = {};
-let fontOn = { "nk-edit": true, "nk-saved": true }, fontLabels = {}, featOn = new Set(), glyphFeats = new Set();
-const opt = { mode: "overlay", align: "center", paint: "fill" };
+const DEFAULTS = { scale: 0.96, dy: 0, width: 1, slant: 0, grade: 0, tracking: 0, center: "advance" };
+const RAW = [["scale", 0.001], ["width", 0.001], ["grade", 0.1], ["dy", 1], ["slant", 0.1], ["tracking", 1]];
+const EDIT = "#e8743b", CMP = "#3b82f6";
+let families = [], info = null, core = null, samples = {}, saved = {}, params = {}, targets = {};
+let hist = [], histAt = -1, fromHist = false, versionsList = [];
+let cmpChosen = false, solveSeq = 0, glyphSeq = 0, prevSeq = 0, timer = null, lastGlyphs = null;
 
 async function api(path, body) {
   const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
@@ -168,355 +133,287 @@ async function api(path, body) {
   if (j.error) throw new Error(j.error);
   return j;
 }
-function status(t) { $("status").textContent = t; }
-function fam() { return families.find(f => f.id === $("family").value); }
-function color(fid) { return COLORS[fid] || REF_COLORS[(info.references.findIndex(r => r.id === fid)) % REF_COLORS.length]; }
-function params() { const p = { center: $("p_center").value }; for (const k of PARAMS) p[k] = +$("p_" + k).value; return p; }
-function selectedFonts() { return Object.keys(fontLabels).filter(f => fontOn[f]); }
-function chars() { return [...$("focus").value].filter(c => c !== " " && c !== "|").slice(0, 12).join(""); }
+const status = (t) => { $("status").textContent = t; };
+const fam = () => families.find(f => f.id === $("family").value);
+const pixel = () => fam().kind === "pixel";
+const driven = () => core.controls.filter(c => c.solve !== "direct");
+const fmt = (c, v) => v == null ? "–" : (+v).toFixed(c.step >= 1 ? 0 : c.step >= 0.1 ? 1 : 3);
+function controlChars() { return [...new Set([...$("latinCtl").value, ...$("hangulCtl").value])].filter(c => c.trim()).join(""); }
+function fail(e) { $("err").textContent = e.message; status("오류"); }
 
-async function loadFace(name, url) {
-  const face = new FontFace(name, `url(${url})`);
-  await face.load();
-  for (const f of [...document.fonts]) if (f.family === name || f.family === `"${name}"`) document.fonts.delete(f);
-  document.fonts.add(face);
+// ---------- controls ----------
+function buildControls() {
+  $("controls").innerHTML = core.controls.map(c => `
+    <div class="ctl" data-id="${c.id}">
+      <div class="t"><span class="dot" id="dot_${c.id}"></span><b>${c.label}</b><input type="number" id="n_${c.id}" step="${c.step}" min="${c.min}" max="${c.max}"><span class="u">${c.unit}</span></div>
+      <input type="range" id="r_${c.id}" min="${c.min}" max="${c.max}" step="${c.step}">
+      <div class="f"><span>${c.hint}</span>${c.phi != null ? `<button data-phi="${c.id}" title="${c.expr || "기준"} = ${c.phi}">${c.expr ? "φ" : "기준"} ${fmt(c, c.phi)}</button>` : ""}<span class="raw" id="raw_${c.id}"></span></div>
+    </div>`).join("");
+  for (const c of core.controls) {
+    const r = $("r_" + c.id), n = $("n_" + c.id);
+    r.oninput = () => { n.value = fmt(c, r.value); targets[c.id] = +r.value; schedule(); };
+    n.onchange = () => { r.value = n.value; targets[c.id] = +n.value; schedule(); };
+  }
+  for (const b of $("controls").querySelectorAll("button[data-phi]")) b.onclick = () => {
+    const c = core.controls.find(x => x.id === b.dataset.phi);
+    setTarget(c, c.phi); solve();
+  };
+  $("raws").innerHTML = RAW.filter(([k]) => k !== "tracking" || core.controls.some(c => c.drives === "tracking"))
+    .map(([k, s]) => `<span>${k}</span><input type="number" id="raw-${k}" step="${s}">`).join("")
+    + `<span>center</span><select id="raw-center"><option value="advance">advance</option><option value="bbox">bbox</option></select>`;
+  for (const el of $("raws").querySelectorAll("input,select")) el.onchange = () => {
+    const k = el.id.slice(4); params[k] = k === "center" ? el.value : +el.value; measure();
+  };
+  const off = pixel();
+  $("pixelNote").hidden = !off;
+  for (const el of document.querySelectorAll("#controls input, #controls button, #raws input, #raws select, #phiAll, #save, #reset, #saveNote")) el.disabled = off;
+}
+function setTarget(c, v) {
+  targets[c.id] = v;
+  $("r_" + c.id).value = v; $("n_" + c.id).value = fmt(c, v);
+}
+function showResult(r) {
+  for (const x of r.results) {
+    const c = core.controls.find(k => k.id === x.id);
+    $("dot_" + x.id).className = "dot" + (x.met === true ? " ok" : x.met === false ? " no" : "");
+    $("dot_" + x.id).title = x.met === false ? `목표에 닿지 못했습니다 (측정 ${fmt(c, x.actual)}): 범위 끝이거나 원본 디자인의 한계` : "";
+    $("raw_" + x.id).textContent = c.drives ? `→ ${c.drives} ${params[c.drives] ?? "–"}` : "";
+  }
+  $("checks").innerHTML = (r.checks || []).map(k => `<span>${k.locked ? "🔒 " : ""}${k.label}</span><span class="n">${k.actual ?? "–"} <span class="hint">/ ${k.target}</span></span><span class="dot ${k.ok ? "ok" : k.ok === false ? "no" : ""}" title="${k.expr}"></span>`).join("")
+    || '<span class="hint">측정할 수 없습니다</span>';
+  for (const [k] of [...RAW, ["center"]]) { const el = $("raw-" + k); if (el) el.value = params[k]; }
+  const q = new URLSearchParams({ family: fam().id, weight: $("weight").value, p: JSON.stringify(params) });
+  $("advLink").href = $("advLink2").href = "/lab/advanced?" + q;
 }
 
-// ---------- toolbar ----------
-function buildChips() {
-  const f = fam();
-  fontLabels = { "nk-edit": `${f.family} (편집 중)`, "nk-saved": `${f.family} (저장값)` };
-  for (const r of info.references) fontLabels[r.id] = r.label;
-  $("fontChips").innerHTML = Object.entries(fontLabels).map(([id, label]) => {
-    const ref = info.references.find(r => r.id === id);
-    const miss = ref && ref.missing;
-    return `<label class="chip ${miss ? "missing" : ""}" title="${miss ? "sources/에 없음: nkfont fetch" : ""}"><input type="checkbox" data-f="${id}" ${fontOn[id] && !miss ? "checked" : ""} ${miss ? "disabled" : ""}><i style="background:${color(id)}"></i>${label}</label>`;
+// Measure the current raw params; targets become what is measured (nothing moves).
+async function measure() {
+  const my = ++solveSeq; status("측정 중…"); $("err").textContent = "";
+  try {
+    const r = await api("/api/lab/solve", { family: fam().id, weight: $("weight").value, params, targets: {} });
+    if (my !== solveSeq) return;
+    params = r.params;
+    for (const x of r.results) {
+      const c = core.controls.find(k => k.id === x.id);
+      if (x.actual != null) setTarget(c, x.actual);
+    }
+    showResult(r); pushHist(); status(`측정 ${r.ms} ms`); redraw();
+  } catch (e) { fail(e); }
+}
+// Meet every target: the solver moves the raw params, a few build-and-measure rounds.
+async function solve() {
+  const my = ++solveSeq; status("계산 중…"); $("err").textContent = "";
+  try {
+    const r = await api("/api/lab/solve", { family: fam().id, weight: $("weight").value, params, targets });
+    if (my !== solveSeq) return;
+    params = r.params; showResult(r); pushHist(); status(`${r.rounds}회 맞춤 · ${r.ms} ms`); redraw();
+  } catch (e) { fail(e); }
+}
+function schedule() { clearTimeout(timer); timer = setTimeout(solve, 160); }
+
+// ---------- undo / redo (this session's edits) ----------
+function pushHist() {
+  const s = JSON.stringify(params);
+  if (fromHist) { fromHist = false; } else if (hist[histAt] !== s) { hist = hist.slice(0, histAt + 1); hist.push(s); histAt = hist.length - 1; }
+  $("undo").disabled = histAt <= 0 || pixel(); $("redo").disabled = histAt >= hist.length - 1 || pixel();
+  markVersions();
+}
+function stepHist(d) {
+  const i = histAt + d; if (i < 0 || i >= hist.length) return;
+  histAt = i; params = JSON.parse(hist[i]); fromHist = true; measure();
+}
+$("undo").onclick = () => stepHist(-1);
+$("redo").onclick = () => stepHist(1);
+document.addEventListener("keydown", (e) => {
+  if (!(e.metaKey || e.ctrlKey) || ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName) && e.target.type !== "range") return;
+  const k = e.key.toLowerCase();
+  if (k === "z" && !e.shiftKey) { e.preventDefault(); stepHist(-1); }
+  else if ((k === "z" && e.shiftKey) || k === "y") { e.preventDefault(); stepHist(1); }
+});
+
+// ---------- versions (saved [hangul] history) ----------
+const VKEYS = ["scale", "width", "grade", "dy", "slant", "tracking", "center"];
+const same = (a, b) => VKEYS.every(k => (a[k] ?? DEFAULTS[k]) === (b[k] ?? DEFAULTS[k]));
+async function loadVersions() {
+  try {
+    versionsList = (await api("/api/versions", { family: fam().id })).versions.slice().reverse();
+    markVersions();
+  } catch (e) { fail(e); }
+}
+function markVersions() {
+  if (!core) return;
+  const f = fam(), cur = { ...DEFAULTS, ...f.hangul };
+  if (!versionsList.length) { $("versions").innerHTML = '<span class="hint">아직 버전이 없습니다. "빌드 설정에 저장"하면 v1(저장 전 값)과 v2가 생깁니다.</span>'; return; }
+  $("versions").innerHTML = versionsList.map(v => {
+    const h = { ...DEFAULTS, ...v.hangul }, isCur = same(h, cur), isEdit = same(h, params);
+    const diff = VKEYS.filter(k => h[k] !== cur[k]).map(k => `${k} ${cur[k]}→${h[k]}`).join(" · ");
+    return `<div class="ver ${isCur ? "cur" : ""}"><b>v${v.n}</b><span>${(v.note || "").replace(/</g, "&lt;") || '<span class="hint">메모 없음</span>'}${isCur ? '<span class="tag">현재 저장값</span>' : ""}${isEdit && !isCur ? '<span class="tag">편집 중</span>' : ""}</span>
+      <button data-load="${v.n}" title="편집기로 가져옵니다 (저장하지 않음)">불러오기</button><button data-restore="${v.n}" ${isCur || pixel() ? "disabled" : ""} title="빌드 설정에 다시 씁니다">복원</button>
+      <span class="when" style="grid-column:1/-1">${v.saved_at}${v.restored_from ? ` · v${v.restored_from}에서 복원` : ""}</span>${diff ? `<span class="diff">현재 대비: ${diff}</span>` : ""}</div>`;
   }).join("");
-  for (const el of $("fontChips").querySelectorAll("input")) el.onchange = () => { fontOn[el.dataset.f] = el.checked; refresh(); };
-  const prevBase = $("base").value;
-  $("base").innerHTML = Object.entries(fontLabels).map(([id, l]) => `<option value="${id}">${l}</option>`).join("");
-  $("base").value = fontLabels[prevBase] ? prevBase : "nk-saved";
-  $("featFont").innerHTML = Object.entries(fontLabels).filter(([id]) => id !== "nk-edit").map(([id, l]) => `<option value="${id}">${l}</option>`).join("");
-}
-
-function seg(id) {
-  for (const b of $(id).querySelectorAll("button")) b.onclick = () => {
-    for (const x of $(id).querySelectorAll("button")) x.classList.toggle("on", x === b);
-    opt[id] = b.dataset.v; draw();
+  for (const b of $("versions").querySelectorAll("button[data-load]")) b.onclick = () => {
+    const v = versionsList.find(x => x.n === +b.dataset.load); params = { ...DEFAULTS, ...v.hangul }; measure();
+    $("saveMsg").textContent = `v${v.n}을 편집기로 불러왔습니다 (아직 저장 안 됨)`;
+  };
+  for (const b of $("versions").querySelectorAll("button[data-restore]")) b.onclick = async () => {
+    const n = +b.dataset.restore;
+    if (!confirm(`v${n} 값을 빌드 설정(config/families/${fam().id}.toml)에 다시 쓸까요? 새 버전으로 기록됩니다.`)) return;
+    try {
+      const r = await api("/api/versions/restore", { family: fam().id, n });
+      const f = fam(); f.hangul = { ...f.hangul, ...r.version.hangul };
+      params = { ...DEFAULTS, ...f.hangul }; saved = { ...params };
+      $("saveMsg").textContent = `v${n} 복원 → ${r.saved} (v${r.version.n}로 기록)`;
+      await loadVersions(); measure();
+    } catch (e) { fail(e); }
   };
 }
 
-// ---------- tuning controls ----------
-function bindParam(k) {
-  const r = $("p_" + k), n = $("p_" + k + "_n");
-  r.oninput = () => { n.value = r.value; schedule(); };
-  n.onchange = () => { r.value = n.value; schedule(); };
-}
-function setParams(p) {
-  for (const k of PARAMS) { $("p_" + k).value = p[k]; $("p_" + k + "_n").value = p[k]; }
-  $("p_center").value = p.center;
-}
-function schedule() { clearTimeout(timer); timer = setTimeout(refresh, 140); }
-
-// ---------- data ----------
-async function refresh() {
-  const f = fam(); if (!f) return;
-  const my = ++seq; $("err").textContent = ""; status("측정 중…");
-  try {
-    const r = await api("/api/lab/glyphs", {
-      family: f.id, weight: $("weight").value, chars: chars(), fonts: selectedFonts(),
-      params: params(), features: [...glyphFeats],
-      scan_y: [+$("sy1").value, +$("sy2").value], scan_x: [+$("sx").value / 100],
-    });
-    if (my !== seq) return;
-    last = r.fonts; active = Math.min(active, chars().length - 1);
-    draw(); table(); harmony(); phi(); status(`완료 · ${r.ms} ms`);
-  } catch (e) { $("err").textContent = e.message; status("오류"); }
-}
-
-// ---------- drawing ----------
+// ---------- control glyphs ----------
 const NS = "http://www.w3.org/2000/svg";
 function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+const cssv = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
+async function refreshGlyphs() {
+  const my = ++glyphSeq, cmp = $("cmp").value;
+  try {
+    const r = await api("/api/lab/glyphs", { family: fam().id, weight: $("weight").value, chars: controlChars(), fonts: cmp ? ["nk-edit", cmp] : ["nk-edit"], params, partial: true });
+    if (my !== glyphSeq) return;
+    lastGlyphs = r.fonts; draw();
+  } catch (e) { fail(e); }
+}
 function draw() {
   const svg = $("svg"); svg.innerHTML = "";
-  if (!last) return;
-  const ids = selectedFonts().filter(id => last[id] && !last[id].error);
-  const cs = [...chars()];
-  if (!ids.length || !cs.length) return;
-  const g0 = last[ids[0]].guides;
-  let top = 0, bot = 0, colW = [];
-  for (const id of ids) { top = Math.max(top, last[id].guides.ascent); bot = Math.min(bot, last[id].guides.descent); }
-  cs.forEach((c, i) => { colW[i] = Math.max(...ids.map(id => (last[id].glyphs[i] || {}).advance || 600)); });
-  const gap = 80, inner = colW.reduce((a, b) => a + b + gap, 0) + 20;
-  const fs = Math.max(26, (inner + 300) / 85); // label size in font units, readable at any zoom
-  const pad = Math.round(fs * 6.2);
-  const rows = opt.mode === "side" ? ids.map(id => [id]) : [ids];
-  const head = opt.mode === "side" ? fs * 1.6 : 0;
-  const rowH = top - bot + 60 + head;
-  const W = pad + inner, H = rowH * rows.length + 20;
+  const ed = lastGlyphs && lastGlyphs["nk-edit"]; if (!ed || ed.error) return;
+  const cmp = $("cmp").value && lastGlyphs[$("cmp").value];
+  const g = ed.guides, all = controlChars();
+  const rows = [[...$("latinCtl").value].filter(c => c.trim()), [...$("hangulCtl").value].filter(c => c.trim())].filter(r => r.length);
+  const glyph = (font, ch) => font && !font.error ? font.glyphs[[...all].indexOf(ch)] : null;
+  const top = Math.max(g.han_top ?? 0, g.cap_top ?? 0) + 70, bot = Math.min(g.han_bottom ?? 0, -40) - 50;
+  const gap = 70, pad = 300, rowH = top - bot;
+  const widths = rows.map(r => r.reduce((a, ch) => a + Math.max(glyph(ed, ch)?.advance || 600, glyph(cmp, ch)?.advance || 0) + gap, 0));
+  const W = pad + Math.max(...widths) + 20, H = rowH * rows.length;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  svg.style.maxHeight = Math.max(320, 420 * rows.length) + "px";
-  const cssv = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-  rows.forEach((rowIds, ri) => {
-    const oy = 10 + ri * rowH + head + top + 30; // baseline in svg coords
-    const root = el("g", {}, svg);
-    if (opt.mode === "side") el("text", { x: 6, y: oy - top - 30, "font-size": fs * 1.2, "font-weight": 600, fill: color(rowIds[0]) }, root).textContent = fontLabels[rowIds[0]];
-    const g = last[rowIds[0]].guides;
-    if ($("showGuides").checked) {
-      const lines = [["ascent", g.ascent, 0], ["cap", g.cap_top, 0], ["x-height", g.x_top, 0], ["baseline", 0, 0], ["descent", g.descent, 0], ["한 top", g.han_top, 1], ["한 bottom", g.han_bottom, 1]];
-      for (const [label, v, k] of lines) {
-        if (v === undefined) continue;
-        el("line", { x1: pad - 10, x2: W, y1: oy - v, y2: oy - v, stroke: cssv(k ? "--guide2" : "--guide"), "stroke-dasharray": label === "baseline" ? "" : "6 6", "stroke-width": 2 }, root);
-        el("text", { x: 4, y: oy - v + fs * 0.35, "font-size": fs * 0.8, fill: cssv("--mute") }, root).textContent = `${label} ${v}`;
-      }
-      if (rowIds.length > 1) for (const id of rowIds.slice(1)) {  // other fonts' x/cap as ticks
-        const gg = last[id].guides;
-        for (const v of [gg.x_top, gg.cap_top, gg.han_top]) if (v !== undefined) el("line", { x1: W - 24, x2: W - 4, y1: oy - v, y2: oy - v, stroke: color(id), "stroke-width": 4 }, root);
-      }
+  const capMid = g.cap_top / 2, hanMid = g.han_top != null ? (g.han_top + g.han_bottom) / 2 : null;
+  const lines = [["대문자", g.cap_top, "--guide"], ["x높이", g.x_top, "--guide"], ["기준선", 0, "--guide"], ["한글 위", g.han_top, "--guide2"], ["한글 아래", g.han_bottom, "--guide2"]];
+  rows.forEach((row, ri) => {
+    const oy = ri * rowH + top;
+    let lastY = -1e9;  // labels of guides that nearly coincide are stacked, not overprinted
+    for (const [label, v, col] of lines.filter(l => l[1] != null).sort((a, b) => b[1] - a[1])) {
+      el("line", { x1: pad - 20, x2: W, y1: oy - v, y2: oy - v, stroke: cssv(col), "stroke-width": 2.5, "stroke-dasharray": v === 0 ? "" : "8 8" }, svg);
+      const ty = Math.max(oy - v + 12, lastY + 38); lastY = ty;
+      el("text", { x: 6, y: ty, "font-size": 34, fill: cssv(col === "--guide2" ? "--acc" : "--mute") }, svg).textContent = `${label} ${v}`;
     }
-    if ($("showScan").checked) for (const y of [+$("sy1").value, +$("sy2").value]) el("line", { x1: pad - 10, x2: W, y1: oy - y, y2: oy - y, stroke: cssv("--scan"), "stroke-width": 1.5, opacity: .7 }, root);
-    let x = pad;
-    cs.forEach((c, i) => {
-      const cw = colW[i];
-      if (i === active) el("rect", { x: x - gap / 2 + 4, y: oy - top - 20, width: cw + gap - 8, height: top - bot + 30, fill: cssv("--soft"), rx: 12 }, root).style.cursor = "default";
-      const hit = el("rect", { x: x - gap / 2, y: oy - top - 20, width: cw + gap, height: top - bot + 30, fill: "transparent" }, root);
-      hit.style.cursor = "pointer"; hit.onclick = () => { active = i; draw(); table(); };
-      rowIds.forEach((id, k) => {
-        const gl = last[id].glyphs[i];
-        if (!gl || gl.missing) {
-          if (opt.mode === "side" || k === 0) el("text", { x: x + 10, y: oy - 200 + k * 30, "font-size": fs, fill: color(id) }, root).textContent = "없음";
-          return;
-        }
-        let dx = x;
-        if (opt.align === "center") dx = x + (cw - gl.advance) / 2;
-        if (opt.align === "ink" && gl.xmin !== undefined) dx = x + cw / 2 - (gl.xmin + gl.xmax) / 2;
-        const gg = el("g", { transform: `translate(${dx} ${oy}) scale(1 -1)` }, root);
-        const col = color(id);
-        if ($("showCell").checked) el("rect", { x: 0, y: g.descent, width: gl.advance, height: g.ascent - g.descent, fill: "none", stroke: col, "stroke-dasharray": "4 6", "stroke-width": 1.5, opacity: .7 }, gg);
-        const fill = opt.paint === "fill" ? (rowIds.length > 1 ? col : cssv("--ink")) : "none";
-        el("path", { d: gl.path, fill, "fill-opacity": rowIds.length > 1 && opt.paint === "fill" ? .16 : 1, stroke: col, "stroke-width": opt.paint === "fill" ? 1.5 : 2.5 }, gg);
-        if ($("showSlant").checked) for (const key of ["slant_line", "slant_r_line"]) {
-          const L = gl[key]; if (!L) continue;
-          el("line", { x1: L[0], y1: L[1], x2: L[2], y2: L[3], stroke: col, "stroke-width": 3, "stroke-dasharray": "10 6" }, gg);
-        }
-        if ($("showScan").checked) {
-          const off = (k - (rowIds.length - 1) / 2) * 12;
-          for (const s of gl.scan_y || []) for (const [a, b] of s.runs) {
-            el("line", { x1: a, x2: b, y1: s.at + off, y2: s.at + off, stroke: col, "stroke-width": 7, "stroke-linecap": "butt" }, gg);
-            const t = el("text", { x: (a + b) / 2, y: -(s.at + off) - 12, "font-size": fs * 0.75, "text-anchor": "middle", fill: col, transform: "scale(1 -1)" }, gg);
-            t.textContent = Math.round(b - a);
-          }
-          for (const s of gl.scan_x || []) {
-            el("line", { x1: s.at, x2: s.at, y1: g.descent, y2: g.ascent, stroke: cssv("--scan"), "stroke-width": 1, opacity: .5 }, gg);
-            for (const [a, b] of s.runs) {
-              el("line", { x1: s.at + off, x2: s.at + off, y1: a, y2: b, stroke: col, "stroke-width": 7 }, gg);
-              const t = el("text", { x: s.at + off + 10, y: -(a + b) / 2 + 6, "font-size": fs * 0.75, fill: col, transform: "scale(1 -1)" }, gg);
-              t.textContent = Math.round(b - a);
-            }
-          }
-        }
-      });
+    // Optical centres: capitals vs Hangul (the 세로 중심 control closes this gap).
+    el("line", { x1: pad - 20, x2: pad + 40, y1: oy - capMid, y2: oy - capMid, stroke: cssv("--mute"), "stroke-width": 5 }, svg);
+    if (hanMid != null) el("line", { x1: pad - 20, x2: pad + 40, y1: oy - hanMid, y2: oy - hanMid, stroke: cssv("--acc"), "stroke-width": 5 }, svg);
+    el("title", {}, el("rect", { x: pad - 24, y: oy - Math.max(capMid, hanMid ?? capMid) - 10, width: 70, height: Math.abs(capMid - (hanMid ?? capMid)) + 20, fill: "transparent" }, svg)).textContent = `중심: 대문자 ${capMid} · 한글 ${hanMid ?? "–"}`;
+    let x = pad + 60;
+    for (const ch of row) {
+      const a = glyph(ed, ch), b = glyph(cmp, ch);
+      const cw = Math.max(a?.advance || 600, b?.advance || 0);
+      for (const [gl, isEdit] of [[b, false], [a, true]]) {
+        if (!gl || gl.missing) continue;
+        const gg = el("g", { transform: `translate(${x + (cw - gl.advance) / 2} ${oy}) scale(1 -1)` }, svg);
+        el("rect", { x: 0, y: g.descent, width: gl.advance, height: g.ascent - g.descent, fill: "none", stroke: cssv("--line"), "stroke-width": 2 }, gg);
+        el("path", isEdit ? { d: gl.path, fill: cssv("--ink"), "fill-opacity": cmp ? .85 : 1 } : { d: gl.path, fill: "none", stroke: CMP, "stroke-width": 5, "stroke-dasharray": "14 8" }, gg);
+      }
+      if (!a || a.missing) el("text", { x: x + 20, y: oy - 300, "font-size": 60, fill: cssv("--mute") }, svg).textContent = `${ch} 없음`;
       x += cw + gap;
-    });
-    root.dataset.oy = oy;
+    }
   });
-  svg._layout = { pad, oy0: 10 + head + top + 30, rowH };
 }
 
-$("svg").onmousemove = (e) => {
-  const svg = $("svg"); if (!svg._layout) return;
-  const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
-  const p = pt.matrixTransform(svg.getScreenCTM().inverse());
-  const row = Math.floor((p.y - 10) / svg._layout.rowH);
-  const y = Math.round(svg._layout.oy0 + row * svg._layout.rowH - p.y);
-  $("coord").textContent = `y ${y}`;
-};
-
-// ---------- table ----------
-const ROWS = [["글리프", "glyph"], ["advance", "advance"], ["LSB", "lsb"], ["RSB", "rsb"], ["잉크 폭", "width"], ["잉크 높이", "height"], ["아래 / 위", "ymin", "ymax"],
-  ["세로획 (최소)", "stem"], ["가로획 (최소)", "bar"], ["대비 가로/세로", "contrast"], ["기울기 L°", "slant"], ["기울기 R°", "slant_r"], ["잉크 농도", "coverage"], ["잉크 면적", "ink"]];
-function table() {
-  const ids = selectedFonts().filter(id => last && last[id] && !last[id].error);
-  const cs = [...chars()]; const c = cs[active];
-  $("activeLbl").textContent = c ? `「${c}」 U+${c.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}` : "";
-  const base = last && last[$("base").value] && last[$("base").value].glyphs ? last[$("base").value].glyphs[active] : null;
-  let h = `<tr><th></th>${ids.map(id => `<th style="color:${color(id)}">${fontLabels[id].replace(/\s*\(.*\)/, m => m.includes("편집") ? " ✎" : m.includes("저장") ? " ●" : "")}</th>`).join("")}</tr>`;
-  for (const [label, key, key2] of ROWS) {
-    h += `<tr><td>${label}</td>`;
-    for (const id of ids) {
-      const g = last[id].glyphs[active] || {};
-      if (g.missing) { h += "<td>–</td>"; continue; }
-      let v = g[key];
-      if (key2) v = `${g[key] ?? "–"} / ${g[key2] ?? "–"}`;
-      let d = "";
-      if (!key2 && key !== "glyph" && base && !base.missing && typeof v === "number" && typeof base[key] === "number" && id !== $("base").value) {
-        const diff = +(v - base[key]).toFixed(key === "coverage" || key === "contrast" ? 3 : 1);
-        if (diff) d = `<small class="${diff > 0 ? "up" : "dn"}">${diff > 0 ? "+" : ""}${diff}</small>`;
-      }
-      h += `<td>${v ?? "–"}${d}</td>`;
-    }
-    h += "</tr>";
-  }
-  $("table").innerHTML = h;
+// ---------- full preview ----------
+const SAMPLE_LABELS = { hangul: "한글", latin: "영문", code: "코드", terminal: "터미널" };
+function buildSamples() {
+  $("samples").innerHTML = Object.entries(samples).map(([k, t]) =>
+    `<div class="sample ${k === "terminal" ? "term" : ""} ${fam().kind === "text" && k !== "code" && k !== "terminal" ? "text" : ""}"><h4>${SAMPLE_LABELS[k] || k}</h4><pre></pre></div>`).join("");
+  [...$("samples").querySelectorAll("pre")].forEach((p, i) => { p.textContent = Object.values(samples)[i]; });
+  applySize();
 }
-
-function harmony() {
-  const ids = selectedFonts().filter(id => last[id] && last[id].harmony);
-  let h = "<span></span><span>세로획 영/한</span><span>가로획 영/한</span><span>비율</span>";
-  for (const id of ids) {
-    const m = last[id].harmony;
-    h += `<b style="color:${color(id)}">${fontLabels[id]}</b><span>${m.latin_stem ?? "–"} / ${m.hangul_stem ?? "–"}</span><span>${m.latin_bar ?? "–"} / ${m.hangul_bar ?? "–"}</span><span>${m.stem_ratio ?? "–"}</span>`;
-  }
-  $("harmony").innerHTML = h;
-}
-
-// ---------- golden ratio rules ----------
-function snapParams(rules) {
-  const p = params();
-  for (const r of rules) {
-    if (r.locked || !r.drives || r.actual == null) continue;
-    if (r.drives === "scale" || r.drives === "width") p[r.drives] = +(p[r.drives] * r.target / r.actual).toFixed(4);
-    if (r.drives === "grade") p.grade = +(p.grade + (r.target * r.den - r.num)).toFixed(1);
-  }
-  return p;
-}
-function phi() {
-  const d = last && last["nk-edit"]; if (!d || !d.proportions) { $("phi").innerHTML = ""; return; }
-  const others = selectedFonts().filter(id => id !== "nk-edit" && last[id] && last[id].proportions);
-  $("phi").innerHTML = d.proportions.map((r, i) => {
-    const span = 0.12; // meter shows ±12% around the target
-    const pos = (v) => Math.max(0, Math.min(100, 50 + (v / r.target - 1) / span * 50));
-    const tol = r.tolerance / span * 50;
-    const marks = [["nk-edit", r.actual], ...others.map(id => [id, last[id].proportions[i].actual])]
-      .filter(([, v]) => v != null).map(([id, v]) => `<b title="${fontLabels[id]} ${v}" style="left:calc(${pos(v)}% - 1px);background:${color(id)}"></b>`).join("");
-    const dev = r.deviation == null ? "–" : (r.deviation > 0 ? "+" : "") + (r.deviation * 100).toFixed(1) + "%";
-    const btn = !r.locked && r.drives && r.actual != null && !r.ok ? ` <button data-r="${i}" title="${r.drives} 값을 바꿔 목표에 맞춥니다">${r.drives} 맞춤</button>` : "";
-    return `<div class="phi"><span class="lbl">${r.locked ? "🔒 " : r.ok ? "✓ " : "△ "}${r.label}</span><span class="num">${r.actual ?? "–"} → ${r.target} <span class="hint">${r.expr}</span> ${dev}${btn}</span>
-      <div class="meter"><i style="left:${50 - tol}%;width:${2 * tol}%"></i><em></em>${marks}</div></div>`;
-  }).join("");
-  for (const b of $("phi").querySelectorAll("button[data-r]")) b.onclick = () => { setParams(snapParams([d.proportions[+b.dataset.r]])); refresh(); };
-}
-$("phiAll").onclick = () => { const d = last && last["nk-edit"]; if (d && d.proportions) { setParams(snapParams(d.proportions)); refresh(); } };
-
-// ---------- glyph browser ----------
-async function loadBrowser() {
-  const f = fam(), w = $("weight").value;
-  $("blocks").textContent = "전체 빌드 중… (처음 한 번, 약 6초)";
+function applySize() { for (const p of $("samples").querySelectorAll("pre")) { p.style.fontSize = $("size").value + "px"; } }
+async function refreshPreview() {
+  const my = ++prevSeq;
   try {
-    await loadFace("NKFull", `/api/lab/font?id=nk-saved&family=${f.id}&weight=${encodeURIComponent(w)}`);
-    const r = await api("/api/lab/charset", { family: f.id, weight: w });
-    let total = 0;
-    $("blocks").innerHTML = "";
-    for (const b of r.blocks) {
-      total += b.cps.length;
-      const d = document.createElement("details");
-      d.innerHTML = `<summary>${b.name}<span>${b.cps.length}</span></summary><div class="cells"></div>`;
-      let shown = 0;
-      const more = () => {
-        const cells = d.querySelector(".cells"); cells.querySelector(".more")?.remove();
-        const next = b.cps.slice(shown, shown + 300); shown += next.length;
-        for (const cp of next) {
-          const c = document.createElement("div"); c.textContent = String.fromCodePoint(cp);
-          c.title = "U+" + cp.toString(16).toUpperCase().padStart(4, "0");
-          c.onclick = (e) => { const ch = String.fromCodePoint(cp); $("focus").value = e.shiftKey ? $("focus").value + ch : ch; active = e.shiftKey ? chars().length - 1 : 0; refresh(); };
-          cells.appendChild(c);
-        }
-        if (shown < b.cps.length) { const m = document.createElement("button"); m.className = "more"; m.textContent = `더 보기 (${b.cps.length - shown})`; m.onclick = more; cells.appendChild(m); }
-      };
-      d.ontoggle = () => { if (d.open && !shown) more(); };
-      $("blocks").appendChild(d);
-    }
-    $("glyphCount").textContent = `${total}자`;
-    $("blocks").firstChild && ($("blocks").firstChild.open = true);
-  } catch (e) { $("blocks").textContent = e.message; }
+    const text = Object.values(samples).join("\n") + controlChars();
+    const r = await api("/api/preview", { family: fam().id, weight: $("weight").value, text, ...params });
+    if (my !== prevSeq) return;
+    const bytes = Uint8Array.from(atob(r.font), c => c.charCodeAt(0));
+    const face = new FontFace("NKEdit", bytes.buffer);
+    await face.load();
+    if (my !== prevSeq) return;
+    for (const f of [...document.fonts]) if (f.family === "NKEdit" || f.family === '"NKEdit"') document.fonts.delete(f);
+    document.fonts.add(face);
+  } catch (e) { fail(e); }
 }
+function redraw() { refreshGlyphs(); refreshPreview(); }
 
-// ---------- OpenType features ----------
-async function loadFeatures() {
-  const f = fam(), w = $("weight").value, fid = $("featFont").value;
-  if (!fid) return;
-  $("feats").innerHTML = '<span class="hint">불러오는 중…</span>';
-  try {
-    const face = "Feat_" + fid.replace(/[^a-z0-9]/gi, "_");
-    await loadFace(face, `/api/lab/font?id=${encodeURIComponent(fid)}&family=${f.id}&weight=${encodeURIComponent(w)}`);
-    const r = await api("/api/lab/features", { font: fid, family: f.id, weight: w });
-    const all = $("featAll").checked;
-    const list = r.features.filter(x => all || !HIDDEN_FEATS.has(x.tag));
-    $("feats").innerHTML = list.map(x => {
-      const name = x.name || FEAT_NAMES[x.tag] || (/^ss\d\d$/.test(x.tag) ? "스타일 세트" : /^cv\d\d$/.test(x.tag) ? "글자 변형" : "");
-      const sample = (x.tag === "calt" || x.tag === "liga" || x.tag === "dlig") ? "-> => != === <= |>" : (x.sample || "abc").slice(0, 8);
-      const esc = sample.replace(/&/g, "&amp;").replace(/</g, "&lt;");
-      return `<div class="fcard ${featOn.has(x.tag) ? "on" : ""}" data-t="${x.tag}"><header><b>${x.tag}</b>${name}<label><input type="checkbox" data-g="${x.tag}" ${glyphFeats.has(x.tag) ? "checked" : ""}> 큰 보기</label></header>
-        <div class="pair"><div style="font-family:'${face}';font-feature-settings:'${x.tag}' 0${x.tag === "calt" ? "" : ",'calt' 0"}">${esc}</div><div style="font-family:'${face}';font-feature-settings:'${x.tag}' 1">${esc}</div></div></div>`;
-    }).join("") || '<span class="hint">GSUB 기능이 없습니다</span>';
-    for (const c of $("feats").querySelectorAll(".fcard")) c.querySelector(".pair").onclick = () => { const t = c.dataset.t; featOn.has(t) ? featOn.delete(t) : featOn.add(t); c.classList.toggle("on"); code(); };
-    for (const cb of $("feats").querySelectorAll("input[data-g]")) cb.onchange = () => { cb.checked ? glyphFeats.add(cb.dataset.g) : glyphFeats.delete(cb.dataset.g); refresh(); };
-    $("codeView").style.fontFamily = `'${face}', monospace`;
-    code();
-  } catch (e) { $("feats").textContent = e.message; }
+// ---------- save ----------
+function changedHangul() {
+  // Only keys the family already sets or that differ from the defaults: small, reviewable diffs.
+  const f = fam(), out = {};
+  for (const k of Object.keys(DEFAULTS)) {
+    if (params[k] === undefined) continue;
+    if (k === "tracking" && !core.controls.some(c => c.drives === "tracking")) continue;
+    if (k in (f.hangul || {}) || params[k] !== DEFAULTS[k]) out[k] = params[k];
+  }
+  return out;
 }
-function code() {
-  $("codeView").style.fontFeatureSettings = [...featOn].map(t => `'${t}' 1`).join(",") || "normal";
-  $("codeView").textContent = $("code").value;
-}
-
-// ---------- rules + save ----------
-$("ruleGrade").onclick = () => {
-  const m = last && last["nk-edit"] && last["nk-edit"].harmony; if (!m || m.grade_delta == null) return;
-  setParams({ ...params(), grade: +(+$("p_grade").value + m.grade_delta).toFixed(1) }); refresh();
-};
-$("ruleCenter").onclick = () => {
-  const g = last && last["nk-edit"] && last["nk-edit"].guides; if (!g || g.han_top === undefined) return;
-  const off = (g.han_top + g.han_bottom) / 2 - g.cap_top / 2;
-  setParams({ ...params(), dy: Math.round(+$("p_dy").value - off) }); refresh();
-};
-$("ruleCap").onclick = () => {
-  const g = last && last["nk-edit"] && last["nk-edit"].guides; if (!g || g.han_top === undefined) return;
-  const cur = (g.han_top - g.han_bottom) / g.cap_top;
-  setParams({ ...params(), scale: +(+$("p_scale").value * +$("capTarget").value / cur).toFixed(3) }); refresh();
-};
-$("reset").onclick = () => { setParams(saved); refresh(); };
 $("save").onclick = async () => {
   const f = fam();
   try {
-    const r = await api("/api/save", { family: f.id, ...params() });
-    saved = params(); f.hangul = { ...f.hangul, ...saved };
-    $("saveMsg").textContent = "저장됨 → " + r.saved + " (저장값 폰트를 다시 빌드합니다)";
-    refresh(); loadBrowser();
-  } catch (e) { $("err").textContent = e.message; }
+    const h = changedHangul();
+    const r = await api("/api/save", { family: f.id, ...h, note: $("saveNote").value });
+    f.hangul = { ...f.hangul, ...h }; saved = { ...params }; $("saveNote").value = "";
+    $("saveMsg").textContent = `저장됨 → ${r.saved} (v${r.version.n}) · nkfont build ${f.id} 로 빌드에 반영됩니다`;
+    await loadVersions();
+  } catch (e) { fail(e); }
 };
+$("savePreset").onclick = async () => {
+  const f = fam(), label = $("presetLabel").value.trim();
+  if (!label) { $("presetLabel").focus(); return; }
+  try {
+    const r = await api("/api/presets/save", { label, family: f.id, weight: $("weight").value, hangul: pixel() ? {} : changedHangul(), features: [] });
+    $("saveMsg").innerHTML = `프리셋 저장됨 → config/presets/${r.preset.id}.toml · <a href="/presets">프리셋 비교에서 보기</a>`;
+  } catch (e) { fail(e); }
+};
+$("reset").onclick = () => { params = { ...saved }; measure(); };
+$("phiAll").onclick = () => { for (const c of driven()) if (c.phi != null) setTarget(c, c.phi); solve(); };
 
 // ---------- wiring ----------
-function onFamily() {
+async function onFamily() {
   const f = fam();
+  const prevW = $("weight").value;
   $("weight").innerHTML = f.weights.map(w => `<option>${w}</option>`).join("");
-  saved = { ...DEFAULTS, ...f.hangul };
-  setParams(saved);
-  const pixel = f.kind === "pixel";
-  for (const id of ["p_scale", "p_dy", "p_width", "p_slant", "p_grade", "p_center", "ruleGrade", "ruleCenter", "ruleCap", "save", "reset"]) $(id).disabled = pixel;
-  buildChips(); refresh(); loadBrowser(); loadFeatures();
+  if (f.weights.includes(prevW)) $("weight").value = prevW;
+  saved = { ...DEFAULTS, ...f.hangul }; params = { ...saved }; targets = {};
+  const prevCmp = $("cmp").value;
+  const opts = [["nk-saved", `${f.family} (저장값)`], ...info.references.filter(r => !r.missing).map(r => [r.id, r.label]), ["", "없음"]];
+  $("cmp").innerHTML = opts.map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
+  $("cmp").value = cmpChosen && opts.some(([v]) => v === prevCmp) ? prevCmp : "nk-saved";
+  try {
+    core = await api("/api/lab/core", { family: f.id });
+    if (!$("latinCtl").value) $("latinCtl").value = core.latin;
+    if (!$("hangulCtl").value) $("hangulCtl").value = core.hangul;
+    buildControls(); buildSamples();
+    hist = []; histAt = -1;
+    await Promise.all([measure(), loadVersions()]);
+  } catch (e) { fail(e); }
 }
-for (const k of PARAMS) bindParam(k);
-$("p_center").onchange = schedule;
-for (const id of ["sy1", "sy2", "sx"]) { $(id).oninput = () => { $(id + "n").value = $(id).value; schedule(); }; $(id + "n").onchange = () => { $(id).value = $(id + "n").value; schedule(); }; }
-for (const id of ["mode", "align", "paint"]) seg(id);
-for (const id of ["showGuides", "showScan", "showSlant", "showCell"]) $(id).onchange = draw;
-$("focus").oninput = () => { active = 0; schedule(); };
 $("family").onchange = onFamily;
-$("weight").onchange = () => { refresh(); loadBrowser(); loadFeatures(); };
-$("base").onchange = table;
-$("featFont").onchange = loadFeatures; $("featAll").onchange = loadFeatures;
-$("code").oninput = code;
+$("weight").onchange = () => { measure(); };
+$("cmp").onchange = () => { cmpChosen = true; refreshGlyphs(); };
+$("latinCtl").oninput = $("hangulCtl").oninput = () => { clearTimeout(timer); timer = setTimeout(redraw, 250); };
+$("size").onchange = applySize;
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", draw);
 
 (async () => {
-  const [fr, ir] = await Promise.all([api("/api/families"), api("/api/lab/info")]);
-  families = fr.families; info = ir;
-  for (const r of info.references) fontOn[r.id] = ["ref:jetbrains-mono", "ref:d2coding"].includes(r.id);
-  $("family").innerHTML = families.map(f => `<option value="${f.id}">${f.family}</option>`).join("");
-  $("presets").innerHTML = info.presets.map((p, i) => `<button data-i="${i}" title="${p.text}">${p.label}</button>`).join("");
-  for (const b of $("presets").querySelectorAll("button")) b.onclick = () => { $("focus").value = info.presets[+b.dataset.i].text; active = 0; refresh(); };
-  onFamily();
+  try {
+    const [fr, ir, pr] = await Promise.all([api("/api/families"), api("/api/lab/info"), api("/api/presets")]);
+    families = fr.families; info = ir; samples = pr.samples;
+    $("family").innerHTML = families.map(f => `<option value="${f.id}">${f.family}</option>`).join("");
+    await onFamily();
+  } catch (e) { fail(e); }
 })();
 </script>
 </body>

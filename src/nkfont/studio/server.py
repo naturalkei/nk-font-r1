@@ -13,13 +13,14 @@ from importlib import resources
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
-from . import presets, update
-from .core import _KEYS, DEFAULT_TEXT, Studio, update_hangul_config
+from . import presets, update, versions
+from .core import _KEYS, DEFAULT_TEXT, Studio
 from .lab import Lab
 
 PAGES = {
     "/": "index.html",
     "/lab": "lab.html",
+    "/lab/advanced": "lab-advanced.html",
     "/presets": "presets.html",
     "/specimen": "specimen.html",
     "/update": "update.html",
@@ -154,6 +155,14 @@ def make_handler(studio: Studio, lab: Lab | None = None, restart=None):
                         out = lab.glyphs(req)
                     ms = round((time.perf_counter() - t0) * 1000)
                     return self._json({"fonts": out, "ms": ms})
+                if self.path == "/api/lab/core":
+                    return self._json(lab.core(req["family"]))
+                if self.path == "/api/lab/solve":
+                    t0 = time.perf_counter()
+                    with _LOCK:
+                        out = lab.solve(req)
+                    out["ms"] = round((time.perf_counter() - t0) * 1000)
+                    return self._json(out)
                 if self.path == "/api/lab/charset":
                     return self._json({"blocks": lab.charset(req["family"], req["weight"])})
                 if self.path == "/api/lab/features":
@@ -176,9 +185,15 @@ def make_handler(studio: Studio, lab: Lab | None = None, restart=None):
                 if self.path == "/api/presets/delete":
                     presets.delete(req["id"], studio.root)
                     return self._json({"deleted": req["id"]})
-                if self.path == "/api/save":
-                    path = update_hangul_config(req["family"], req, studio.root)
-                    return self._json({"saved": str(path.relative_to(studio.root))})
+                if self.path == "/api/save":  # every save is also a numbered version
+                    with _LOCK:
+                        out = versions.save(req["family"], req, req.get("note", ""), studio.root)
+                    return self._json(out)
+                if self.path == "/api/versions":
+                    return self._json({"versions": versions.load(req["family"], studio.root)})
+                if self.path == "/api/versions/restore":
+                    with _LOCK:
+                        return self._json(versions.restore(req["family"], req["n"], studio.root))
                 self._send(404, b"not found", "text/plain")
             except Exception as exc:  # report to the UI instead of dropping the connection
                 self._json({"error": f"{type(exc).__name__}: {exc}"}, HTTPStatus.BAD_REQUEST)
