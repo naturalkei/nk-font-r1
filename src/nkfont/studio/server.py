@@ -13,7 +13,7 @@ from importlib import resources
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
-from . import presets
+from . import presets, update
 from .core import _KEYS, DEFAULT_TEXT, Studio, update_hangul_config
 from .lab import Lab
 
@@ -22,6 +22,7 @@ PAGES = {
     "/lab": "lab.html",
     "/presets": "presets.html",
     "/specimen": "specimen.html",
+    "/update": "update.html",
 }
 # Sample texts for the preset comparison page (one tab each).
 SAMPLES = {
@@ -78,7 +79,8 @@ def _static(name: str) -> bytes:
     return resources.files(__package__).joinpath("static", name).read_bytes()
 
 
-def make_handler(studio: Studio, lab: Lab | None = None):
+def make_handler(studio: Studio, lab: Lab | None = None, restart=None):
+    """`restart` is set by the desktop app: a callable that reopens it after an update."""
     lab = lab or Lab(studio.root)
 
     class Handler(BaseHTTPRequestHandler):
@@ -157,6 +159,18 @@ def make_handler(studio: Studio, lab: Lab | None = None):
                 if self.path == "/api/lab/features":
                     feats = lab.features(req["font"], req["family"], req["weight"])
                     return self._json({"features": feats})
+                if self.path == "/api/update/check":
+                    return self._json({**update.status(studio.root), "app": restart is not None})
+                if self.path == "/api/update/apply":
+                    with _LOCK:
+                        return self._json(update.apply(studio.root))
+                if self.path == "/api/app/restart":
+                    if restart is None:
+                        raise RuntimeError(
+                            "브라우저 모드: 터미널에서 nkfont studio를 다시 실행하세요"
+                        )
+                    threading.Timer(0.3, restart).start()  # answer before the window closes
+                    return self._json({"restarting": True})
                 if self.path == "/api/presets/save":
                     return self._json({"preset": presets.save(req, studio.root)})
                 if self.path == "/api/presets/delete":
@@ -172,9 +186,9 @@ def make_handler(studio: Studio, lab: Lab | None = None):
     return Handler
 
 
-def make_server(host: str = "127.0.0.1", port: int = 8765) -> ThreadingHTTPServer:
+def make_server(host: str = "127.0.0.1", port: int = 8765, restart=None) -> ThreadingHTTPServer:
     """Port 0 picks a free port (the desktop app does this); see `server_address`."""
-    return ThreadingHTTPServer((host, port), make_handler(Studio()))
+    return ThreadingHTTPServer((host, port), make_handler(Studio(), restart=restart))
 
 
 def serve(host: str = "127.0.0.1", port: int = 8765, open_browser: bool = True) -> None:

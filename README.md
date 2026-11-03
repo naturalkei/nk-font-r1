@@ -25,6 +25,8 @@
   φ 비율 스타일(제목 1~3·본문·캡션) 블록을 직접 고쳐 쓰는 워크벤치. 프리셋으로 저장·비교로 바로 이어집니다.
 - **데스크톱 앱**: `make app` (= `pip install -e ".[app]"` + `nkfont app`) → 위 화면을 네이티브 창(macOS WebKit)으로.
   `make app-install`은 `~/Applications/NK Studio.app` 런처를 만들어 Launchpad·Dock에서 열 수 있게 합니다.
+  업데이트는 메뉴 **업데이트 → 업데이트 확인…**(`/update`): `git pull --ff-only` 후 다시 시작. 커밋하지 않은 변경이나
+  로컬 커밋이 있으면 멈추고, `pyproject.toml`이 바뀌었을 때만 의존성을 다시 설치합니다.
 
 ## 개발
 ```bash

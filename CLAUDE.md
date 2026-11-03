@@ -27,6 +27,7 @@ nkfont studio         # NK Studio web UI: live Hangul tuning, saves [hangul] in 
                       #   /specimen = per-family specimen workbench (NK axes, φ type scale)
 nkfont app            # same pages in a native window (pywebview, `pip install -e ".[app]"`);
                       #   --install-mac-app writes ~/Applications/NK Studio.app
+                      #   /update = self-update: git pull --ff-only (stops on local edits), then restart
 nkfont phi [FILES]    # golden-ratio proportion report (config/proportions.toml, shared by families)
 nkfont site           # build/site: prototype site (WOFF2 + zips); deployed by .github/workflows/pages.yml
 python -m pytest -q   # unit tests use synthetic fonts; real-font tests skip without sources/

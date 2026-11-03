@@ -73,7 +73,9 @@ def main(argv: list[str] | None = None) -> int:
 
     a = sub.add_parser("app", help="NK Studio in a desktop window (pywebview), presets first")
     a.add_argument(
-        "--page", choices=["presets", "specimen", "studio", "lab", "site"], default="presets"
+        "--page",
+        choices=["presets", "specimen", "studio", "lab", "site", "update"],
+        default="presets",
     )
     a.add_argument("--port", type=int, default=0, help="0 = any free port")
     a.add_argument("--debug", action="store_true", help="enable the web inspector")

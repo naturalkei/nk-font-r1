@@ -11,6 +11,7 @@ runs this command with the current Python, so the app opens from Launchpad/Spotl
 
 from __future__ import annotations
 
+import os
 import plistlib
 import stat
 import sys
@@ -27,6 +28,7 @@ PAGES = {
     "studio": "/",
     "lab": "/lab",
     "site": "/site/",
+    "update": "/update",
 }
 BUNDLE_ID = "dev.nk-font.studio"
 
@@ -51,12 +53,27 @@ def _menu(webview, base: str):
                 MenuAction("글리프 랩", go(PAGES["lab"])),
                 MenuAction("미리보기 사이트", go(PAGES["site"])),
             ],
-        )
+        ),
+        Menu("업데이트", [MenuAction("업데이트 확인…", go(PAGES["update"]))]),
     ]
 
 
+def _reexec(page: str) -> None:
+    """Start a fresh process so updated Python code and pages are loaded."""
+    os.execv(sys.executable, [sys.executable, "-m", "nkfont.cli", "app", "--page", page])
+
+
 def run(page: str = "presets", port: int = 0, debug: bool = False) -> int:
-    httpd = make_server("127.0.0.1", port)
+    restart_requested = threading.Event()
+
+    def restart() -> None:  # called by /api/app/restart after an update
+        restart_requested.set()
+        import webview
+
+        for w in list(webview.windows):
+            w.destroy()
+
+    httpd = make_server("127.0.0.1", port, restart=restart)
     base = f"http://127.0.0.1:{httpd.server_address[1]}"
     url = base + PAGES.get(page, "/")
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
@@ -78,6 +95,9 @@ def run(page: str = "presets", port: int = 0, debug: bool = False) -> int:
         webview.start(debug=debug, menu=menu) if menu else webview.start(debug=debug)
     finally:
         httpd.shutdown()
+        httpd.server_close()
+    if restart_requested.is_set():
+        _reexec(page)
     return 0
 
 
