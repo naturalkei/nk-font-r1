@@ -26,6 +26,23 @@ ascent = 960
 descent = -312
 line_height = "phi^0.5"
 
+[weights]
+# Thin..ExtraBold plus Black. Bagel Fat One is one heavy weight that already pairs Latin and
+# Hangul, so the others move its stems (latin_grade, units at UPM 1000); Black stays Gasoek One.
+# Fill-in syllables come from the Source Han Sans master nearest to each weight with a solved
+# grade, so they match the Bagel strokes around them ("stem+bar", weights.py).
+match = "stem+bar"
+reference = "Regular"
+# The fill-in syllables must match the lettering's own Hangul, not its Latin: probe Bagel's
+# (and Gasoek's) ㅣ and ㅡ in the "latin" source.
+latin_probe = "ㅣ"
+latin_bar_probe = "ㅡ"
+# Black is Gasoek One's own Latin + Hangul pairing, a different lettering: QA does not compare
+# its Hangul/Latin ratios with Bagel Fat One's Regular.
+independent = ["Black"]
+
+# Regular first: tools open the first weight. The rest follow in weight-class order.
+
 [[weight]]
 name = "Regular"
 latin = "bagel-fat-one"
@@ -37,3 +54,52 @@ name = "Black"
 latin = "gasoek-one"
 hangul = "source-han-sans-kr-heavy"
 weight_class = 900
+
+[[weight]]
+name = "Thin"
+latin = "bagel-fat-one"
+latin_grade = -60
+hangul = "source-han-sans-kr-regular"
+weight_class = 100
+
+[[weight]]
+name = "ExtraLight"
+latin = "bagel-fat-one"
+latin_grade = -42
+hangul = "source-han-sans-kr-medium"
+weight_class = 200
+
+[[weight]]
+name = "Light"
+latin = "bagel-fat-one"
+latin_grade = -22
+hangul = "source-han-sans-kr-bold"
+weight_class = 300
+
+[[weight]]
+name = "Medium"
+latin = "bagel-fat-one"
+latin_grade = 15
+hangul = "source-han-sans-kr-heavy"
+weight_class = 500
+
+[[weight]]
+name = "SemiBold"
+latin = "bagel-fat-one"
+latin_grade = 30
+hangul = "source-han-sans-kr-heavy"
+weight_class = 600
+
+[[weight]]
+name = "Bold"
+latin = "bagel-fat-one"
+latin_grade = 45
+hangul = "source-han-sans-kr-heavy"
+weight_class = 700
+
+[[weight]]
+name = "ExtraBold"
+latin = "bagel-fat-one"
+latin_grade = 60
+hangul = "source-han-sans-kr-heavy"
+weight_class = 800

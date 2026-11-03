@@ -171,11 +171,14 @@ def run_all(
     `kind = "text"` (proportional reading faces) swaps the terminal width/overflow/metrics checks
     for text metrics and full Hangul coverage.
     """
+    from .weights import check_weight_names
+
     if kind == "text":
         result = {
             "text-metrics": check_text_metrics(font),
             "hangul-coverage": check_hangul_coverage(font),
             "names": check_names(font),
+            "weight": check_weight_names(font, legacy=False),
         }
         if base is not None:
             result["features"] = check_features(font, base)
@@ -185,6 +188,7 @@ def run_all(
         "overflow": check_overflow(font, inherited_codepoints(font, base, own))[0],
         "metrics": check_metrics(font),
         "names": check_names(font),
+        "weight": check_weight_names(font, legacy=False),
     }
     if base is not None:
         result["features"] = check_features(font, base)

@@ -17,6 +17,15 @@ dy = 40
 center = "advance"
 fit = 0.92
 
+[weights]
+# Thin..ExtraBold (docs/FAMILIES.md "Weights"). JetBrains Mono ships all eight; D2Coding only
+# Regular and Bold, so the other Hangul weights take the nearest master and a solved grade:
+# "stem+bar" keeps Hangul stem and bar / Latin stem and bar at Regular's ratios (weights.py).
+match = "stem+bar"
+reference = "Regular"
+
+# Regular first: tools open the first weight. The rest follow in weight-class order.
+
 [[weight]]
 name = "Regular"
 latin = "jetbrains-mono-regular"
@@ -28,3 +37,39 @@ name = "Bold"
 latin = "jetbrains-mono-bold"
 hangul = "d2coding-bold"
 weight_class = 700
+
+[[weight]]
+name = "Thin"
+latin = "jetbrains-mono-thin"
+hangul = "d2coding-regular"
+weight_class = 100
+
+[[weight]]
+name = "ExtraLight"
+latin = "jetbrains-mono-extralight"
+hangul = "d2coding-regular"
+weight_class = 200
+
+[[weight]]
+name = "Light"
+latin = "jetbrains-mono-light"
+hangul = "d2coding-regular"
+weight_class = 300
+
+[[weight]]
+name = "Medium"
+latin = "jetbrains-mono-medium"
+hangul = "d2coding-regular"
+weight_class = 500
+
+[[weight]]
+name = "SemiBold"
+latin = "jetbrains-mono-semibold"
+hangul = "d2coding-bold"
+weight_class = 600
+
+[[weight]]
+name = "ExtraBold"
+latin = "jetbrains-mono-extrabold"
+hangul = "d2coding-bold"
+weight_class = 800

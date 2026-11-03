@@ -3,7 +3,9 @@
 OFL 1.1 Korean fonts. Terminal Nerd Font families **NK Mono** (flagship: JetBrains Mono + D2Coding Hangul)
 and **NK Pixel**; proportional families (`kind = "text"`) **NK Sans** and **NK Serif** (documents),
 **NK Novel** (books/news) and **NK Comics** (comic lettering).
-Families, φ rules, weights and feature plans: `docs/FAMILIES.md`.
+Families, φ rules, weights and feature plans: `docs/FAMILIES.md`. Every family ships Thin 100 – ExtraBold 800
+(`[weights]` + `[[weight]]`, `src/nkfont/weights.py`; Pixel: Regular + bitmap Bold); missing upstream weights are
+derived with `latin_grade`, and `match = "stem+bar"` keeps Hangul/Latin stroke ratios at Regular's in every weight.
 Primary goal: perfect grid alignment in terminals (Starship, zsh/Powerlevel10k, iTerm2, Linux
 terminals). NK Pixel must also work in pixel-art games (Minecraft, Terraria) and game engines.
 

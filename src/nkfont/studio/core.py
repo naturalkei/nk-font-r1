@@ -16,6 +16,7 @@ from fontTools.ttLib import TTFont
 
 from .. import config
 from ..build import build_master, hangul_params, pixel_params, style_params
+from ..weights import default_weight, harmony_row, sorted_weights
 
 DEFAULT_TEXT = (
     "가나다라마바사 한글 ABCD abcd 0O1lI\n"
@@ -26,6 +27,10 @@ DEFAULT_TEXT = (
 
 # Probe glyphs for the rule-based guides: Latin cap/x height and the Hangul extremes.
 _PROBES = {"cap": "H", "x": "x", "han_top": "한", "han_low": "를", "han_mid": "가"}
+
+
+# Stroke probes of the weight ladder (weights.PROBES): Latin l/H and Hangul ㅣ/ㅡ.
+_HARMONY = "lHㅣㅡ"
 
 
 @dataclass
@@ -65,6 +70,7 @@ def measure(font: TTFont) -> dict:
         m["center_offset"] = round(
             (m["han_mid_top"] + m["han_mid_bottom"]) / 2 - m["cap_top"] / 2, 1
         )
+    m["harmony"] = harmony_row(font)
     return m
 
 
@@ -95,7 +101,10 @@ class Studio:
                     "id": fid,
                     "family": fam["family"],
                     "kind": fam.get("kind", "merge"),
-                    "weights": [w["name"] for w in fam["weight"]],
+                    # Thin..ExtraBold in weight-class order; tools open `default_weight` first.
+                    "weights": [w["name"] for w in sorted_weights(fam)],
+                    "weight_classes": {w["name"]: w["weight_class"] for w in fam["weight"]},
+                    "default_weight": default_weight(fam),
                     "hangul": fam.get("hangul", {}),
                 }
             )
@@ -135,7 +144,7 @@ class Studio:
         if key in self._previews:
             return self._previews[key]
         w = next(x for x in fam["weight"] if x["name"] == weight)
-        chars = set(text) | set(_PROBES.values()) | {"0"}
+        chars = set(text) | set(_PROBES.values()) | set(_HARMONY) | {"0"}
         unicodes = {ord(c) for c in chars}
         if fam.get("kind") == "pixel":
             font = build_master(fam, w, pixel=pixel_params(fam, **pixel), unicodes=unicodes)

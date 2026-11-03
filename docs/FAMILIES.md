@@ -124,20 +124,33 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 - Pixel의 가로획 2px(`heavy`)과 블랙은 16px 한글에 자리가 없어 를·를 가로획 사이 1px 틈이 막히거나 영문만 굵어져
   밴드를 벗어납니다. 축은 남기고 프리셋에서는 뺐습니다.
 
-## 4. 인쇄 디자인용 굵기 범위
+## 4. 굵기: Thin(100) – ExtraBold(800)
 
-목표: 인쇄 디자이너가 제목부터 각주까지 한 가족으로 쓸 수 있도록 **Thin(100)부터 Black(900)까지 9단계 + 이탤릭**, 가변 폰트(`wght` 축)와 정적 OTF/TTF를 함께 제공합니다. 굵기 이름, `usWeightClass`, 스타일 링크(RIBBI는 같은 패밀리, 나머지는 `NK Sans Light` 같은 레거시 패밀리 + `typographic family` 16/17번)는 이미 `names.py`가 규칙대로 씁니다.
+모든 가족이 OpenType 표준 굵기 여덟 단계(Thin 100, ExtraLight 200, Light 300, Regular 400, Medium 500, SemiBold 600, Bold 700, ExtraBold 800)를 정적 TTF로 냅니다(NK Comics는 Black 900 추가, NK Pixel은 아래 예외). 설정은 `config/families/<가족>.toml`의 `[weights]`와 `[[weight]]`, 코드는 `src/nkfont/weights.py`입니다.
 
-| 가족 | 영문 소스 굵기 | 한글 소스 굵기 | 1.0 목표 | 메모 |
+**원칙**
+
+1. 업스트림이 그 굵기를 내면 그 원본을 씁니다. 없으면 가장 가까운 원본에서 획만 더하거나 뺍니다(`latin_grade`, GRAD 축처럼 폭은 그대로). 겹치거나 맞닿은 자모·윤곽을 먼저 한 윤곽으로 합치고(skia-pathops), 윤곽을 따라 기하학적으로 오프셋합니다(점을 법선 방향으로 옮기는 방식은 큰 값에서 획이 끊기거나 뾰족해짐). 합성한 영문은 힌팅을 지우고 매끈하게(gasp) 렌더링합니다.
+2. **한글과 영문이 따로 놀지 않게**: `[weights] match = "stem+bar"`이면 굵기마다 한글 grade를 풀어서 `한글 세로획 / 영문 세로획`(ㅣ / l)이 Regular와 같아지게 하고, grade의 가로획 몫(contrast)을 풀어서 `한글 가로획 / 영문 가로획`(ㅡ / H)도 맞춥니다. Regular는 손대지 않아 기존 빌드와 바이트까지 같습니다.
+3. 획을 너무 빼서 지워지지 않게 한 번에 원래 획의 65%까지만 뺍니다(`min_keep = 0.35`).
+4. 명조·세리프는 굵기가 바뀌어도 가로 헤어라인은 거의 그대로이므로 `contrast = 0.3`(가로획에는 30%만)으로 합성합니다.
+
+| 가족 | 영문 원본 굵기 | 합성하는 영문 | 한글 원본 | 메모 |
 | --- | --- | --- | --- | --- |
-| NK Sans | IBM Plex Sans 100–700 + 이탤릭 | 본고딕 7단계 (ExtraLight–Heavy) | 100–900, 이탤릭, 가변 | 인쇄용 대표. Plex 7단계와 본고딕 7단계를 1:1로 짝짓고 800–900은 본고딕 Bold/Heavy + 영문 보간 |
-| NK Serif | IBM Plex Serif 100–700 (7) + 이탤릭 | 본명조 7단계 (ExtraLight–Heavy) | 100–900, 이탤릭 | 명조는 한 단계 올려 매핑. NK Sans와 같은 Plex 뼈대라 굵기 단계도 짝이 맞음 |
-| NK Mono | JetBrains Mono 100–800 + 이탤릭 | D2Coding 2단계 | Regular·Bold → 4단계 이상 | D2Coding 한글이 2단계뿐이라 Light·ExtraBold는 획 굵기 보간(조정 도구의 grade) 필요 → M5 |
-| NK Novel | Crimson Text 400/600/700 + 이탤릭 (가변 Crimson Pro 200–900) | 고운바탕 2단계 | 300–800 | 한글 굵기 확장이 병목: 고운바탕 가변화 또는 본명조 계열 대체 검토 |
-| NK Comics | Bagel Fat One / Gasoek One | 같은 소스 | Regular·Black (+ 기울임 효과음) | 레터링 글꼴이라 굵기보다 "목소리"(대사·외침·속삭임)로 나눔 |
-| NK Pixel | 단일 | 단일 | Regular (+ 픽셀 Bold) | 픽셀은 1 px 두께 증가로 Bold 생성 |
+| NK Mono | JetBrains Mono 8단계 전부 | 없음 | D2Coding Regular·Bold | 나머지 한글 6단계는 가까운 D2Coding + 계산된 grade |
+| NK Sans | IBM Plex Sans Thin–Bold | ExtraBold = Bold + 24 | 본고딕 ExtraLight–Heavy | 단계마다 가장 가까운 본고딕 + grade |
+| NK Serif | IBM Plex Serif Thin–Bold | ExtraBold = Bold + 24 | 본명조 ExtraLight–Heavy | Regular는 한 단계 무거운 Medium 유지, contrast 0.3 |
+| NK Novel | Crimson Text Regular·SemiBold·Bold | Thin·ExtraLight·Light·Medium·ExtraBold | 고운바탕 Regular·Bold | 세로획 사다리 0.40·0.55·0.75·1.17 × Regular, contrast 0.3 |
+| NK Comics | Bagel Fat One (단일) · Gasoek One(Black) | Thin–ExtraBold 전부 | 본고딕(채움 글자) | 레터링 원본이 하나뿐이라 모두 합성. Bagel의 이음새가 얇아 −60까지만 뺄 수 있어 Thin도 "가벼운 만화체" 정도 |
+| NK Pixel | Neo둥근모 Code (단일) | Bold만 | 같은 소스 | 픽셀 글꼴은 획이 1 px뿐이라 Thin–SemiBold는 그릴 수 없음. Bold = 세로획을 오른쪽으로 1 px 넓힌 비트맵식 볼드(격자 유지) |
 
-인쇄용 출력 형식: 정적 OTF(CFF, 인쇄 RIP 호환) + TTF + 가변 TTF + WOFF2. PDF 임베딩 허용(`fsType` = 0, 설치 가능)을 QA에서 검사합니다.
+**이름**: RIBBI(Regular·Bold)는 같은 레거시 패밀리, 나머지는 `NK Sans Light` 같은 레거시 패밀리 + typographic family(16/17번). SemiBold·ExtraBold는 Bold 비트(`fsSelection`, `macStyle`)를 켜지 않습니다.
+
+**가변 폰트(`wght`)**: 지금 원본으로는 만들지 않습니다. 가변 폰트는 모든 굵기의 윤곽이 점 하나까지 호환돼야 하는데, 측정해 보니 D2Coding Regular↔Bold 18%, 고운바탕 0%, Crimson Text 6%, Bagel↔Gasoek 0%만 호환됩니다. 한글을 한 원본 + grade로만 만들면 호환은 되지만 D2Coding Bold 같은 실제 디자인을 버리게 됩니다. 후보 경로: (1) Latin 가변(JetBrains Mono·Plex 가변판) + 한글 grade 델타를 gvar로 합치는 웹용 가변판, (2) 한글 원본 마스터 호환화. Nerd Fonts 패처는 가변 폰트를 지원하지 않으므로 터미널용은 계속 정적입니다.
+
+**QA** (`nkfont qa --profile ci`, 단계 "weights Thin..ExtraBold"): 굵기 누락·이름·`usWeightClass`, 굵기가 올라갈수록 획이 굵어지는지(단조 증가), 한글/영문 세로획 비율 ±10%·가로획 비율 ±20% 이내(가족별 `[weights] tolerance`). 스튜디오 `/specimen`의 "굵기 단계"와 사이트 "Thin부터 ExtraBold까지"에서 같은 숫자와 모양을 봅니다.
+
+인쇄용 다음 단계: 이탤릭, Black(900) 전 가족 확장, 정적 OTF(CFF).
 
 ---
 

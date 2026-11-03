@@ -97,7 +97,7 @@ function initPlay() {
     play.fam = v;
     const fam = manifest.families.find((f) => f.id === v);
     const ws = fam ? fam.webfonts.map((w) => [String(w.weight), w.style]) : [["400", "Regular"]];
-    if (!ws.find(([w]) => +w === play.weight)) play.weight = +ws[0][0];
+    if (!ws.find(([w]) => +w === play.weight)) play.weight = ws.find(([w]) => +w === 400) ? 400 : +ws[0][0];
     seg($("#wSeg"), ws, String(play.weight), (w) => { play.weight = +w; applyPlay(); });
     applyPlay();
   });
@@ -105,6 +105,36 @@ function initPlay() {
   if (innerWidth < 640) $("#sizeR").value = 24;
   for (const id of ["#sizeR", "#playGrid", "#playLiga"]) $(id).oninput = applyPlay;
   applyPlay();
+}
+
+/* ---------- weights: Thin 100 .. ExtraBold 800 ---------- */
+function weightRange(f) {
+  const ws = f.webfonts || [];
+  if (!ws.length) return "–";
+  if (ws.length <= 2) return ws.map((w) => w.style).join(", ");
+  return `${ws[0].style} ${ws[0].weight} – ${ws[ws.length - 1].style} ${ws[ws.length - 1].weight} · ${ws.length}종`;
+}
+const LADDER_SAMPLE = {
+  mono: "다람쥐 헌 쳇바퀴 0O1lI {}",
+  pixel: "다람쥐 헌 쳇바퀴 123",
+  sans: "한글과 English를 한 줄에",
+  serif: "보고서와 Report의 본문",
+  novel: "책 읽는 밤, A quiet night",
+  comics: "쾅! 와아 BOOM!",
+};
+const ladder = { fam: "mono" };
+function renderLadder() {
+  const f = manifest.families.find((x) => x.id === ladder.fam);
+  const info = FAMILY_INFO[ladder.fam];
+  if (!f || !info) { $("#ladder").innerHTML = ""; return; }
+  $("#ladder").innerHTML = f.webfonts.map((w) => `<div class="lrow"><span class="lname">${w.style}<small>${w.weight}</small></span>
+    <span class="ltext ${info.cls}" style="font-family:'${info.css}', var(--term);font-weight:${w.weight}">${LADDER_SAMPLE[ladder.fam] || "한글 Hangul"}</span></div>`).join("");
+}
+function initLadder() {
+  const ids = manifest.families.map((f) => f.id).filter((id) => FAMILY_INFO[id]);
+  if (!ids.length) { $("#weights").hidden = true; return; }
+  seg($("#ladderSeg"), ids.map((id) => [id, FAMILY_INFO[id].css]), ladder.fam, (v) => { ladder.fam = v; renderLadder(); });
+  renderLadder();
 }
 
 /* ---------- stats & families & downloads ---------- */
@@ -127,7 +157,7 @@ function renderData() {
       <div class="spec ${i.cls}">${i.spec || "한글 Aa 0O1lI"}</div>
       <div class="spec2 ${i.cls}">${i.spec2 || "fn 합계(값: i32) -> i32 { 값 * 2 }\n~/문서   main ✔"}</div>
       <p style="margin:0;color:var(--mute);font-size:14px">${i.note}</p>
-      <dl><dt>영문</dt><dd>${i.latin}</dd><dt>한글</dt><dd>${i.hangul}</dd><dt>굵기</dt><dd>${f.webfonts.map((w) => w.style).join(", ") || "–"}</dd><dt>글리프</dt><dd>${glyphs}</dd></dl></article>`;
+      <dl><dt>영문</dt><dd>${i.latin}</dd><dt>한글</dt><dd>${i.hangul}</dd><dt>굵기</dt><dd>${weightRange(f)}</dd><dt>글리프</dt><dd>${glyphs}</dd></dl></article>`;
   };
   $("#famGrid").innerHTML = fams.filter((f) => !isText(f.id)).map(famCard).join("");
   $("#famGridText").innerHTML = fams.filter((f) => isText(f.id)).map(famCard).join("");
@@ -319,4 +349,4 @@ function initInstall() {
 /* ---------- boot ---------- */
 initCode(); initInstall(); initPixel();
 await loadManifest();
-renderData(); initPlay(); initGlyphs();
+renderData(); initPlay(); initLadder(); initGlyphs();
