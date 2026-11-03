@@ -1,35 +1,46 @@
-# NK Serif: IBM Plex Mono (RFN "Plex") + Source Han Serif KR (RFN "Source"). Milestone M4 prototype.
+# NK Serif: proportional document serif for reports, papers, letters and print layouts (not a
+# terminal font; the terminal family is NK Mono). IBM Plex Serif (RFN "Plex") + Source Han Serif KR
+# (RFN "Source"). Shares Plex's skeleton with NK Sans, so the two pair as heading/body faces.
+# NK Novel is the long-form book face; NK Serif is the crisper document face.
+# kind = "text": no terminal grid, no Nerd Fonts icons; Hangul keeps its own spacing.
 status = "active"
+kind = "text"
 family = "NK Serif"
 file_prefix = "NKSerif"
-version = "0.1.0"
+version = "0.2.0"
 copyright = """Copyright 2026 naturalk (nk-font). \
 Copyright 2017 IBM Corp., with Reserved Font Name 'Plex'. \
 Copyright 2017-2024 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'."""
 
 [hangul]
-# Plex Mono has a lower x-height than JetBrains Mono, so Hangul is set slightly smaller.
-scale = 0.94
-dy = -20
+# For a 1000-UPM source. Source Han Serif Hangul set a little under Plex Serif's cap-to-descender
+# span, like NK Sans, so a document can switch between the two without reflowing much. Scale and
+# width follow the φ proportion rules (config/proportions.toml: hangul_height, hangul_aspect).
+scale = 0.88
+dy = 0
 center = "advance"
-# Fine tuning from the Glyph Lab (`nkfont studio` -> /lab). Defaults leave outlines untouched.
-# Extra horizontal scale on top of `scale` (Hangul proportions next to Latin).
-width = 1.0
-# Skew in degrees, positive leans right; reserved for italics (match the Latin italic angle).
+# Target units added to every Hangul advance (negative = tighter); document text, not books.
+tracking = -20
+# Myeongjo hairlines vanish at small sizes; Hangul is mapped one weight heavier than Latin
+# (Regular -> Medium) in the [[weight]] table below.
+width = 0.95
 slant = 0.0
-# Stem weight change in font units without moving advances, like a GRAD axis (+ is darker).
 grade = 0.0
-# Myeongjo hairlines vanish at small sizes; map Hangul one weight heavier than Latin.
-weight_bias = 1
+
+[metrics]
+# Default line = φ^(5/6) = 1.493 em, the same document line as NK Sans (phi.py, scale step 5).
+ascent = 1025
+descent = -275
+line_height = "phi^5/6"
 
 [[weight]]
 name = "Regular"
-latin = "plex-mono-regular"
+latin = "plex-serif-regular"
 hangul = "source-han-serif-kr-medium"   # weight_bias: Regular -> Medium
 weight_class = 400
 
 [[weight]]
 name = "Bold"
-latin = "plex-mono-bold"
+latin = "plex-serif-bold"
 hangul = "source-han-serif-kr-bold"
 weight_class = 700

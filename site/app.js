@@ -4,9 +4,9 @@ const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">":
 
 const FAMILY_INFO = {
   mono: { css: "NK Mono", cls: "nk-mono", latin: "JetBrains Mono", hangul: "D2Coding 한글", note: "터미널 대표 가족. 고정폭용으로 그린 한글이 두 칸을 꽉 채우고, 합자는 켜고 끌 수 있습니다." },
-  serif: { css: "NK Serif", cls: "nk-serif", latin: "IBM Plex Mono", hangul: "Source Han Serif KR (본명조)", note: "명조 한글은 한 단계 굵게 짝지어 작은 크기에서도 획이 살아 있습니다." },
   pixel: { css: "NK Pixel", cls: "nk-pixel", latin: "Neo둥근모 Code", hangul: "Neo둥근모 Code", note: "16 px 비트맵 격자의 픽셀 터미널 글꼴. Nerd 아이콘 포함, 게임용 포맷도 준비 중입니다." },
   sans: { css: "NK Sans", cls: "nk-sans", text: true, latin: "IBM Plex Sans", hangul: "Source Han Sans KR (본고딕)", note: "일반 문서·UI·발표 자료용 비례폭 고딕. 기본 줄 높이 φ^5/6 = 1.493.", spec: "한글 Aa 2026", spec2: "회의록, 보고서, 슬라이드에\n어울리는 담백한 고딕." },
+  serif: { css: "NK Serif", cls: "nk-serif", text: true, latin: "IBM Plex Serif", hangul: "Source Han Serif KR (본명조)", note: "보고서·논문·인쇄물용 비례폭 명조. NK Sans와 같은 Plex 뼈대라 제목·본문 짝으로 씁니다. 명조 한글은 한 단계 굵게 짝지었습니다. 기본 줄 높이 φ^5/6 = 1.493.", spec: "한글 Aa 1446", spec2: "제1장 연구의 목적과 범위\n본 보고서는 다음과 같이 구성된다." },
   novel: { css: "NK Novel", cls: "nk-novel", text: true, latin: "Crimson Text", hangul: "고운바탕", note: "책·소설·신문 본문용 비례폭 바탕. 기본 줄 높이 φ = 1.618.", spec: "한글 Aa 1987", spec2: "“그래, 다시 시작하자.” 그녀가\n창밖을 보며 말했다." },
   comics: { css: "NK Comics", cls: "nk-comics", text: true, latin: "Bagel Fat One · Gasoek One", hangul: "Bagel Fat One · Gasoek One (+ 본고딕 Heavy 보충)", note: "만화·웹툰 말풍선과 효과음용. 통통 튀는 Regular, 외치는 Black. 기본 줄 높이 √φ = 1.272.", spec: "쾅!! Aa ?!", spec2: "빨리 도망쳐!! WHAT?!\n잠깐만, 같이 가!" },
 };

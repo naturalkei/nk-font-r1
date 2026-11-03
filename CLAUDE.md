@@ -1,7 +1,7 @@
 # nk-nerd-font (nk-font)
 
-OFL 1.1 Korean fonts. Terminal Nerd Font families **NK Mono** (flagship: JetBrains Mono + D2Coding Hangul),
-**NK Serif**, **NK Pixel**; proportional families (`kind = "text"`) **NK Sans** (documents),
+OFL 1.1 Korean fonts. Terminal Nerd Font families **NK Mono** (flagship: JetBrains Mono + D2Coding Hangul)
+and **NK Pixel**; proportional families (`kind = "text"`) **NK Sans** and **NK Serif** (documents),
 **NK Novel** (books/news) and **NK Comics** (comic lettering).
 Families, φ rules, weights and feature plans: `docs/FAMILIES.md`.
 Primary goal: perfect grid alignment in terminals (Starship, zsh/Powerlevel10k, iTerm2, Linux
@@ -14,7 +14,7 @@ terminals). NK Pixel must also work in pixel-art games (Minecraft, Terraria) and
 ```bash
 make setup            # .venv + nkfont CLI (the cloud session hook does this automatically)
 nkfont fetch          # pinned upstream fonts -> sources/ (SHA256 checked, never committed)
-nkfont build mono     # build/master/NKMono-*.ttf  (mono|serif|pixel|sans|novel|comics|all)
+nkfont build mono     # build/master/NKMono-*.ttf  (mono|pixel|sans|serif|novel|comics|all)
 nkfont patch          # Docker Nerd Fonts patcher -> dist/NK*NerdFont*.ttf (terminal families only)
 nkfont check FILES --base sources/JetBrainsMono-Regular.ttf [--master build/master/NKMono-Regular.ttf] [--kind text]
 nkfont qa [--profile quick|ci|release]   # full automated pipeline + report (docs/TESTING.md)

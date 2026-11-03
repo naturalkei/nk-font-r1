@@ -3,7 +3,7 @@ export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-export const NK_CSS = { sans: "NK Sans", serif: "NK Serif", pixel: "NK Pixel" };
+export const NK_CSS = { mono: "NK Mono", sans: "NK Sans", serif: "NK Serif", pixel: "NK Pixel" };
 
 export function initTheme() {
   const root = document.documentElement;

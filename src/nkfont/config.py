@@ -59,7 +59,7 @@ def family(name: str, root: Path = ROOT) -> dict:
 
 
 # Display/build order of the families; config/families/<id>.toml.
-FAMILY_ORDER = ("mono", "serif", "pixel", "sans", "novel", "comics")
+FAMILY_ORDER = ("mono", "pixel", "sans", "serif", "novel", "comics")
 
 
 def family_ids(root: Path = ROOT) -> list[str]:
