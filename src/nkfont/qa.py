@@ -168,6 +168,8 @@ class Runner:
         refs = {}
         srcs = config.sources()
         for ref in cfg.get("reference", []):
+            if ref.get("nk") and self.report.family not in ref["nk"]:
+                continue  # e.g. pixel references are not benchmarked against NK Mono
             path = srcs[ref["weights"]["400"]].path
             if path.exists():
                 refs[ref["name"]] = measure_font(TTFont(path), mcfg, groups)

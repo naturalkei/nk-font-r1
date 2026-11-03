@@ -13,7 +13,8 @@ loadFonts(manifest, data);
 const nkFonts = data.fonts.filter((f) => f.role === "nk");
 const refs = data.fonts.filter((f) => f.role === "reference");
 let fam = nkFonts[0].id;
-const lineup = () => [nkFonts.find((f) => f.id === fam), ...refs];
+// A reference with `nk` (config/compare.toml) is only shown next to those NK families.
+const lineup = () => [nkFonts.find((f) => f.id === fam), ...refs.filter((r) => !r.nk || r.nk.includes(fam))];
 const fmt = (v, d = 0) => (v == null ? "–" : Number(v).toLocaleString("ko-KR", { maximumFractionDigits: d, minimumFractionDigits: d }));
 const COLORS = ["var(--acc)", "var(--warm)", "var(--rose)", "var(--violet)"];
 

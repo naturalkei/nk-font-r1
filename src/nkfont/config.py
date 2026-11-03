@@ -17,11 +17,13 @@ RESERVED_NAMES = (
     "Source",
     "Pretendard",
     "Plex",
-    "NeoDunggeunmo",
+    "NeoDunggeunmo",  # also covers "NeoDunggeunmo Pro"
     "둥근모",
     "Nanum",
     "나눔",
     "D2Coding",
+    "Mulmaru",
+    "물마루",
 )
 
 
@@ -36,7 +38,7 @@ class SourceFont:
     url: str
     sha256: str
     license: str
-    # Upstreams that only ship archives: `member` is the file inside the zip at `url`, `sha256`
+    # Upstreams that only ship archives: `member` is the file inside the zip/tgz at `url`, `sha256`
     # is the extracted file's hash and `archive_sha256` pins the zip itself.
     member: str | None = None
     archive_sha256: str | None = None

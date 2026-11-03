@@ -24,7 +24,7 @@ NK는 두 갈래입니다. **터미널 갈래**는 1 : 2 셀 격자(0 / 600 / 12
 | **NK Novel** | 읽기 (`text`) | 책·소설·뉴스·신문 본문 | Crimson Text | 고운바탕 | φ = 1.618 |
 | **NK Comics** | 읽기 (`text`) | 만화·웹툰 말풍선·효과음 | **Bagel Fat One / Gasoek One** | 같은 소스 + 본고딕 Heavy 보충 | √φ = 1.272 |
 
-라이선스는 모두 2026-11-02에 업스트림 원문으로 확인해 `sources.lock`에 고정했습니다. RFN이 있는 소스(`D2Coding`, `Plex`, `Source`, `Neo둥근모`)는 `RESERVED_NAMES`가 이름 사용을 막습니다. Crimson Text, 고운바탕, Bagel Fat One, Gasoek One, JetBrains Mono는 RFN이 없습니다.
+라이선스는 모두 2026-11-02에 업스트림 원문으로 확인해 `sources.lock`에 고정했습니다. RFN이 있는 소스(`D2Coding`, `Plex`, `Source`, `Neo둥근모`, 비교용 `물마루`)는 `RESERVED_NAMES`가 이름 사용을 막습니다. Crimson Text, 고운바탕, Bagel Fat One, Gasoek One, JetBrains Mono는 RFN이 없습니다.
 
 ### 1.1 NK Mono: 터미널 대표
 * **영문**: JetBrains Mono. 합자와 cv/ss 기능을 그대로 두고, 합자를 싫어하는 사용자는 `calt`를 끄면 됩니다.

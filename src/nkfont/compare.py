@@ -342,6 +342,18 @@ def measure_font(font: TTFont, cfg: dict, groups: list[dict]) -> dict:
     }
 
 
+def ofl_body(text: str) -> str:
+    """The OFL text without our copyright block: a reference font's notice must name only its own
+    authors, so cut everything before the license's own header."""
+    i = text.find("This Font Software is licensed")
+    return text[i:] if i >= 0 else text
+
+
+def refs_for(nk_id: str, refs: dict[str, dict]) -> dict[str, dict]:
+    """The references compared with one NK family: those without `nk`, or that list it."""
+    return {k: r for k, r in refs.items() if not r.get("nk") or nk_id in r["nk"]}
+
+
 def improvement_notes(nk: dict, refs: dict[str, dict]) -> list[str]:
     """Honest to-do list: where an NK font does not (yet) stand out against the references."""
     notes = []
@@ -435,19 +447,24 @@ def build_compare(out: Path, nk_fonts: dict[str, dict], root: Path = config.ROOT
             "version": ref["version"],
             "license": ref["license"],
             "homepage": ref["homepage"],
-            "copyright": font["name"].getDebugName(0),
+            "nk": ref.get("nk"),  # NK families this reference is shown with (None = all)
+            # the upstream LICENSE line when the name table lacks one (Neo둥근모)
+            "copyright": ref.get("copyright") or font["name"].getDebugName(0),
             "webfonts": webfonts,
         }
         entry.update(measure_font(font, mcfg, groups))
         fonts.append(entry)
         refs[ref["name"]] = entry
-        notice = f"{ref['name']} {ref['version']}\n{entry['copyright']}\n{ref['homepage']}\n\n"
+        notice = (
+            f"{ref['name']} {ref['version']}\n{entry['copyright']}\n"
+            f"License: {ref['license']}\n{ref['homepage']}\n\n"
+        )
         (out / "fonts" / "ref" / f"LICENSE-{ref['id']}.txt").write_text(
-            notice + (root / "OFL.txt").read_text()
+            notice + ofl_body((root / "OFL.txt").read_text())
         )
     for f in fonts:
         if f["role"] == "nk":
-            f["todo"] = improvement_notes(f, refs)
+            f["todo"] = improvement_notes(f, refs_for(f["id"], refs))
     data = {
         "groups": [{k: g[k] for k in ("id", "title", "note", "chars")} for g in groups],
         "fonts": fonts,
