@@ -1,0 +1,76 @@
+# Benchmark page (site/compare.html): reference fonts and specimen groups.
+# `nkfont site` measures every font listed here from its real outlines and writes compare.json.
+# Reference fonts are served unmodified (WOFF2 re-wrap) with their license; never merged.
+
+# NK families compared, first = shown by default. Only terminal (fixed-width) families are
+# measured; proportional reading faces (kind = "text") are skipped. NK Mono is the terminal face,
+# so it leads; NK Sans stays listed only while it is still a fixed-width prototype.
+nk_order = ["mono", "sans", "serif", "pixel"]
+
+[[reference]]
+id = "jetbrains-mono"
+name = "JetBrains Mono"
+version = "2.304"
+license = "OFL-1.1"
+homepage = "https://www.jetbrains.com/lp/mono/"
+weights = { 400 = "jetbrains-mono-regular", 700 = "jetbrains-mono-bold" }
+
+[[reference]]
+# NK Mono takes its Hangul from D2Coding, so this comparison isolates what NK adds on top:
+# the 1:2 grid without Ambiguous double-width symbols, JetBrains Mono Latin, icons, line metrics.
+id = "d2coding"
+name = "D2Coding"
+version = "1.4.0"
+license = "OFL-1.1 (RFN 'D2Coding')"
+homepage = "https://github.com/naver/d2-coding-font"
+weights = { 400 = "d2coding-regular", 700 = "d2coding-bold" }
+
+# Overlay specimens: each group's characters are drawn on top of each other from the outlines,
+# and `distinct` = 1 - IoU of the two most similar members (0 = identical, 1 = no overlap).
+[[group]]
+id = "il1"
+title = "I · l · 1 · |"
+note = "코드에서 가장 자주 헷갈리는 세로 획들"
+chars = ["I", "l", "1", "|"]
+
+[[group]]
+id = "zero"
+title = "0 · O · o"
+note = "숫자 0과 대문자 O"
+chars = ["0", "O", "o"]
+
+[[group]]
+id = "ieung"
+title = "0 · O · ㅇ"
+note = "한글 ㅇ이 섞이는 순간 생기는 혼동"
+chars = ["0", "O", "ㅇ"]
+
+[[group]]
+id = "i-jamo"
+title = "l · 1 · ㅣ"
+note = "영문 l, 숫자 1, 한글 모음 ㅣ"
+chars = ["l", "1", "ㅣ"]
+
+[[group]]
+id = "dash"
+title = "- · ㅡ"
+note = "하이픈과 한글 모음 ㅡ"
+chars = ["-", "ㅡ"]
+
+[[group]]
+id = "brackets"
+title = "( · { · ["
+note = "괄호 세 종류"
+chars = ["(", "{", "["]
+
+[metrics]
+# Strings the density (typographic colour) measurement averages over.
+latin_sample = "abcdefghijklmnopqrstuvwxyz"
+hangul_sample = "가나다라마바사아자차카타파하한글"
+# Syllable used for Hangul proportions and the balance drawing.
+hangul_probe = "한"
+# Characters the live terminal demo uses; compare.json records which ones each font has, so
+# the page can tell a fallback glyph from an overflowing one.
+probe_chars = "①②③…→·✔❯─│┌┬┐├┼┤└┴┘\ue0b0파일상태줄설정한글정렬통과경고실패재시도문서개합계건소요초"
+# Raster size (px per em) for density and distinctness measurements.
+raster_px = 128

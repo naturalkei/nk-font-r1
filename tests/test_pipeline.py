@@ -79,3 +79,15 @@ def test_line_metrics_keep_latin_base_and_win_covers_bbox(latin, hangul):
 def test_reserved_font_name_is_rejected(latin):
     with pytest.raises(ValueError):
         set_names(latin, "Source Mono", "Regular", "0.1.0", 400)
+
+
+def test_feature_ui_names_survive_renaming(latin):
+    # Regression: set_names wiped nameID >= 256, so ssXX/cvXX labels from the Latin base
+    # ("Classic construction" in JetBrains Mono) went missing in NK Sans.
+    latin["name"].setName("Classic construction", 256, 3, 1, 0x409)
+    latin["name"].setName("Old Mac record", 256, 1, 0, 0)
+    set_names(latin, "NK Sans", "Regular", "0.1.0", 400)
+    font = roundtrip(latin)
+    assert font["name"].getName(256, 3, 1, 0x409).toUnicode() == "Classic construction"
+    assert font["name"].getName(256, 1, 0, 0) is None
+    assert font["name"].getName(1, 3, 1, 0x409).toUnicode() == "NK Sans"

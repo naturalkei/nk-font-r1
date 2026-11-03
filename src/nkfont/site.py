@@ -1,6 +1,7 @@
 """Assemble the static prototype site: copy site/, convert fonts to WOFF2, zip downloads.
 
-`nkfont site` -> build/site/ (deployable to GitHub Pages as is).
+`nkfont site` -> build/site/ (deployable to GitHub Pages as is), including compare.json and the
+reference web fonts for the benchmark page (nkfont.compare).
 """
 
 from __future__ import annotations
@@ -101,7 +102,7 @@ def glyph_index(font: TTFont) -> dict:
     return {"half": half, "runs": runs, "icons": icons}
 
 
-def build_site(out: Path | None = None, families=None) -> Path:
+def build_site(out: Path | None = None, families=None, compare: bool = True) -> Path:
     out = out or config.BUILD_DIR / "site"
     families = families or config.family_ids()
     shutil.rmtree(out, ignore_errors=True)
@@ -175,6 +176,18 @@ def build_site(out: Path | None = None, families=None) -> Path:
             "nerd": bool(files["nf"]),
         }
         manifest["families"].append(entry)
+    if compare:
+        from .compare import build_compare
+
+        nk = {}
+        for entry in manifest["families"]:
+            if entry.get("kind") == "text":
+                continue  # proportional reading faces are not compared with coding fonts
+            files = _family_files(config.family(entry["id"]))
+            web = files["nf"] or files["master"]
+            regular = [f for f in web if f.stem.endswith("-Regular")] or web
+            nk[entry["id"]] = {"family": entry["family"], "path": regular[0]}
+        build_compare(out, nk)
     # The glyph explorer shows the terminal flagship with its Nerd icons.
     mono_nf = _family_files(config.family("mono"))["nf"]
     if mono_nf:
