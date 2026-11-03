@@ -9,6 +9,7 @@ from fontTools.pens.recordingPen import RecordingPen
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import TTFont
 
+from nkfont import config
 from nkfont.build import finish_text, hangul_params, is_terminal
 from nkfont.checks import check_hangul_coverage, check_text_metrics, run_all
 from nkfont.merge import HangulParams, merge_hangul
@@ -139,3 +140,12 @@ def test_text_metrics_catch_monospace_claims(latin):
 def test_new_reserved_names_are_rejected(latin, name):
     with pytest.raises(ValueError):
         set_names(latin, name, "Regular", "0.1.0", 400)
+
+
+def test_only_mono_and_pixel_are_terminal_families():
+    """NK Serif 0.2 became a document face: only Mono and Pixel get the grid and Nerd icons."""
+    terminal = {fid for fid in config.family_ids() if is_terminal(config.family(fid))}
+    assert terminal == {"mono", "pixel"}
+    serif = config.family("serif")
+    assert serif["kind"] == "text"
+    assert serif["metrics"]["line_height"] == "phi^5/6"

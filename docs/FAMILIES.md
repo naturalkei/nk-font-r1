@@ -10,15 +10,17 @@
 ## 1. 여섯 가족 한눈에
 
 > 2026-11-02 재편(사용자 결정): **NK Sans는 처음부터 고정폭일 이유가 없는 문서용 비례폭 고딕**으로 바꾸고, 터미널 대표 역할은 **NK Mono**가 맡습니다. NK Mono 한글은 사용자가 좋아하는 D2Coding의 한글을 씁니다. NK Comics는 "더 과장되고 만화다운" 레터링으로 다시 짰습니다.
+>
+> 2026-11-03: **NK Serif도 문서용 비례폭 명조**(IBM Plex Serif + 본명조)로 전환했습니다. 터미널 갈래는 NK Mono와 NK Pixel 두 가족입니다.
 
 NK는 두 갈래입니다. **터미널 갈래**는 1 : 2 셀 격자(0 / 600 / 1200)와 Nerd 아이콘을 지키는 고정폭, **문서·읽기 갈래**는 격자 없이 사람이 읽는 비례폭입니다. MonoLisa 3.0이 Code와 Text를 나눈 것과 같은 방향이지만, NK의 비례폭 갈래는 한글 본문이 주인공입니다.
 
 | 가족 | 갈래 (`kind`) | 용도 | 영문 베이스 | 한글 베이스 | 기본 줄 높이 |
 | --- | --- | --- | --- | --- | --- |
 | **NK Mono** | 터미널 (`merge`) | 터미널·코딩 대표 | JetBrains Mono | **D2Coding 한글** (RFN `D2Coding`) | 영문 베이스 1.32 (불변) |
-| NK Serif | 터미널 (`merge`) | 세리프 코딩 | IBM Plex Mono | 본명조 KR | 영문 베이스 |
 | NK Pixel | 터미널 (`pixel`) | 픽셀 터미널 + 게임 | Neo둥근모 Code | Neo둥근모 Code | 픽셀 격자 |
 | **NK Sans** | 문서 (`text`) | 일반 문서·UI·발표 자료 | **IBM Plex Sans** | 본고딕 KR | φ^5/6 = 1.493 |
+| **NK Serif** | 문서 (`text`) | 보고서·논문·편지·인쇄물 | **IBM Plex Serif** | 본명조 KR (한 단계 굵게) | φ^5/6 = 1.493 |
 | **NK Novel** | 읽기 (`text`) | 책·소설·뉴스·신문 본문 | Crimson Text | 고운바탕 | φ = 1.618 |
 | **NK Comics** | 읽기 (`text`) | 만화·웹툰 말풍선·효과음 | **Bagel Fat One / Gasoek One** | 같은 소스 + 본고딕 Heavy 보충 | √φ = 1.272 |
 
@@ -66,8 +68,8 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 
 | 기능 | 내용 | 기본 | 가족 |
 | --- | --- | --- | --- |
-| `calt` | 영문 문맥 대체 (베이스에서 보존) | 켜짐 | Sans·Serif |
-| `dlig` | 코딩 합자 전체를 한 번에 (`->`, `=>`, `!=`, `===`) | 꺼짐 | Sans·Serif |
+| `calt` | 영문 문맥 대체 (베이스에서 보존) | 켜짐 | Mono |
+| `dlig` | 코딩 합자 전체를 한 번에 (`->`, `=>`, `!=`, `===`) | 꺼짐 | Mono |
 | `zero` | NK 제로 (사선) | 꺼짐 | 전 가족 |
 | `tnum` / `pnum` | 고정 숫자 / 비례 숫자 | Novel은 `pnum`, 터미널은 고정 | 전 가족 |
 | `onum` / `lnum` | 올드스타일 / 라이닝 숫자 | Novel 본문 `onum` 검토 | Novel |
@@ -107,7 +109,7 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 | 가족 | 영문 소스 굵기 | 한글 소스 굵기 | 1.0 목표 | 메모 |
 | --- | --- | --- | --- | --- |
 | NK Sans | IBM Plex Sans 100–700 + 이탤릭 | 본고딕 7단계 (ExtraLight–Heavy) | 100–900, 이탤릭, 가변 | 인쇄용 대표. Plex 7단계와 본고딕 7단계를 1:1로 짝짓고 800–900은 본고딕 Bold/Heavy + 영문 보간 |
-| NK Serif | Plex Mono 100–700 (7) + 이탤릭 | 본명조 7단계 | 100–900 | 명조는 한 단계 올려 매핑 |
+| NK Serif | IBM Plex Serif 100–700 (7) + 이탤릭 | 본명조 7단계 (ExtraLight–Heavy) | 100–900, 이탤릭 | 명조는 한 단계 올려 매핑. NK Sans와 같은 Plex 뼈대라 굵기 단계도 짝이 맞음 |
 | NK Mono | JetBrains Mono 100–800 + 이탤릭 | D2Coding 2단계 | Regular·Bold → 4단계 이상 | D2Coding 한글이 2단계뿐이라 Light·ExtraBold는 획 굵기 보간(조정 도구의 grade) 필요 → M5 |
 | NK Novel | Crimson Text 400/600/700 + 이탤릭 (가변 Crimson Pro 200–900) | 고운바탕 2단계 | 300–800 | 한글 굵기 확장이 병목: 고운바탕 가변화 또는 본명조 계열 대체 검토 |
 | NK Comics | Bagel Fat One / Gasoek One | 같은 소스 | Regular·Black (+ 기울임 효과음) | 레터링 글꼴이라 굵기보다 "목소리"(대사·외침·속삭임)로 나눔 |

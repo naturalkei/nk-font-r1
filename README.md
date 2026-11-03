@@ -1,20 +1,25 @@
 # nk-nerd-font
 
-터미널에서 한글·영문·Nerd Fonts 아이콘이 셀 그리드에 정확히 맞는 OFL 1.1 한글 고정폭 폰트입니다.
-**NK Sans**, **NK Serif**, **NK Pixel** 세 가족으로 개발하며, NK Pixel은 마인크래프트·테라리아 같은
-픽셀아트 게임에서도 쓸 수 있는 포맷으로 함께 배포할 예정입니다.
+OFL 1.1 한글 글꼴 모음입니다. 터미널 갈래 **NK Mono**·**NK Pixel**은 한글·영문·Nerd Fonts 아이콘이
+셀 그리드에 정확히 맞는 고정폭이고, 문서·읽기 갈래 **NK Sans**·**NK Serif**·**NK Novel**·**NK Comics**는
+비례폭입니다. NK Pixel은 마인크래프트·테라리아 같은 픽셀아트 게임용 포맷으로도 배포할 예정입니다.
+가족별 설계는 [docs/FAMILIES.md](docs/FAMILIES.md)에 있습니다.
 
 - 기획안: [docs/PLAN.md](docs/PLAN.md)
 - 로드맵: [docs/ROADMAP.md](docs/ROADMAP.md)
 
 ## 현재 상태 (프로토타입 v0.1.0)
-세 가족 모두 빌드되고 Nerd Font / Nerd Font Mono 패치와 터미널 호환 검사를 통과합니다. 정식 릴리스 전입니다.
+여섯 가족 모두 빌드되고 검사를 통과합니다. 터미널 갈래는 Nerd Font / Nerd Font Mono 패치와 터미널 호환 검사,
+문서·읽기 갈래는 줄 높이(황금비)·한글 11,172자 검사를 거칩니다. 정식 릴리스 전입니다.
 
-| 가족 | 영문 | 한글 | 굵기 |
-| --- | --- | --- | --- |
-| NK Sans | JetBrains Mono | 본고딕 KR (Source Han Sans KR) | Regular, Bold |
-| NK Serif | IBM Plex Mono | 본명조 KR (Source Han Serif KR), 한 단계 굵게 | Regular, Bold |
-| NK Pixel | Neo둥근모 Code (16px 격자) | 〃 | Regular |
+| 가족 | 갈래 | 영문 | 한글 | 굵기 |
+| --- | --- | --- | --- | --- |
+| NK Mono | 터미널 | JetBrains Mono | D2Coding 한글 | Regular, Bold |
+| NK Pixel | 터미널·게임 | Neo둥근모 Code (16px 격자) | 〃 | Regular |
+| NK Sans | 문서 | IBM Plex Sans | 본고딕 KR (Source Han Sans KR) | Regular, Bold |
+| NK Serif | 문서 | IBM Plex Serif | 본명조 KR (Source Han Serif KR), 한 단계 굵게 | Regular, Bold |
+| NK Novel | 읽기 | Crimson Text | 고운바탕 | Regular, Bold |
+| NK Comics | 만화 | Bagel Fat One · Gasoek One | 같은 소스 + 본고딕 Heavy 보충 | Regular, Black |
 
 - 소개 페이지(GitHub Pages): https://naturalkei.github.io/nk-font-r1/ — `main`에 병합되면 `.github/workflows/pages.yml`이 다시 빌드해 배포
 - 조절 도구 **NK Studio**: `nkfont studio` → 브라우저에서 한글 크기·세로 위치를 슬라이더로 바꾸며 저장값과 나란히 비교하고,
@@ -28,7 +33,7 @@ make patch          # Docker로 Nerd Fonts 패치 (nerdfonts/patcher)
 make check proof    # 터미널 호환 검사 + 교정 시트
 make tune           # 한글 스케일 비교 시트
 make test lint
-nkfont build serif && nkfont build pixel   # 다른 두 가족
+nkfont build all     # 여섯 가족 모두 (mono|pixel|sans|serif|novel|comics)
 nkfont studio       # 한글 미세 조절 웹 UI (http://127.0.0.1:8765)
 nkfont site         # 소개 페이지 조립: build/site (WOFF2, 다운로드 zip, fonts.json)
 make qa             # 테스트 자동화: 린트·테스트·빌드·검사·재현성·골든 이미지 (docs/TESTING.md)

@@ -29,7 +29,7 @@ url = "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/Subs
 sha256 = "f678def86be3d973e85fb0e34513b93b9ec7d6a478380d93fe79d43d1ad9f797"
 license = "OFL-1.1 (RFN 'Source')"
 
-# NK Serif (M4 prototype): IBM Plex Mono from google/fonts pinned by commit, Source Han Serif KR.
+# IBM Plex Mono from google/fonts pinned by commit (Glyph Lab Latin candidate; NK Serif before 0.2).
 [[font]]
 id = "plex-mono-regular"
 url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/ibmplexmono/IBMPlexMono-Regular.ttf"
@@ -40,6 +40,20 @@ license = "OFL-1.1 (RFN 'Plex')"
 id = "plex-mono-bold"
 url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/ibmplexmono/IBMPlexMono-Bold.ttf"
 sha256 = "ac27abd6450a64dd94467580a02fe6235156d5b92f2926ebbc8e7489df64e0be"
+license = "OFL-1.1 (RFN 'Plex')"
+
+# NK Serif 0.2 (proportional document serif): IBM Plex Serif from the IBM/plex v6.4.0 release
+# tree (google/fonts ships it only as a variable font). Hangul: Source Han Serif KR below.
+[[font]]
+id = "plex-serif-regular"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Serif/fonts/complete/ttf/IBMPlexSerif-Regular.ttf"
+sha256 = "3764f5ddda8c687a765d0105e2a31cd311fca244239b878cb59fedb069a14dbb"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-serif-bold"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Serif/fonts/complete/ttf/IBMPlexSerif-Bold.ttf"
+sha256 = "acb1a816c739eaf36081cb261fe150b1e346276c05c97290fc3cd47e3d011866"
 license = "OFL-1.1 (RFN 'Plex')"
 
 [[font]]

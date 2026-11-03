@@ -32,7 +32,7 @@ def test_mono_regular_has_all_hangul_syllables(mono):
     assert all(cp in cmap for cp in range(0xAC00, 0xD7A4))
 
 
-@pytest.mark.parametrize("fid", ["sans", "novel", "comics"])
+@pytest.mark.parametrize("fid", ["sans", "serif", "novel", "comics"])
 def test_new_families_pass_their_checks(fid):
     srcs = config.sources()
     if not all(s.path.exists() for s in srcs.values()):
