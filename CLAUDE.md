@@ -60,6 +60,9 @@ ruff check src tests && ruff format --check src tests
   win over φ (`locked`, reported only); proportional families (`grid = false`) skip `grid_only` rules. New `[hangul]` knobs must default
   to the identity so existing builds stay byte-identical.
 - Pin every upstream input in `sources.lock` (URL + SHA256, patcher image tag + digest).
+  Reference fonts whose terms don't clearly allow redistribution (e.g. 만화진흥원체/KOMACON) go in
+  `config/local_fonts.toml` instead: found on the owner's disk, shown in the Lab, never committed,
+  fetched, merged or put on the site.
 
 ## Testing rule
 Every feature PR adds the qa stage or test that verifies it; every bug fix adds a regression test

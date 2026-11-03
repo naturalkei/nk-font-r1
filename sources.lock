@@ -187,3 +187,31 @@ id = "mulmaru-mono"
 url = "https://raw.githubusercontent.com/mushsooni/mushsooni.github.io/2ec3ba90418f9ac8a6b9a1bc6cc04c2127e33ad1/MulmaruMono.ttf"
 sha256 = "34a1641eb4e94449b26192321e8e0c2bd4f07ef3674fac8abed33d8953a7f70d"
 license = "OFL-1.1 (RFN '물마루 Mono', 'Mulmaru Mono')"
+
+# NK Comics handwriting references (Glyph Lab only, never merged): the user wants a pen-handwriting
+# feel like HCL 리얼노트필기 (local-only, config/local_fonts.toml). Licenses verified 2026-11-03
+# from google/fonts OFL.txt: Gaegu OFL-1.1 without RFN (2,350 syllables, Light/Regular/Bold);
+# Nanum Pen Script OFL-1.1 with RFN "Nanum", "NanumPen" etc. (11,172 syllables).
+[[font]]
+id = "gaegu-light"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gaegu/Gaegu-Light.ttf"
+sha256 = "da44ad6e5823819599ec42e1a516f23002cc0e72f968f93bd49e793360cd77ca"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "gaegu-regular"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gaegu/Gaegu-Regular.ttf"
+sha256 = "aa52c98336f7c62e2896fc8b12b56a75d5b476d88a2f104b0980f4f7ce0adfc3"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "gaegu-bold"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gaegu/Gaegu-Bold.ttf"
+sha256 = "cc38a4af9506a45254d1ce07c589ec473d9e5f0be319e5a77b17c214903f8c1c"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "nanum-pen-script"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/nanumpenscript/NanumPenScript-Regular.ttf"
+sha256 = "6f0d1ab29c7894010dc88831fb7a0a51edb79136e450344183de5b1a8b52bd43"
+license = "OFL-1.1 (RFN 'Nanum', 'NanumPen')"

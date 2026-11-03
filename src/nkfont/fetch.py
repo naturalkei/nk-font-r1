@@ -63,3 +63,22 @@ def fetch_all(force: bool = False) -> list[str]:
                 raise RuntimeError(f"{src.id}: SHA256 mismatch ({digest} != {src.sha256})")
             done.append(src.id)
     return done
+
+
+def local_status(root: Path = config.ROOT) -> list[str]:
+    """One line per local-only reference (config/local_fonts.toml): found where, or missing.
+
+    These are never downloaded; a pinned `sha256` that differs only warns (another release).
+    """
+    lines = []
+    for lf in config.local_fonts(root).values():
+        for weight in lf.weights:
+            path = lf.find(weight, root)
+            if path is None:
+                names = ", ".join(lf.weights[weight])
+                lines.append(f"--  {lf.id} {weight}: not installed (local only: {names})")
+                continue
+            want = lf.sha256.get(path.name)
+            note = "" if not want or sha256(path) == want else " (different release than pinned)"
+            lines.append(f"loc {lf.id} {weight}: {path}{note}")
+    return lines

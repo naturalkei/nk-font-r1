@@ -39,6 +39,8 @@ NK는 두 갈래입니다. **터미널 갈래**는 1 : 2 셀 격자(0 / 600 / 12
 ### 1.3 NK Novel과 NK Comics
 * **Novel**: 고운바탕(11,172자) + Crimson Text. 한글 스케일 0.92, 자간 −10, 줄 높이 φ.
 * **Comics**: 통통 튀는 **Bagel Fat One**(Regular)과 굵게 외치는 **Gasoek One**(Black). 둘 다 같은 디자이너(JAMO Typeface)가 영문과 한글을 함께 그려 과장된 만화 레터링이 한 몸으로 맞습니다. 원본은 2,780음절이라 나머지 8,389음절은 본고딕 Heavy를 크기 맞춰 보충해 글자가 빠지지 않게 했습니다(드문 글자만 해당, 이후 원본 스타일로 다시 그리기 과제). 줄 높이 √φ.
+  * 비교 레퍼런스: **만화진흥원체(KOMACON, 한국만화영상진흥원)**. 받은 배포본에 읽을 수 있는 라이선스 전문이 없어 재배포 가능 여부를 확인할 수 없으므로, 레포에 커밋하거나 `sources.lock`에 고정하지 않고 `config/local_fonts.toml`에 **로컬 전용**으로 등록했습니다. 공식 설치본(KomaconFonts.dmg/.exe)으로 설치하면 `KOMACON.ttf`를 `~/Library/Fonts` 등에서 찾아 글리프 랩(`/lab`, `/lab/advanced`, `/presets`)에 비교용으로 띄웁니다(`sources/local/` 또는 `$NK_LOCAL_FONTS`에 둬도 됨). 측정·표시만 하고 병합·사이트 배포는 하지 않습니다.
+  * 필기체 방향 레퍼런스(2026-11-03, 사용자가 HCL 리얼노트필기 같은 펜 필기 느낌을 원함, 디자인 변경 전): **개구 Gaegu**(OFL, RFN 없음, Light/Regular/Bold, 2,350음절)와 **나눔손글씨 펜**(OFL, RFN `Nanum`, 11,172음절)은 `sources.lock`에 고정하고 글리프 랩에 추가했습니다. **HCL 리얼노트필기**는 라이선스를 찾지 못해 `config/local_fonts.toml`에 로컬 전용으로 두고, 설치 파일명을 몰라 `HCL*리얼노트*`, `*RealNote*` 패턴으로 찾습니다. 모두 모양 참고용이며 글리프를 가져오지 않습니다.
 
 ### 1.4 NK Pixel과 "mono-pixel" 터미널 스타일
 요청하신 게임 개발자용 mono-pixel 터미널 스타일은 **NK Pixel에 통합**합니다. NK Pixel은 이미 반각 8×16 / 전각 16×16 격자의 터미널 폰트이고 Nerd Font / Nerd Font Mono로 패치됩니다. 별도 가족을 만들면 같은 픽셀 마스터를 두 번 관리하게 되므로, 대신 NK Pixel 안에서 터미널 완성도를 높입니다.
