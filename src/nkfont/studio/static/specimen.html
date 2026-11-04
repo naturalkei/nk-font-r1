@@ -51,7 +51,15 @@ button{cursor:pointer}button.primary{background:var(--acc);border-color:var(--ac
 .stl b{font-weight:600;font-family:system-ui,sans-serif}
 .hint{font-size:12px;color:var(--mute)}.err{color:#c0392b;font-size:12px;white-space:pre-wrap}
 .loading{opacity:.35;transition:opacity .2s}
-@media (max-width:900px){.bench{grid-template-columns:1fr}.title h1{font-size:44px}.stl{grid-template-columns:70px 90px 1fr}.stl span:nth-child(3){display:none}}
+.ladder{margin-top:34px;border-top:1px solid var(--line);padding-top:16px}
+.ladder h3{display:flex;align-items:center;gap:10px;margin:0 0 4px;font-size:13px;font-weight:600}
+.ladder h3 .hint{font-weight:400}
+.lrow{display:grid;grid-template-columns:120px 1fr 190px;gap:14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.lrow:hover{background:var(--sel)}.lrow.on .ln b{color:var(--acc)}
+.lrow .ln{font:12px ui-monospace,monospace;color:var(--mute)}.lrow .ln b{display:block;font:600 13px system-ui,sans-serif;color:var(--ink)}
+.lrow .ls{font-size:34px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .lm{font:11px ui-monospace,monospace;color:var(--mute);text-align:right}.lrow .lm .bad{color:#c0392b}
+@media (max-width:900px){.lrow{grid-template-columns:84px 1fr}.lrow .lm{display:none}.lrow .ls{font-size:24px}.bench{grid-template-columns:1fr}.title h1{font-size:44px}.stl{grid-template-columns:70px 90px 1fr}.stl span:nth-child(3){display:none}}
 </style>
 </head>
 <body>
@@ -114,6 +122,10 @@ button{cursor:pointer}button.primary{background:var(--acc);border-color:var(--ac
         <div class="hint" style="margin:8px 12px">크기는 본문 16px에서 φ 비율로 올립니다 (제목 1 = 16·φ³, 제목 2 = 16·φ², 제목 3 = 16·φ, 캡션 = 16/√φ).</div></div>
     </div>
   </div>
+  <div class="ladder">
+    <h3>굵기 단계 <span class="hint">Thin 100 – ExtraBold 800 · 한글 획 / 영문 획 비율이 Regular와 같아야 한글과 영문이 따로 놀지 않습니다</span></h3>
+    <div id="ladder"></div>
+  </div>
 </div>
 <script>
 const $ = (id) => document.getElementById(id);
@@ -161,8 +173,11 @@ function hangulParams() { // only knobs that differ from the saved family value
   const out = {}; for (const [k] of AXES) if (axes[k] !== undefined && axes[k] !== saved(k)) out[k] = axes[k]; return out;
 }
 function weightFor(role) { // style weight role -> one of the family's static weights
-  if (role === "bold") return fam.weights.find(w => /bold|black|heavy/i.test(w) && w !== weight) || fam.weights[fam.weights.length - 1];
-  return weight;
+  if (role !== "bold") return weight;
+  const cls = fam.weight_classes || {}, heavier = fam.weights.filter(w => (cls[w] || 0) > (cls[weight] || 400));
+  // Headings: Bold for text weights up to Medium, otherwise the next heavier weight.
+  if (fam.weights.includes("Bold") && (cls[weight] || 400) < 600) return "Bold";
+  return heavier[0] || fam.weights[fam.weights.length - 1];
 }
 function styleWeight(name) { const s = styles[name]; return s.weight === "bold" ? weightFor("bold") : s.weight === "regular" ? weight : s.weight; }
 
@@ -189,6 +204,28 @@ async function refreshFonts() {
     for (const el of $("blocks").children) el.style.fontFamily = ff(styleWeight(el.dataset.style));
     setStatus(`${fam.family} ${weight}` + (Object.keys(hangulParams()).length ? " · 조정 중" : ""));
   } catch (e) { $("err").textContent = e.message; setStatus("오류"); }
+}
+const LADDER_TEXT = { text: "한글 Hangul 다람쥐 Quartz 123", pixel: "한글 Hangul 123", merge: "한글 Hangul 0O1l {} 123" };
+async function refreshLadder() {
+  const my = fam.id, ref = fam.default_weight || "Regular", sample = LADDER_TEXT[fam.kind] || LADDER_TEXT.merge;
+  $("ladder").innerHTML = fam.weights.map(w => `<div class="lrow ${w === weight ? "on" : ""}" data-w="${esc(w)}"><div class="ln"><b>${esc(w)}</b>${fam.weight_classes?.[w] ?? ""}</div><div class="ls loading">${esc(sample)}</div><div class="lm" id="lm_${esc(w)}">…</div></div>`).join("");
+  const rows = await Promise.all(fam.weights.map(async w => {
+    try {
+      const r = await api("/api/preview", { family: fam.id, weight: w, text: sample, ...hangulParams() });
+      const name = "nkl" + nFace++, face = new FontFace(name, Uint8Array.from(atob(r.font), c => c.charCodeAt(0)).buffer);
+      await face.load(); document.fonts.add(face); return [w, name, r.metrics.harmony || {}];
+    } catch (e) { return [w, null, {}]; }
+  }));
+  if (my !== fam.id) return;
+  const base = (rows.find(([w]) => w === ref) || rows[0])[2];
+  for (const [w, name, h] of rows) {
+    const row = $("ladder").querySelector(`[data-w="${CSS.escape(w)}"]`); if (!row) continue;
+    const s = row.querySelector(".ls"); if (name) { s.style.fontFamily = `"${name}", monospace`; s.classList.remove("loading"); }
+    const drift = (k) => base[k] && h[k] ? h[k] / base[k] - 1 : null, pct = (d) => d === null ? "–" : `${d >= 0 ? "+" : ""}${Math.round(d * 100)}%`;
+    const ds = drift("stem_ratio"), db = drift("bar_ratio");
+    row.querySelector(".lm").innerHTML = `영문 ${h.latin_stem ?? "–"} / 한글 ${h.hangul_stem ?? "–"}<br>` +
+      `세로 <span class="${Math.abs(ds) > 0.1 ? "bad" : ""}">${pct(ds)}</span> · 가로 <span class="${Math.abs(db) > 0.2 ? "bad" : ""}">${pct(db)}</span>`;
+  }
 }
 function schedule(ms = 220) { clearTimeout(timer); timer = setTimeout(refreshFonts, ms); }
 
@@ -233,14 +270,14 @@ function defaultBlocks(script) {
 function setFamily(id, keepAxes) {
   fam = families.find(f => f.id === id) || families[0]; LS.set("family", fam.id);
   $("family").value = fam.id;
-  if (!fam.weights.includes(weight)) weight = fam.weights[0];
+  if (!fam.weights.includes(weight)) weight = fam.default_weight || fam.weights[0];
   if (!keepAxes) axes = Object.fromEntries(AXES.map(([k]) => [k, saved(k)]));
   lhStep = fam.kind === "text" ? 6 : 3;
   $("name").textContent = fam.family; $("desc").textContent = DESC[fam.id] || "";
   $("tags").innerHTML = `<span class="k">${KIND[fam.kind] || fam.kind}</span>` + fam.weights.map(w => `<span>${esc(w)}</span>`).join("") + '<span>한글 11,172</span><span>OFL 1.1</span>';
   const ps = presets.filter(p => !p.error && p.family === fam.id);
   $("preset").innerHTML = '<option value="">—</option>' + ps.map(p => `<option value="${esc(p.id)}">${esc(p.label)}</option>`).join("");
-  renderAxes(); renderBlocks();
+  renderAxes(); renderBlocks(); refreshLadder();
 }
 
 function applyPreset(p) {
@@ -263,13 +300,15 @@ $("family").onchange = () => { extra = {}; setFamily($("family").value); };
 $("script").onchange = () => setScript($("script").value);
 $("sentence").onchange = () => { $("hero").textContent = SCRIPTS[$("script").value][+$("sentence").value]; schedule(0); };
 $("hero").oninput = () => schedule(450);
+$("ladder").onclick = (e) => { const r = e.target.closest(".lrow"); if (!r) return; weight = r.dataset.w; renderAxes(); renderTool(); renderStyles(); schedule(0);
+  for (const x of $("ladder").children) x.classList.toggle("on", x === r); };
 $("weights").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; weight = b.dataset.w; renderAxes(); renderTool(); renderStyles(); schedule(0); };
 $("axisList").oninput = (e) => { const r = e.target; if (!r.dataset.k) return; axes[r.dataset.k] = +r.value; $("v_" + r.dataset.k).textContent = r.value;
   $("ax_" + r.dataset.k).classList.toggle("changed", +r.value !== saved(r.dataset.k)); schedule(); };
 document.querySelector(".axes").onclick = (e) => { const b = e.target.closest("[data-reset]"); if (!b) return;
   const k = b.dataset.reset; if (k === "lh") { lhStep = fam.kind === "text" ? 6 : 3; } else axes[k] = saved(k); renderAxes(); schedule(0); };
 $("lh").oninput = () => { lhStep = +$("lh").value; $("lhV").textContent = `n=${lhStep} · ${lhOf(lhStep)}`; $("hero").style.lineHeight = lhOf(lhStep); };
-$("resetAll").onclick = () => { extra = {}; axes = Object.fromEntries(AXES.map(([k]) => [k, saved(k)])); weight = fam.weights[0]; lhStep = fam.kind === "text" ? 6 : 3; $("preset").value = ""; renderAxes(); renderBlocks(); };
+$("resetAll").onclick = () => { extra = {}; axes = Object.fromEntries(AXES.map(([k]) => [k, saved(k)])); weight = fam.default_weight || fam.weights[0]; lhStep = fam.kind === "text" ? 6 : 3; $("preset").value = ""; renderAxes(); renderBlocks(); };
 $("blocks").addEventListener("focusin", (e) => { const el = e.target.closest(".blk"); if (!el) return; cur = +el.dataset.i;
   for (const x of $("blocks").children) x.classList.toggle("cur", x === el); renderTool(); renderStyles(); });
 $("blocks").addEventListener("input", (e) => { const el = e.target.closest(".blk"); blocks[+el.dataset.i].text = el.textContent; LS.set("blocks", blocks); schedule(500); });

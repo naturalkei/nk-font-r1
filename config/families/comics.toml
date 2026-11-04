@@ -41,12 +41,41 @@ ascent = 960
 descent = -312
 line_height = "phi^0.5"
 
+[weights]
+# Thin..ExtraBold. Gaegu ships Light, Regular and Bold; the others move the nearest master's
+# strokes (latin_grade, units at UPM 1000): Thin and ExtraLight from Light, Medium from Regular,
+# SemiBold and ExtraBold from Bold. The Hangul (Gaegu's own, re-imported) gets a solved grade so
+# Hangul stem / Latin stem stays the Regular's ("stem+bar", weights.py); the Nanum Pen fill-in
+# syllables take the same grade plus the weight's fill_adjust.
+match = "stem+bar"
+reference = "Regular"
+
+# Regular first: tools open the first weight. The rest follow in weight-class order.
+
 [[weight]]
 name = "Regular"
 latin = "gaegu-regular"
 hangul = "gaegu-regular"
 fill = "nanum-pen-script"
 weight_class = 400
+
+[[weight]]
+name = "Thin"
+latin = "gaegu-light"
+latin_grade = -18
+hangul = "gaegu-light"
+fill = "nanum-pen-script"
+fill_adjust = { grade = -37 }
+weight_class = 100
+
+[[weight]]
+name = "ExtraLight"
+latin = "gaegu-light"
+latin_grade = -10
+hangul = "gaegu-light"
+fill = "nanum-pen-script"
+fill_adjust = { grade = -37 }
+weight_class = 200
 
 [[weight]]
 name = "Light"
@@ -57,9 +86,35 @@ fill_adjust = { grade = -37 }
 weight_class = 300
 
 [[weight]]
+name = "Medium"
+latin = "gaegu-regular"
+latin_grade = 7
+hangul = "gaegu-regular"
+fill = "nanum-pen-script"
+weight_class = 500
+
+[[weight]]
+name = "SemiBold"
+latin = "gaegu-bold"
+latin_grade = -8
+hangul = "gaegu-bold"
+fill = "nanum-pen-script"
+fill_adjust = { grade = 8 }
+weight_class = 600
+
+[[weight]]
 name = "Bold"
 latin = "gaegu-bold"
 hangul = "gaegu-bold"
 fill = "nanum-pen-script"
 fill_adjust = { grade = 8 }
 weight_class = 700
+
+[[weight]]
+name = "ExtraBold"
+latin = "gaegu-bold"
+latin_grade = 15
+hangul = "gaegu-bold"
+fill = "nanum-pen-script"
+fill_adjust = { grade = 8 }
+weight_class = 800

@@ -33,14 +33,62 @@ ascent = 1025
 descent = -275
 line_height = "phi^5/6"
 
+[weights]
+# Thin..ExtraBold. Plex Serif ships Thin..Bold; ExtraBold is Plex Serif Bold + 24 units.
+# Hangul: the Source Han Serif master nearest to each Latin weight (Regular keeps its
+# one-heavier Medium), then a solved grade ("stem+bar", weights.py). Myeongjo and serif weights
+# change their stems, not their hairlines, so grades move horizontal strokes only 30%.
+match = "stem+bar"
+reference = "Regular"
+contrast = 0.3
+
+# Regular first: tools open the first weight. The rest follow in weight-class order.
+
 [[weight]]
 name = "Regular"
 latin = "plex-serif-regular"
-hangul = "source-han-serif-kr-medium"   # weight_bias: Regular -> Medium
+hangul = "source-han-serif-kr-medium"
 weight_class = 400
 
 [[weight]]
 name = "Bold"
 latin = "plex-serif-bold"
-hangul = "source-han-serif-kr-bold"
+hangul = "source-han-serif-kr-heavy"
 weight_class = 700
+
+[[weight]]
+name = "Thin"
+latin = "plex-serif-thin"
+hangul = "source-han-serif-kr-extralight"
+weight_class = 100
+
+[[weight]]
+name = "ExtraLight"
+latin = "plex-serif-extralight"
+hangul = "source-han-serif-kr-extralight"
+weight_class = 200
+
+[[weight]]
+name = "Light"
+latin = "plex-serif-light"
+hangul = "source-han-serif-kr-light"
+weight_class = 300
+
+[[weight]]
+name = "Medium"
+latin = "plex-serif-medium"
+hangul = "source-han-serif-kr-bold"
+weight_class = 500
+
+[[weight]]
+name = "SemiBold"
+latin = "plex-serif-semibold"
+hangul = "source-han-serif-kr-heavy"
+weight_class = 600
+
+[[weight]]
+name = "ExtraBold"
+latin = "plex-serif-bold"
+latin_grade = 24
+hangul = "source-han-serif-kr-heavy"
+weight_class = 800

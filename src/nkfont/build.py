@@ -10,8 +10,8 @@ Family kinds:
 
 from __future__ import annotations
 
+import dataclasses
 import os
-from dataclasses import replace as _replace
 from pathlib import Path
 
 from fontTools.ttLib import TTFont
@@ -28,6 +28,7 @@ from .names import COPYRIGHT, set_names
 from .phi import line_metrics
 from .pixelstyle import PixelParams, apply_pixel, is_hangul
 from .style import StyleParams, apply_style
+from .weights import hangul_weight, pixel_bold, synthesize
 
 # Seconds between 1904-01-01 (OpenType epoch) and 1970-01-01 (Unix epoch).
 MAC_EPOCH_OFFSET = 2082844800
@@ -72,6 +73,7 @@ def hangul_params(fam: dict, **override) -> HangulParams:
         width=h.get("width", 1.0),
         slant=h.get("slant", 0.0),
         grade=h.get("grade", 0.0),
+        contrast=fam.get("weights", {}).get("contrast", 1.0),
         advance="cell" if is_terminal(fam) else "proportional",
         tracking=h.get("tracking", 0),
     )
@@ -92,7 +94,7 @@ def fill_params(fam: dict, base: HangulParams, weight: dict | None = None) -> Ha
     unknown = set(f) - set(FILL_KEYS)
     if unknown:
         raise ValueError(f"unknown [fill] keys: {', '.join(sorted(unknown))}")
-    return _replace(
+    return dataclasses.replace(
         base,
         scale=base.scale * f.get("scale", 1.0),
         width=base.width * f.get("width", 1.0),
@@ -197,6 +199,10 @@ def build_pixel(
     term = fam.get("terminal", {})
     if term.get("unmap_width_conflicts", True):
         unmap_width_conflicts(font, half_width(font), [tuple(r) for r in term.get("unmap", [])])
+    if weight.get("smear"):
+        # Bitmap-style bold: every vertical stroke `smear` pixels wider to the right, horizontal
+        # strokes untouched, so the outline stays on the pixel grid (the classic bitmap bold).
+        pixel_bold(font, fam["grid"]["units_per_pixel"] * weight["smear"])
     px = fam.get("grid", {}).get("units_per_pixel", 64)
     apply_pixel(font, pixel or pixel_params(fam), px, unicodes)
     return finish(font, fam, weight, font["hhea"].ascent, font["hhea"].descent)
@@ -226,8 +232,18 @@ def build_master(
     hangul = hangul or TTFont(srcs[weight["hangul"]].path)
     hhea = latin["hhea"]
     ascent, descent, line_gap = hhea.ascent, hhea.descent, hhea.lineGap
+    contrast = fam.get("weights", {}).get("contrast", 1.0)
+    # Weights the Latin upstream does not ship are derived from the nearest master (weights.py).
+    synthesize(latin, weight.get("latin_grade", 0.0), contrast)
     ranges = ranges or config.ranges()
     params = params or hangul_params(fam)
+    delta, grade_y = hangul_weight(fam, weight, srcs)
+    # Grades are in the Latin font's units; the solver works at UPM 1000.
+    k = latin["head"].unitsPerEm / 1000
+    if delta:
+        params = dataclasses.replace(params, weight_grade=delta * k)
+    if grade_y is not None:
+        params = dataclasses.replace(params, grade_y=grade_y * k)
     if fam.get("hangul", {}).get("replace"):
         drop_hangul(latin, hangul, ranges)
     merge_hangul(latin, hangul, ranges, params)

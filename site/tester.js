@@ -15,6 +15,9 @@ const weightsOf = (f) => {
   return m ? m.webfonts.map((w) => w.weight).sort((a, b) => a - b) : [400];
 };
 
+// OpenType usWeightClass names (Thin 100 .. Black 900).
+const WEIGHT_NAMES = { 100: "Thin", 200: "ExtraLight", 300: "Light", 400: "Regular", 500: "Medium", 600: "SemiBold", 700: "Bold", 800: "ExtraBold", 900: "Black" };
+
 // Editor colour themes: classic open-source palettes (colour values only) plus NK's own.
 const THEMES = {
   "NK 다크": { bg: "#0f100e", fg: "#e7e6df", bar: "#161714", line: "#262724", dim: "#77746b", k: "#b39cf0", s: "#f2a65a", c: "#6d6a62", n: "#53d3bd", f: "#ef7b7b", t: "#7cb8f0" },
@@ -165,8 +168,8 @@ function features() {
 function pickFont(id) {
   st.font = fonts.find((f) => f.id === id);
   const ws = weightsOf(st.font);
-  if (!ws.includes(st.weight)) st.weight = ws[0];
-  seg($("#tWeight"), ws.map((w) => [String(w), w >= 700 ? "Bold" : "Regular"]), String(st.weight), (w) => { st.weight = +w; applyStyle(); });
+  if (!ws.includes(st.weight)) st.weight = ws.includes(400) ? 400 : ws[0];
+  seg($("#tWeight"), ws.map((w) => [String(w), WEIGHT_NAMES[w] || String(w)]), String(st.weight), (w) => { st.weight = +w; applyStyle(); });
   features();
   applyStyle();
 }

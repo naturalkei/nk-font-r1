@@ -126,7 +126,7 @@ def test_text_family_flags_and_checks(latin, hangul):
     assert check_text_metrics(font) == []
     # The synthetic font has one syllable, so the reading-face coverage check must flag it.
     assert check_hangul_coverage(font) == ["11171 Hangul syllables missing, first U+AC01"]
-    assert set(run_all(font, kind="text")) == {"text-metrics", "hangul-coverage", "names"}
+    assert set(run_all(font, kind="text")) == {"text-metrics", "hangul-coverage", "names", "weight"}
 
 
 def test_text_metrics_catch_monospace_claims(latin):

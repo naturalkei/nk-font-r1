@@ -58,3 +58,30 @@ def render(fonts: list[tuple[str, TTFont | Path]], size: int = 28, lines=SAMPLE)
         total.paste(b, (0, y))
         y += b.height
     return total
+
+
+WEIGHT_SAMPLE = "한글 Hangul 다람쥐 Quartz 0O1lI"
+
+
+def render_weights(
+    fonts: list[tuple[str, TTFont | Path]], size: int = 44, text: str = WEIGHT_SAMPLE
+) -> Image.Image:
+    """One line per weight (label, font), Thin at the top: Hangul and Latin side by side so a
+    weight where one script looks lighter or darker than the other stands out."""
+    label_font = ImageFont.load_default()
+    rows = []
+    for label, f in fonts:
+        pf = _pil_font(f, size)
+        asc, desc = pf.getmetrics()
+        w = int(pf.getlength(text)) + 190
+        img = Image.new("RGB", (w, asc + desc + 16), "white")
+        d = ImageDraw.Draw(img)
+        d.text((10, (asc + desc) // 2), label, fill=(120, 0, 0), font=label_font)
+        d.text((170, 8), text, fill="black", font=pf)
+        rows.append(img)
+    total = Image.new("RGB", (max(r.width for r in rows), sum(r.height for r in rows)), "white")
+    y = 0
+    for r in rows:
+        total.paste(r, (0, y))
+        y += r.height
+    return total

@@ -3,7 +3,8 @@
 Profiles grow from fast to thorough:
   quick    lint, unit tests, Regular master build, font checks, reproducibility, golden images,
            golden-ratio proportion report (advisory)
-  ci       quick + all weights, real-font tests, Nerd Fonts patch (Docker), checks on patched fonts
+  ci       quick + all weights (Thin..ExtraBold ladder: names, Hangul/Latin harmony),
+           real-font tests, Nerd Fonts patch (Docker), checks on patched fonts
   release  ci + fontbakery audit (optional tool, skipped if missing) + manual terminal-matrix
            checklist in the report
 """
@@ -149,6 +150,56 @@ class Runner:
                 st.status = "warn"
             if warnings:
                 st.details.append(f"{f.name} overflow warnings (inherited/PUA): {len(warnings)}")
+
+    def weight_ladder(self, st: Stage) -> None:
+        """Thin..ExtraBold: names and usWeightClass, every weight present, and Hangul/Latin harmony.
+
+        Fails when a weight is missing or misnamed, when a stroke gets lighter as the weight
+        class rises, or when the Hangul/Latin stem or bar ratio drifts from Regular's by more
+        than `[weights] tolerance` (default stem ±10%, bar ±20%): Hangul must not look lighter
+        or darker than the Latin next to it at any weight.
+        """
+        from .weights import STANDARD, check_weight_ladder, check_weight_names, harmony_row
+
+        fam = config.family(self.report.family)
+        if len(self.masters) < 2:
+            st.status = "skip"
+            st.details.append("needs every weight (profile ci or release)")
+            return
+        rows = []
+        for m in self.masters:
+            font = TTFont(m)
+            style = m.stem.split("-")[-1]
+            for p in check_weight_names(font):
+                st.status = "fail"
+                st.details.append(f"{m.name}: {p}")
+            row = harmony_row(font)
+            rows.append((style, font["OS/2"].usWeightClass, row))
+        have = {r[0] for r in rows}
+        # A pixel face has one stroke width: Regular and a bitmap Bold only (pixel.toml).
+        want = ("Regular", "Bold") if fam.get("kind") == "pixel" else STANDARD
+        for w in want:
+            if w not in have:
+                st.status = "fail"
+                st.details.append(f"missing weight {w}")
+        for style, cls, r in sorted(rows, key=lambda r: r[1]):
+            st.details.append(
+                f"{style} {cls}: Latin {r['latin_stem']}/{r['latin_bar']} "
+                f"Hangul {r['hangul_stem']}/{r['hangul_bar']} "
+                f"stem {r['stem_ratio']} bar {r['bar_ratio']}"
+            )
+        from .proof import render_weights
+
+        out = self.report_dir / "weights.png"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        ordered = sorted(zip(rows, self.masters, strict=True), key=lambda x: x[0][1])
+        render_weights([(f"{r[0]} {r[1]}", m) for r, m in ordered]).save(out)
+        self.report.artifacts.append(str(out))
+        wcfg = fam.get("weights", {})
+        problems = check_weight_ladder(rows, wcfg.get("tolerance"), wcfg.get("independent", ()))
+        if problems:
+            st.status = "fail"
+            st.details[:0] = problems  # problems first: the report shows the first lines
 
     def benchmark(self, st: Stage) -> None:
         """Measure the Regular master against the reference fonts (config/compare.toml).
@@ -354,6 +405,7 @@ class Runner:
         )
         self.stage("build masters", lambda st: self.build(st, None if thorough else "Regular"))
         self.stage("font checks (masters)", lambda st: self.font_checks(st, self.masters))
+        self.stage("weights Thin..ExtraBold", self.weight_ladder)
         self.stage("benchmark vs reference fonts", self.benchmark)
         self.stage("reproducible build", self.reproducible)
         self.stage("golden images (masters)", lambda st: self.golden(st, self.masters))
@@ -383,7 +435,7 @@ def write_report(report: Report, report_dir: Path) -> Path:
         "| --- | --- | --- | --- |",
     ]
     for s in report.stages:
-        details = "<br>".join(d.replace("|", "\\|") for d in s.details[:6])
+        details = "<br>".join(d.replace("|", "\\|") for d in s.details[:10])
         lines.append(f"| {s.name} | {icon[s.status]} {s.status} | {s.seconds}s | {details} |")
     if report.profile == "release":
         lines += ["", "### Manual terminal matrix", ""] + [f"- [ ] {m}" for m in MATRIX]

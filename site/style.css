@@ -175,3 +175,10 @@ main>section{padding:clamp(64px,9vw,120px) var(--gut)}
 .bubble.r{align-self:flex-end}.bubble.r:after{left:auto;right:34px}
 .bubble.shout{font-weight:900;font-size:30px;border-radius:12px;transform:rotate(-1.5deg)}
 .sfx{font-weight:900;font-size:44px;letter-spacing:.04em;color:#e2483d;-webkit-text-stroke:1.5px #111;transform:rotate(-6deg);align-self:center}
+
+/* ---------- weights (Thin..ExtraBold) ---------- */
+.ladder{margin-top:18px;border-top:1px solid var(--line)}
+.ladder .lrow{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+.ladder .lname{font:600 13px var(--ui);color:var(--mute)}.ladder .lname small{margin-left:8px;font-weight:400;color:var(--faint)}
+.ladder .ltext{font-size:clamp(26px,4.2vw,46px);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-width:640px){.ladder .lrow{grid-template-columns:1fr;gap:2px}}
