@@ -7,7 +7,7 @@ features = []
 
 [hangul]
 stem = 26.0
-tracking = 1
+tracking = 14
 
 [style]
 tracking = -12

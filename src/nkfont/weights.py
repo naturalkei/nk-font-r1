@@ -144,15 +144,18 @@ def hangul_weight(fam: dict, weight: dict, srcs: dict) -> tuple[float, float | N
     if match not in ("stem", "stem+bar") or weight["name"] == reference_name(fam):
         return 0.0, None
     ref = next(w for w in fam["weight"] if w["name"] == reference_name(fam))
-    g0 = fam.get("hangul", {}).get("grade", 0.0)
+    h = fam.get("hangul", {})
+    g0 = h.get("grade", 0.0)
+    # [hangul] stem thickens vertical stems only: it counts for the stem ratio, not the bar's.
+    s0 = g0 + h.get("stem", 0.0)
     keep = cfg.get("min_keep", 0.35)
     lr, hr = latin_stroke(fam, ref, srcs), hangul_stroke(fam, ref, srcs)
     lw, hw = latin_stroke(fam, weight, srcs), hangul_stroke(fam, weight, srcs)
     if None in (lr, hr, lw, hw) or not lr:
         return 0.0, None
-    delta = (hr + g0) / lr * lw - hw - g0
+    delta = (hr + s0) / lr * lw - hw - s0
     # Thinning past most of a stroke would erase hairlines: keep at least `min_keep` of it.
-    delta = round(max(delta, -(1 - keep) * hw), 1)
+    delta = round(max(delta, -(1 - keep) * hw - (s0 - g0)), 1)
     # A real master that already matches within `deadband` units is left exactly as drawn.
     dead = cfg.get("deadband", 3.0)
     if abs(delta) < dead:

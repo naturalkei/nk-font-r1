@@ -166,6 +166,19 @@ def test_solver_keeps_regular_stem_and_bar_ratios(fake_strokes):
         assert (h_bar + grade_y) / lat_bar == pytest.approx(1.0, abs=0.01)
 
 
+def test_solver_counts_hangul_stem_knob(fake_strokes):
+    # Regression: [hangul] stem thickens every weight's stems, so the solver must take it off
+    # again on thin weights (Novel Thin came out 34% heavier than Regular's Hangul/Latin ratio).
+    fam = _fam(min_keep=0.1)
+    fam["hangul"]["stem"] = 12.0
+    thin = fam["weight"][1]
+    grade, grade_y = weights.hangul_weight(fam, thin, fake_strokes)
+    # Regular: (88 + 12) / 80 = 1.25; Thin Latin 20 -> Hangul stem 25.
+    assert (88 + 12 + grade) / 20 == pytest.approx(1.25, abs=0.01)
+    # Bars don't get the stem knob: their ratio stays 70/70.
+    assert (70 + grade_y) / 18 == pytest.approx(1.0, abs=0.01)
+
+
 def test_solver_never_erases_strokes(fake_strokes):
     fam = _fam()  # default min_keep 0.35: Thin may lose at most 65% of the Hangul stem
     grade, _ = weights.hangul_weight(fam, fam["weight"][1], fake_strokes)
