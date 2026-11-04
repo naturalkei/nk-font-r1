@@ -21,7 +21,8 @@ OFL 1.1 한글 글꼴 모음입니다. 터미널 갈래 **NK Mono**·**NK Pixel*
 | NK Novel | 읽기 | Crimson Text | 고운바탕 | Regular, Bold |
 | NK Comics | 만화·손글씨 | 개구 Gaegu (펜 필기) | 같은 소스 + 나눔손글씨 펜 보충 | Light, Regular, Bold |
 
-- 소개 페이지(GitHub Pages): https://naturalkei.github.io/nk-font-r1/ — `main`에 병합되면 `.github/workflows/pages.yml`이 다시 빌드해 배포
+- 소개 페이지(GitHub Pages): https://naturalkei.github.io/nk-font-r1/ — `release` 브랜치에 push될 때만 `.github/workflows/pages.yml`이 다시 빌드(Nerd Fonts 패치 포함)해 배포합니다.
+  `main` 병합으로는 배포되지 않으니, 공개할 때 `make release-pages`(= `git push origin main:release`)로 `release`를 `main`까지 올립니다.
 - 조절 도구 **NK Studio**: `nkfont studio` → 브라우저에서 한글 크기·세로 위치를 슬라이더로 바꾸며 저장값과 나란히 비교하고,
   "중심 맞춤"·"높이 비율" 규칙 버튼으로 값을 제안받은 뒤 `config/families/*.toml`에 저장합니다.
 - **프리셋 비교**(`/presets`): 가족·굵기·한글 축·OpenType 기능 조합을 `config/presets/*.toml`에 저장해 두고

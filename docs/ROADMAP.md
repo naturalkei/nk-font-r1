@@ -80,7 +80,7 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 
 ## 3. 소개 사이트 계획 (nk-font 사이트)
 
-정적 사이트(Astro 또는 Vite + 순수 TS)로 만들고 GitHub Pages에 배포합니다. 폰트 빌드 산출물(WOFF2)을 CI에서 그대로 가져다 쓰므로 사이트가 항상 최신 빌드를 보여 줍니다.
+정적 사이트(Astro 또는 Vite + 순수 TS)로 만들고 GitHub Pages에 배포합니다. 폰트 빌드 산출물(WOFF2)을 CI에서 그대로 가져다 쓰므로 사이트는 `release` 브랜치의 빌드를 보여 줍니다(`main` 병합이 아니라 `release` push 때만 배포, `make release-pages`).
 
 ### 3.1 페이지 구성
 | 섹션 | 내용 | 핵심 장치 |
