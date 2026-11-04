@@ -6,7 +6,7 @@ note = "Gothic A1 Bold 실측(높이 1.19·획 0.94·자간 0.80)"
 features = []
 
 [hangul]
-scale = 0.886
-dy = 10
-grade = 20.1
-tracking = 41
+scale = 0.8951
+dy = 7
+grade = 5.0
+tracking = 30

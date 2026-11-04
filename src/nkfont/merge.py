@@ -34,8 +34,18 @@ class HangulParams:
     width: float = 1.0  # extra horizontal scale (1.0 = keep proportions)
     slant: float = 0.0  # degrees, positive leans right (for italics; skewed about the ink centre)
     grade: float = 0.0  # font units added to stem weight without changing the advance
-    # Font units added to vertical stems only (x direction), bars untouched: lowers the stroke
-    # contrast while darkening, e.g. a soft batang next to a high-contrast old-style Latin.
+    # Weight synthesis (weights.py): stem change solved for a weight the source does not ship.
+    # Kept apart from `grade` (a [hangul] / preset knob, a plain point move as before) because it
+    # merges and offsets the outline geometrically.
+    weight_grade: float = 0.0
+    # Share of `weight_grade` applied vertically (to horizontal strokes). 1.0 = even; serif and
+    # myeongjo faces use less so their hairlines survive while the stems change weight.
+    contrast: float = 1.0
+    # Explicit vertical amount (font units) instead of weight_grade * contrast; the weight
+    # solver uses it to match Hangul bars to the Latin bars of weights the sources do not ship.
+    grade_y: float | None = None
+    # Font units added to vertical stems only (x direction), bars untouched ([hangul] stem):
+    # lowers the stroke contrast while darkening, e.g. a soft batang next to a high-contrast Latin.
     stem: float = 0.0
     advance: str = "cell"  # "cell" (terminal grid) or "proportional" (reading faces)
     tracking: float = 0.0  # proportional only: target units added to each Hangul advance
@@ -46,17 +56,24 @@ def is_cubic(font: TTFont) -> bool:
     return "CFF " in font or "CFF2" in font
 
 
-def embolden(glyph, amount: float, amount_y: float | None = None) -> None:
+def embolden(
+    glyph,
+    amount: float,
+    contrast: float = 1.0,
+    amount_y: float | None = None,
+    miter: float = 0.35,
+) -> None:
     """Thicken (amount > 0) or thin a TrueType glyph's strokes by `amount` font units in total.
 
     Every point moves along the bisector of its two edge normals by amount/2, the method
     FreeType's FT_Outline_Embolden uses. Outer contours are clockwise and holes counter-clockwise
     in TrueType, so holes shrink while outlines grow. Advances are not touched (like a GRAD axis).
-    `amount_y` (FT_Outline_EmboldenXY) gives horizontal bars their own amount; `amount` then only
-    acts on vertical stems (x offsets).
+    `contrast` scales the vertical part of the move: vertical stems change by `amount`,
+    horizontal strokes by `amount * contrast` (0 keeps every horizontal stroke as drawn), or by
+    `amount_y` when given. `miter` bounds the move at sharp corners to 1/miter of the amount
+    (weight synthesis uses a tighter bound: large moves would otherwise grow spikes).
     """
-    ay_amount = amount if amount_y is None else amount_y
-    if (not amount and not ay_amount) or glyph.numberOfContours <= 0:
+    if (not amount and not amount_y) or glyph.numberOfContours <= 0:
         return
     coords = glyph.coordinates
     contours, start = [], 0
@@ -71,8 +88,10 @@ def embolden(glyph, amount: float, amount_y: float | None = None) -> None:
     # The biggest contour is an outline: if it runs counter-clockwise the whole glyph is
     # reversed (not TrueType convention), so flip the normals to keep "outward" outward.
     outer = max((signed_area(a, b) for a, b in contours), key=abs)
-    sign = 1 if outer >= 0 else -1
-    half, half_y = sign * amount / 2, sign * ay_amount / 2
+    half = amount / 2 if outer >= 0 else -amount / 2
+    half_y = (
+        half * contrast if amount_y is None else (amount_y / 2 if outer >= 0 else -amount_y / 2)
+    )
     new = list(coords)
     for start, end in contours:
         pts = [coords[i] for i in range(start, end + 1)]
@@ -89,8 +108,11 @@ def embolden(glyph, amount: float, amount_y: float | None = None) -> None:
             # Outward normal of a clockwise (y-up) edge direction (dx, dy) is (-dy, dx).
             n1 = (-ay / la, ax / la)
             n2 = (-by / lb, bx / lb)
-            d = max(1 + n1[0] * n2[0] + n1[1] * n2[1], 0.35)  # clamp spikes at sharp corners
-            new[start + k] = (cx + (n1[0] + n2[0]) * half / d, cy + (n1[1] + n2[1]) * half_y / d)
+            d = max(1 + n1[0] * n2[0] + n1[1] * n2[1], miter)  # clamp spikes at sharp corners
+            new[start + k] = (
+                cx + (n1[0] + n2[0]) * half / d,
+                cy + (n1[1] + n2[1]) * half_y / d,
+            )
     for i, (x, y) in enumerate(new):
         coords[i] = (round(x), round(y))
 
@@ -183,13 +205,34 @@ def merge_hangul(latin: TTFont, hangul: TTFont, ranges, params: HangulParams) ->
             matrix = (sx, 0, 0, gs, dx, params.dy)
 
         tt_pen = TTGlyphPen(None)
-        cu2qu = Cu2QuPen(tt_pen, max_err=1.0, reverse_direction=reverse)
         # TrueType sources (D2Coding, Gowun Batang) use composite glyphs; decompose them,
         # since their component glyphs are not copied into the Latin font.
-        out = TransformPen(cu2qu, matrix)
-        src_glyphs[src_name].draw(DecomposingFilterPen(out, src_glyphs))
+        draw = src_glyphs[src_name].draw
+        synth = bool(params.weight_grade or params.grade_y)
+        if synth:
+            # Weight change: merge the decomposed jamo into one outline (separate, overlapping
+            # or abutting parts would pull apart), then offset it geometrically (weights.py).
+            from .weights import merged_outline, offset_outline, split_offset
+
+            path = merged_outline(
+                lambda pen, d=draw, m=matrix: d(
+                    DecomposingFilterPen(TransformPen(pen, m), src_glyphs)
+                )
+            )
+            wg = params.weight_grade
+            gy = wg * params.contrast if params.grade_y is None else params.grade_y
+            iso, rx, ry = split_offset(wg, gy)
+            out_pen = Cu2QuPen(tt_pen, max_err=1.0, reverse_direction=reverse)
+            offset_outline(path, iso).draw(out_pen)
+        else:
+            cu2qu = Cu2QuPen(tt_pen, max_err=1.0, reverse_direction=reverse)
+            draw(DecomposingFilterPen(TransformPen(cu2qu, matrix), src_glyphs))
         glyph = tt_pen.glyph()
-        embolden(glyph, params.grade + params.stem, params.grade)
+        if synth:
+            # What one axis needs beyond the shared offset: a straight-stroke point move.
+            embolden(glyph, rx, amount_y=ry)
+        if params.grade or params.stem:
+            embolden(glyph, params.grade + params.stem, amount_y=params.grade)
         glyph.program = ttProgram.Program()
         glyph.program.fromBytecode(b"")
 

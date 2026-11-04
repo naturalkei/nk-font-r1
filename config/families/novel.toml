@@ -17,8 +17,8 @@ scale = 0.9
 dy = 0
 # Gowun Batang's strokes are thin and low-contrast next to Crimson Text's (stroke weight was 0.725
 # of the Latin, `nkfont presets`). `grade` darkens every stroke, `stem` adds to vertical stems
-# only, so the batang reaches φ^(-1/6) = 0.92 of the Latin weight (Regular 0.924, Bold 0.87)
-# without its bars getting heavier than Crimson's hairline-contrast allows (contrast 1.07 / 1.32).
+# only, so the batang reaches φ^(-1/6) = 0.92 of the Latin weight (Regular 0.924)
+# without its bars getting heavier than Crimson's hairline-contrast allows (contrast 1.07).
 grade = 8.0
 stem = 14.0
 # Target units added to every Hangul advance (negative = tighter). Long text reads better with
@@ -33,6 +33,18 @@ ascent = 960
 descent = -300
 line_height = "phi"
 
+[weights]
+# Thin..ExtraBold. Crimson Text ships Regular, SemiBold and Bold and Gowun Batang Regular and
+# Bold; the other weights move the nearest master's stems (latin_grade, units at UPM 1000) along
+# the stem ladder Thin 0.40, ExtraLight 0.55, Light 0.75, Medium 1.17 x Regular, ExtraBold
+# Bold + 23. Hangul follows with a solved grade ("stem+bar", weights.py). Book faces keep their
+# hairlines: grades move horizontal strokes only 30%.
+match = "stem+bar"
+reference = "Regular"
+contrast = 0.3
+
+# Regular first: tools open the first weight. The rest follow in weight-class order.
+
 [[weight]]
 name = "Regular"
 latin = "crimson-text-regular"
@@ -44,3 +56,44 @@ name = "Bold"
 latin = "crimson-text-bold"
 hangul = "gowun-batang-bold"
 weight_class = 700
+
+[[weight]]
+name = "Thin"
+latin = "crimson-text-regular"
+latin_grade = -45
+hangul = "gowun-batang-regular"
+weight_class = 100
+
+[[weight]]
+name = "ExtraLight"
+latin = "crimson-text-regular"
+latin_grade = -34
+hangul = "gowun-batang-regular"
+weight_class = 200
+
+[[weight]]
+name = "Light"
+latin = "crimson-text-regular"
+latin_grade = -19
+hangul = "gowun-batang-regular"
+weight_class = 300
+
+[[weight]]
+name = "Medium"
+latin = "crimson-text-regular"
+latin_grade = 13
+hangul = "gowun-batang-regular"
+weight_class = 500
+
+[[weight]]
+name = "SemiBold"
+latin = "crimson-text-semibold"
+hangul = "gowun-batang-bold"
+weight_class = 600
+
+[[weight]]
+name = "ExtraBold"
+latin = "crimson-text-bold"
+latin_grade = 23
+hangul = "gowun-batang-bold"
+weight_class = 800

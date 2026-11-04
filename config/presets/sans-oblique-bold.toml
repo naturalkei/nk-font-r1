@@ -6,8 +6,8 @@ note = "Bold 오블리크, 한·영 같은 각도 (한글 획 0.88)"
 features = []
 
 [hangul]
-grade = 10.3
-tracking = -10
+grade = -4.5
+tracking = -20
 
 [style]
 slant = 11.0

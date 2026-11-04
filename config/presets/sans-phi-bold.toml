@@ -6,7 +6,7 @@ note = "Bold에서도 φ 목표(높이 1.174·획 0.923·중심 0), 한글 자�
 features = []
 
 [hangul]
-scale = 0.8767
-dy = 14
-grade = 19.4
-tracking = -2
+scale = 0.8864
+dy = 10
+grade = 5.0
+tracking = -14

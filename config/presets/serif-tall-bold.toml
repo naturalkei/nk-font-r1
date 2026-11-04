@@ -6,7 +6,7 @@ note = "한글 위주 제목: 한글을 대문자의 1.30배로 키운 Bold (세
 features = []
 
 [hangul]
-scale = 0.9535
-grade = 10.5
+scale = 0.9751
+grade = -9.7
 stem = 24.0
 tracking = 9

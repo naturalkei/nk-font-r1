@@ -15,7 +15,7 @@
 <header class="nav">
   <a class="logo" href="#top" aria-label="nk-font 처음으로"><span class="logo-mark">nk</span><span class="logo-word">font</span></a>
   <nav aria-label="주요 메뉴">
-    <a href="#play">체험</a><a href="#why">특징</a><a href="design.html">설계</a><a href="compare.html">비교</a><a href="tester.html">테스터</a><a href="#families">가족</a><a href="#reading">읽기·만화</a><a href="#glyphs">글리프</a><a href="#pixel">픽셀</a><a href="#install">설치</a>
+    <a href="#play">체험</a><a href="#why">특징</a><a href="design.html">설계</a><a href="compare.html">비교</a><a href="tester.html">테스터</a><a href="#families">가족</a><a href="#weights">굵기</a><a href="#reading">읽기·만화</a><a href="#glyphs">글리프</a><a href="#pixel">픽셀</a><a href="#install">설치</a>
   </nav>
   <div class="nav-right">
     <button class="icon-btn" id="themeBtn" aria-label="밝기 전환" title="밝기 전환">◐</button>
@@ -88,6 +88,12 @@ if (값 != null) { return a <= b; }</div>
   <div class="fam-grid" id="famGrid"></div>
   <h3 class="fam-sub">문서 · 읽기 · 비례폭</h3>
   <div class="fam-grid" id="famGridText"></div>
+</section>
+
+<section id="weights">
+  <div class="section-head"><h2>Thin부터 ExtraBold까지</h2><p>OpenType 표준 굵기 여덟 단계(100 – 800). 단계마다 한글 획과 영문 획의 비율을 Regular와 같게 맞춰, 굵기를 바꿔도 한글과 영문이 따로 놀지 않습니다. 원본에 없는 굵기는 가장 가까운 원본에서 획만 더하거나 빼서 만들고, 빌드마다 획 두께를 재서 검사합니다.</p></div>
+  <div class="seg" id="ladderSeg" role="radiogroup" aria-label="가족"></div>
+  <div class="ladder" id="ladder"></div>
 </section>
 
 <section class="band" id="reading">

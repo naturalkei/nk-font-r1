@@ -6,9 +6,9 @@ note = "어린이 책 Bold: 큰 한글(1.31), 자간 +30, 세로획 +26"
 features = []
 
 [hangul]
-scale = 0.9063
+scale = 0.918
 stem = 26.0
-tracking = 1
+tracking = 8
 
 [style]
 tracking = 30

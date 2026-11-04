@@ -6,9 +6,9 @@ note = "슬라이드·제목용 Bold: 한글을 1.24로 키우고 획을 영문 
 features = []
 
 [hangul]
-scale = 0.9232
-grade = 25.0
-tracking = 0
+scale = 0.9327
+grade = 9.0
+tracking = -12
 
 [style]
 tracking = -20

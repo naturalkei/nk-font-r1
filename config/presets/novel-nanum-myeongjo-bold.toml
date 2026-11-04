@@ -6,8 +6,8 @@ note = "나눔명조 Bold 실측(높이 1.25·자간 0.86), 세로획 +26(stem)�
 features = []
 
 [hangul]
-scale = 0.8514
-dy = -23
-grade = 15.2
+scale = 0.8601
+dy = -27
+grade = 19.0
 stem = 26.0
-tracking = 32
+tracking = 43

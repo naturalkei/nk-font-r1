@@ -6,9 +6,9 @@ note = "한글 위주 제목 Bold: 한글을 대문자의 1.30배, 획 0.92, 한
 features = []
 
 [hangul]
-scale = 0.9914
-grade = 5.7
-tracking = -25
+scale = 1.0035
+grade = -14.0
+tracking = -41
 
 [style]
 tracking = -10

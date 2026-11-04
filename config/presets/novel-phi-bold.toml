@@ -6,8 +6,8 @@ note = "Bold에서도 φ 목표, 세로획 +26(stem)"
 features = []
 
 [hangul]
-scale = 0.8022
-dy = -4
-grade = 17.1
+scale = 0.8094
+dy = -7
+grade = 21.0
 stem = 26.0
-tracking = 17
+tracking = 27

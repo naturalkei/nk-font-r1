@@ -75,6 +75,7 @@ def fit_terminal_widths(font: TTFont, half: int) -> list[int]:
     Empty zero-width characters get advance 0. Glyphs terminals treat as two cells get a
     full-width advance.
 
+    Advances one or two units off the cell are snapped to it (JetBrains Mono Thin U+FF5D: 599).
     JetBrains Mono ships some East Asian Wide symbols at one cell (U+26A1, U+FF5B, ...) and the
     Nerd Fonts patcher adds U+2630 the same way. Terminals reserve two cells for them, so centre
     them in a full-width advance.
@@ -94,6 +95,14 @@ def fit_terminal_widths(font: TTFont, half: int) -> list[int]:
             hmtx[name] = (half, lsb + half // 2)
             fixed.append(cp)
             continue
+        if adv != half and abs(adv - half) <= 2 and cells in (1, 2):
+            # JetBrains Mono Thin/ExtraLight draw U+FF5D at 599: an off-by-one in the upstream
+            # instance. Snap it to the cell (centred) before the wide-glyph rule below.
+            dx = (half - adv) // 2
+            _shift(glyf, name, dx)
+            adv, lsb = half, lsb + dx
+            hmtx[name] = (adv, lsb)
+            fixed.append(cp)
         if adv != half or cells != 2:
             continue
         dx = half // 2

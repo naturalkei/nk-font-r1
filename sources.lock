@@ -372,3 +372,169 @@ url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec03
 sha256 = "ef9512f92f6d579e5dc75af59a5a4b1b8b47d2eda89e00b954d44520e5369027"
 instance = { wght = 700 }
 license = "OFL-1.1 (no RFN)"
+
+# Full weight range (Thin 100 - ExtraBold 800; docs/FAMILIES.md "Weights"). Same tags and licenses as the
+# Regular/Bold entries above; checked 2026-11-03. JetBrains Mono ships all eight weights.
+[[font]]
+id = "jetbrains-mono-thin"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMono-Thin.ttf"
+sha256 = "0756e8e8cf1d65fa7519776764479b3973efb15af4f419d5d7274dc27ae1b702"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "jetbrains-mono-extralight"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMono-ExtraLight.ttf"
+sha256 = "8391e7ec13e8ba758c1838f56bccd973228ccf4dc74aa5bffe9525b9147b12f8"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "jetbrains-mono-light"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMono-Light.ttf"
+sha256 = "60c18d7dd58d81b3bbd12e8ce32744a8771bfe2b5280574082b0eaed46c60d24"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "jetbrains-mono-medium"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMono-Medium.ttf"
+sha256 = "31c92d01a8a08528b718a43addf0ad3df0af2ca4b7b3290a452f70f358e14d3d"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "jetbrains-mono-semibold"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMono-SemiBold.ttf"
+sha256 = "1b3bfa1ed5665a4ce3f9feb68d2d4e40e70bf8b4b7d9a3edd418f321b4e166a0"
+license = "OFL-1.1 (no RFN)"
+
+[[font]]
+id = "jetbrains-mono-extrabold"
+url = "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/fonts/ttf/JetBrainsMono-ExtraBold.ttf"
+sha256 = "8e501d3a6a883e83ea4f7852804fb0894cebdd67751bb1006b37a476cef34cd6"
+license = "OFL-1.1 (no RFN)"
+
+
+# IBM Plex Sans and Plex Serif ship Thin..Bold (no ExtraBold: derived from Bold, weights.py).
+[[font]]
+id = "plex-sans-thin"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Sans/fonts/complete/ttf/IBMPlexSans-Thin.ttf"
+sha256 = "d2fdd87b43039f5e05c7749b6b7937837d074bbf14af2d26dba09b67abf6aca1"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-sans-extralight"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Sans/fonts/complete/ttf/IBMPlexSans-ExtraLight.ttf"
+sha256 = "c13105ca8fb60874c8db103e8ff058f0dfa0e2194e20ee5c9b0f8b7dd5e1fe85"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-sans-light"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Sans/fonts/complete/ttf/IBMPlexSans-Light.ttf"
+sha256 = "2218b5f3f1fc9d3a793343f45c3be5ee7eae9584a7a52391bb8cf2d37622b3e0"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-sans-medium"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Sans/fonts/complete/ttf/IBMPlexSans-Medium.ttf"
+sha256 = "331c8639d7598b2cde62a911a71db195e30cb655cd6bdf2e324a7e984955f907"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-sans-semibold"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Sans/fonts/complete/ttf/IBMPlexSans-SemiBold.ttf"
+sha256 = "a20caf8286023a6a7a85e40b1d2a4ae9fc3e3b1f9eda8f4c542dd4986af67bb1"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-serif-thin"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Serif/fonts/complete/ttf/IBMPlexSerif-Thin.ttf"
+sha256 = "0937a1bb392d2e353acdb9eec643a224a9652a8829ef50ed0c5dfddb1c038933"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-serif-extralight"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Serif/fonts/complete/ttf/IBMPlexSerif-ExtraLight.ttf"
+sha256 = "8a828995d9b96b2f3f3b6d168f23fcac8038c05da7e7774f1271a73a93dc8256"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-serif-light"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Serif/fonts/complete/ttf/IBMPlexSerif-Light.ttf"
+sha256 = "87456aaa1cb1debb5cab9c50295b1a5382f2040642effc7e0467adc6db43710a"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-serif-medium"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Serif/fonts/complete/ttf/IBMPlexSerif-Medium.ttf"
+sha256 = "6b5bfe2b755d256b2bd7ff2be78f1df1931f4a3aad3c6e413284410dfe5b91f7"
+license = "OFL-1.1 (RFN 'Plex')"
+
+[[font]]
+id = "plex-serif-semibold"
+url = "https://raw.githubusercontent.com/IBM/plex/v6.4.0/IBM-Plex-Serif/fonts/complete/ttf/IBMPlexSerif-SemiBold.ttf"
+sha256 = "1539d6a41bdd4ba132fe934b7f48893e3a4e2880da57340ceacefc5469b2763b"
+license = "OFL-1.1 (RFN 'Plex')"
+
+
+# Source Han Sans KR / Serif KR: ExtraLight, Light, Normal, Medium (Sans) and ExtraLight, Light, Regular,
+# SemiBold, Heavy (Serif) as Hangul masters for the extra weights.
+[[font]]
+id = "source-han-sans-kr-extralight"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/SubsetOTF/KR/SourceHanSansKR-ExtraLight.otf"
+sha256 = "3f0647f0f9ac2f684605f6870d8f916af243a7200998e69ea500334d877650ce"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-sans-kr-light"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/SubsetOTF/KR/SourceHanSansKR-Light.otf"
+sha256 = "1df92a4f2587bd4214eaabf52cc1946c5b85e43e1f6a8bf9ed87ef882af7578d"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-sans-kr-normal"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/SubsetOTF/KR/SourceHanSansKR-Normal.otf"
+sha256 = "637a43c6aa32e85e51c8b2c073b3b4acf72305ed18ddec139f8f2266e898ca66"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-sans-kr-medium"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/SubsetOTF/KR/SourceHanSansKR-Medium.otf"
+sha256 = "b2a86d076a1bd8ff964ff55fd2419b78a80af3f8e21d8d3a38f0aa484aedcf94"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-serif-kr-extralight"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-serif/2.003R/SubsetOTF/KR/SourceHanSerifKR-ExtraLight.otf"
+sha256 = "e77fdbd383fe03bbf02af41f2b40919149a0f6b54842e6fa768c9cd5a0a3103c"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-serif-kr-light"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-serif/2.003R/SubsetOTF/KR/SourceHanSerifKR-Light.otf"
+sha256 = "3516b58694752e6fd73baf678baf9026146963871442b1f2c8d3f5bb50b548a1"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-serif-kr-regular"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-serif/2.003R/SubsetOTF/KR/SourceHanSerifKR-Regular.otf"
+sha256 = "b2b310255186ce92de2909f96522b9183a9f6c323dbe5663f205f02d6ece08b7"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-serif-kr-semibold"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-serif/2.003R/SubsetOTF/KR/SourceHanSerifKR-SemiBold.otf"
+sha256 = "f959ed812534357527574ab34b4a15d03f8922c6e15c967e56790a244a122eb3"
+license = "OFL-1.1 (RFN 'Source')"
+
+[[font]]
+id = "source-han-serif-kr-heavy"
+url = "https://raw.githubusercontent.com/adobe-fonts/source-han-serif/2.003R/SubsetOTF/KR/SourceHanSerifKR-Heavy.otf"
+sha256 = "8b8de87e375cbd47ac0888b6255182a3e611e1570e9e1a87d938432b6b098185"
+license = "OFL-1.1 (RFN 'Source')"
+
+
+# Crimson Text ships Regular, SemiBold and Bold; the other NK Novel weights are derived (weights.py).
+[[font]]
+id = "crimson-text-semibold"
+url = "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/crimsontext/CrimsonText-SemiBold.ttf"
+sha256 = "802e84000740fec2a9fbe0ae09b6b6811bd86a78a0173b15d44450a1530e9410"
+license = "OFL-1.1 (no RFN)"
+

@@ -6,7 +6,7 @@ note = "고운바탕 Bold 원본 실측(높이 1.33→밴드 상한 1.31·중심
 features = []
 
 [hangul]
-scale = 0.9032
-dy = -72
-grade = 11.0
-tracking = 34
+scale = 0.9118
+dy = -75
+grade = 13.1
+tracking = 44

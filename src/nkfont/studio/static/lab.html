@@ -385,7 +385,7 @@ async function onFamily() {
   const f = fam();
   const prevW = $("weight").value;
   $("weight").innerHTML = f.weights.map(w => `<option>${w}</option>`).join("");
-  if (f.weights.includes(prevW)) $("weight").value = prevW;
+  $("weight").value = f.weights.includes(prevW) ? prevW : (f.default_weight || f.weights[0]);
   saved = { ...DEFAULTS, ...f.hangul }; params = { ...saved }; targets = {};
   const prevCmp = $("cmp").value;
   // This family's references first (config/lab.toml `families`), then the rest.

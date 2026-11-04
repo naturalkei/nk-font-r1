@@ -164,6 +164,7 @@ function syncLabels() {
 function onFamily() {
   const f = fam();
   $("weight").innerHTML = f.weights.map(w => `<option>${w}</option>`).join("");
+  $("weight").value = f.default_weight || f.weights[0];
   saved = f.kind === "pixel" ? {} : { scale: f.hangul.scale ?? 0.96, dy: f.hangul.dy ?? 0, center: f.hangul.center ?? "advance" };
   const pixel = f.kind === "pixel";
   for (const id of ["scale", "dy", "center", "ruleCenter", "ruleCap", "save", "reset"]) $(id).disabled = pixel;

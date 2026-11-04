@@ -6,10 +6,10 @@ note = "Bold 제목: 한글 1.24·획 1.0(세로획 +24 위에 grade), 한·영 
 features = []
 
 [hangul]
-scale = 0.8881
-grade = 27.8
+scale = 0.911
+grade = 11.1
 stem = 24.0
-tracking = 32
+tracking = 33
 
 [style]
 tracking = -15

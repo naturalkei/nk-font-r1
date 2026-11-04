@@ -57,7 +57,9 @@ def set_names(
 
     os2 = font["OS/2"]
     os2.usWeightClass = weight_class
-    bold = "Bold" in style
+    # Only the RIBBI "Bold" style links as bold; SemiBold and ExtraBold are their own families
+    # in legacy apps (nameID 1) and must not set the bold bits.
+    bold = style in ("Bold", "Bold Italic")
     italic = "Italic" in style
     sel = os2.fsSelection & ~0b1100001  # clear ITALIC, BOLD, REGULAR
     sel |= (1 if italic else 0) | (0b100000 if bold else 0)
