@@ -118,6 +118,9 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 | NK Mono | JetBrains Mono(영문), D2Coding(한글 원본) | `[hangul]` scale·dy·width·grade·center + JetBrains Mono 기능(ss01, ss02, zero, cv01, cv04) | 높이·폭·획·중심 목표(φ 정합, D2Coding에서 잰 비례, 대문자 중심, 획 일치 등)를 Glyph Lab 솔버로 풀어 만든 값. Bold 3종 |
 | NK Pixel | Neo둥근모(원본), 물마루 | `[pixel]` bold(-1/+1px)·italic(N줄마다 1px)·shadow·hangul_dy·dy/scope | 1px 가는 획, 볼드, 계단 이탤릭 3단계, 게임 UI 그림자, 한글 1px 올림(대문자 중심 맞춤)과 그 조합 |
 | NK Comics | 개구, 나눔손글씨 펜, 만화진흥원체(로컬), HCL 리얼노트필기(로컬) | `[style]` slant·grade·tracking·bounce·tilt·seed (영문과 한글을 함께) | 개구 Light/Regular/Bold 위의 펜 필기 20종: 볼펜·0.3 가는 펜·만년필·급한 메모·속삭임·내레이션(Light), 노트·일기·말풍선·사인펜·수성 마커·바로 선 펜(Regular), 붓펜·유성 마커·굵은 붓·포스터·제목·그림일기·외침·효과음(Bold). 획을 더하고 덜고, 기울이고, 글자마다 기준선·각도를 흔듦 |
+| NK Sans | IBM Plex Sans(원본), 본고딕(원본), **Pretendard**, **IBM Plex Sans KR**, **고딕 A1**, **Inter**(영문) | `[hangul]` scale·dy·width·grade·tracking + `[style]` slant·grade·tracking | 레퍼런스 실측 비율(Pretendard, Plex Sans KR, 고딕 A1의 한글 높이·중심·획·자간)을 솔버로 역산 + φ 정합, 헤드라인·캡션·좁은/넓은 한글·가는/진한 본문·오블리크 등 |
+| NK Serif | IBM Plex Serif(원본), 본명조(원본), **나눔명조**, **함렛 Hahmlet**, **Source Serif 4**(영문), 마루 부리(로컬) | 위와 같음 + `stem` | 나눔명조·함렛 실측 비율, 본명조 원본, φ, 보고서·편지·다단·제목·화면 명조 등. Bold는 세로획(`stem`)으로 채워 명조 대비를 지킴 |
+| NK Novel | Crimson Text·고운바탕(원본), **송명**, **나눔명조**, **Crimson Pro**·**Literata**·**EB Garamond**(영문), KoPubWorld 바탕(로컬) | 위와 같음 + `stem` | 고운바탕 원본·송명·나눔명조 실측 비율, φ, 전자책·문고본·양장본·신문·시집·동화책·큰글씨책 등 |
 
 **조화 QA**: `nkfont presets`가 프리셋마다 한글과 영문의 높이·중심·획 굵기·대비·회색도·기울기·자간과 격자를
 재고 `config/preset_qa.toml` 밴드를 벗어나면 실패합니다(qa 단계 "preset harmony"). QA가 정한 한계:
@@ -138,6 +141,13 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 - Comics(개구)는 이미 가는 펜이라 Light에서 grade −10보다 더 깎으면 획이 끊기기 쉽습니다. 보충 음절(나눔손글씨 펜)은
   grade를 깎을수록 개구보다 조금 더 가늘어져(가는 펜 프리셋 0.92) `fill_weight` 밴드 [0.85, 1.15] 안에서만 씁니다.
 - 기울기 지표는 l·I·i와 ㅣ·ㅏ·ㅓ 각각의 중앙값입니다(손글씨는 획마다 기울기가 달라 한 글자만 재면 흔들림).
+- NK Novel(고운바탕 + Crimson Text)은 한글 획이 영문의 0.725로 너무 가늘었습니다. `grade`만 올리면 고운바탕의
+  가로획까지 굵어져 대비가 밴드를 넘으므로, 세로획만 굵히는 새 `[hangul] stem`(FreeType EmboldenXY 방식,
+  기본 0 = 항등)을 더해 저장값을 scale 0.9 · grade 8 · stem 14로 바꿨습니다(획 0.924 ≈ φ^(−1/6), 대비 1.07).
+- 굵기 계산(`match = "stem+bar"`)은 `[hangul] stem`을 세로획 비율에만 넣습니다. 빠뜨리면 Novel Thin 한글이
+  Regular 비율보다 34% 굵어집니다. 반영 후 Novel 세로획 비율은 Thin~ExtraBold 모두 0.95~0.98입니다.
+- 굵기 확장(#21) 이후 Bold 저장값의 한글/영문 획 비율: Sans 0.91, Serif 0.82, Novel 0.97(저장값 비교는 Regular만
+  경고 대상). Bold 프리셋은 #21 빌드 위에서 grade·stem을 다시 풀어 0.88 이상으로 맞췄습니다.
 - Pixel의 가로획 2px(`heavy`)과 블랙은 16px 한글에 자리가 없어 를·를 가로획 사이 1px 틈이 막히거나 영문만 굵어져
   밴드를 벗어납니다. 축은 남기고 프리셋에서는 뺐습니다.
 

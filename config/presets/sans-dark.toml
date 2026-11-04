@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 진한 본문"
+family = "sans"
+weight = "Regular"
+note = "한·영 획을 함께 30 단위 굵게: 인쇄물·저해상도 화면"
+features = []
+
+[hangul]
+tracking = -22
+
+[style]
+grade = 30.0

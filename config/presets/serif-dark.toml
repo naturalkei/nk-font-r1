@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 진한 명조"
+family = "serif"
+weight = "Regular"
+note = "한·영 획을 함께 40 단위 굵게: 명조 가는 획이 사라지는 저해상도 화면"
+features = []
+
+[hangul]
+tracking = -7
+
+[style]
+grade = 40.0

@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 동화책"
+family = "novel"
+weight = "Bold"
+note = "어린이 책 Bold: 큰 한글(1.31), 자간 +30, 세로획 +26"
+features = []
+
+[hangul]
+scale = 0.918
+stem = 26.0
+tracking = 8
+
+[style]
+tracking = 30

@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 기울임 Bold"
+family = "serif"
+weight = "Bold"
+note = "Bold 기울임, 한·영 같은 각도 (한글 세로획 +24로 획 0.88)"
+features = []
+
+[hangul]
+grade = -3.0
+stem = 24.0
+tracking = 3
+
+[style]
+slant = 9.0

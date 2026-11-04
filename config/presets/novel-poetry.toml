@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 시집"
+family = "novel"
+weight = "Regular"
+note = "시집: 한·영 자간 +50, 획을 함께 10 단위 가늘게"
+features = []
+
+[style]
+grade = -10.0
+tracking = 50

@@ -61,6 +61,8 @@ BLOCKS = [
 ]
 
 UPM = 1000
+# Keys of a [[reference]] in config/lab.toml that are not weights.
+REF_META = ("id", "label", "families", "role")
 
 
 def lab_config(root: Path = config.ROOT) -> dict:
@@ -86,7 +88,7 @@ class Lab:
         srcs = config.sources(self.root)
         refs = []
         for r in cfg.get("reference", []):
-            weights = {k: v for k, v in r.items() if k not in ("id", "label") and v in srcs}
+            weights = {k: v for k, v in r.items() if k not in REF_META and v in srcs}
             available = {k: v for k, v in weights.items() if srcs[v].path.exists()}
             refs.append(
                 {
@@ -94,6 +96,9 @@ class Lab:
                     "label": r["label"],
                     "weights": sorted(available),
                     "missing": not available,
+                    # NK families this reference is meant for (None = any family)
+                    "families": r.get("families"),
+                    "role": r.get("role"),
                 }
             )
         for lf in config.local_fonts(self.root).values():
@@ -106,6 +111,7 @@ class Lab:
                     "weights": sorted(available),
                     "missing": not available,
                     "local": True,
+                    "families": list(lf.families) or None,
                     "hint": f"로컬 전용: {files} 를 설치하거나 sources/local/ 에 두세요",
                 }
             )
@@ -127,7 +133,7 @@ class Lab:
         r = next(x for x in cfg.get("reference", []) if x["id"] == rid)
         srcs = config.sources(self.root)
         sid = r.get(weight) or next(
-            v for k, v in r.items() if k not in ("id", "label") and srcs[v].path.exists()
+            v for k, v in r.items() if k not in REF_META and srcs[v].path.exists()
         )
         return srcs[sid].path
 

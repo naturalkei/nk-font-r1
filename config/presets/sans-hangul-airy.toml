@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 한글만 성글게"
+family = "sans"
+weight = "Regular"
+note = "한글 자간만 +50 (영문 그대로): 한글 띄어쓰기와 낱자가 또렷한 학습·교재용"
+features = []
+
+[hangul]
+tracking = 50

@@ -1,0 +1,9 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 기울임"
+family = "sans"
+weight = "Regular"
+note = "한·영을 같은 기준선에서 11° 기울인 오블리크"
+features = []
+
+[style]
+slant = 11.0

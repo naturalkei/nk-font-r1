@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · Pretendard 비율"
+family = "sans"
+weight = "Regular"
+note = "Pretendard Regular 실측 한·영 비율(높이 1.20·중심 +10·획 0.85·자간 0.54)에 맞춤: 국내 UI·문서와 섞여도 튀지 않게"
+features = []
+
+[hangul]
+scale = 0.9558
+dy = -8
+grade = -7.0
+tracking = -24

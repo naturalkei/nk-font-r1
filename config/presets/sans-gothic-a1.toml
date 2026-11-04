@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 고딕 A1 비율"
+family = "sans"
+weight = "Regular"
+note = "Gothic A1 실측(높이 1.19·중심 0·획 0.95·넓은 자간 0.69): 단정한 본문 고딕"
+features = []
+
+[hangul]
+scale = 0.9413
+dy = -11
+grade = 1.2
+tracking = 17

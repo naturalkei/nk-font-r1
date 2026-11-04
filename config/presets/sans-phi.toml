@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · φ 정합"
+family = "sans"
+weight = "Regular"
+note = "황금비 목표: 대문자보다 φ^(2/6)=1.174 큰 한글, 영문보다 φ^(-1/6)=0.923 가는 획, 대문자와 같은 중심, 한글 폭 0.92로 좁혀 φ 폭/높이에 가깝게"
+features = []
+
+[hangul]
+scale = 0.9222
+dy = -6
+width = 0.92
+grade = 4.0

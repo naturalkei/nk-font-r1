@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 장 제목"
+family = "novel"
+weight = "Bold"
+note = "Bold 장 제목: 한·영 자간을 함께 좁힘(여백 비율 0.42), 세로획 +26(stem)"
+features = []
+
+[hangul]
+stem = 26.0
+tracking = 14
+
+[style]
+tracking = -12

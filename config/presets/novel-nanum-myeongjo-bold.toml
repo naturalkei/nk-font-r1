@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 나눔명조 비율 Bold"
+family = "novel"
+weight = "Bold"
+note = "나눔명조 Bold 실측(높이 1.25·자간 0.86), 세로획 +26(stem)으로 바탕 Bold의 대비를 Crimson Bold에 맞춤"
+features = []
+
+[hangul]
+scale = 0.8601
+dy = -27
+grade = 19.0
+stem = 26.0
+tracking = 43

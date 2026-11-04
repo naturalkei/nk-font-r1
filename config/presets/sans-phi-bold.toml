@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · φ 정합 Bold"
+family = "sans"
+weight = "Bold"
+note = "Bold에서도 φ 목표(높이 1.174·획 0.923·중심 0), 한글 자간은 저장값의 여백 비율로"
+features = []
+
+[hangul]
+scale = 0.8864
+dy = 10
+grade = 5.0
+tracking = -14

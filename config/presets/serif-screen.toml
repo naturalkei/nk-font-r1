@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 화면 명조"
+family = "serif"
+weight = "Regular"
+note = "세로획만 +24 (stem): 명조의 가로 헤어라인은 지키고 화면에서 회색도를 맞춤"
+features = []
+
+[hangul]
+stem = 24.0
+tracking = 6

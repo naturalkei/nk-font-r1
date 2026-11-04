@@ -44,6 +44,9 @@ class HangulParams:
     # Explicit vertical amount (font units) instead of weight_grade * contrast; the weight
     # solver uses it to match Hangul bars to the Latin bars of weights the sources do not ship.
     grade_y: float | None = None
+    # Font units added to vertical stems only (x direction), bars untouched ([hangul] stem):
+    # lowers the stroke contrast while darkening, e.g. a soft batang next to a high-contrast Latin.
+    stem: float = 0.0
     advance: str = "cell"  # "cell" (terminal grid) or "proportional" (reading faces)
     tracking: float = 0.0  # proportional only: target units added to each Hangul advance
 
@@ -228,8 +231,8 @@ def merge_hangul(latin: TTFont, hangul: TTFont, ranges, params: HangulParams) ->
         if synth:
             # What one axis needs beyond the shared offset: a straight-stroke point move.
             embolden(glyph, rx, amount_y=ry)
-        if params.grade:
-            embolden(glyph, params.grade)
+        if params.grade or params.stem:
+            embolden(glyph, params.grade + params.stem, amount_y=params.grade)
         glyph.program = ttProgram.Program()
         glyph.program.fromBytecode(b"")
 

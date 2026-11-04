@@ -1,0 +1,10 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 넓은 한글"
+family = "sans"
+weight = "Regular"
+note = "한글 폭 1.08, 한글 자간 +10: 시원한 표지·포스터 본문"
+features = []
+
+[hangul]
+width = 1.08
+tracking = 10

@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · Plex Sans KR 비율 Bold"
+family = "sans"
+weight = "Bold"
+note = "IBM Plex Sans KR Bold 실측(높이 1.31·중심 −28·획 0.89)"
+features = []
+
+[hangul]
+scale = 1.0073
+dy = -64
+grade = -19.3
+tracking = -37

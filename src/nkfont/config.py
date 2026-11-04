@@ -42,10 +42,21 @@ class SourceFont:
     # is the extracted file's hash and `archive_sha256` pins the zip itself.
     member: str | None = None
     archive_sha256: str | None = None
+    # Upstreams that only ship a variable font (google/fonts): `instance` pins every axis, e.g.
+    # {wght = 700}; unnamed axes take their default. `sha256` then pins the downloaded variable
+    # font and `nkfont fetch` writes the static instance to sources/<id>.ttf (reference use only).
+    instance: dict | None = None
 
     @property
     def path(self) -> Path:
+        if self.instance:
+            return SOURCES_DIR / f"{self.id}.ttf"
         return SOURCES_DIR / Path(self.member or self.url).name
+
+    @property
+    def pin_path(self) -> Path:
+        """Where the pinned digest is checked: the font itself, or a sidecar for instances."""
+        return self.path.with_suffix(".ttf.sha256") if self.instance else self.path
 
 
 def sources(root: Path = ROOT) -> dict[str, SourceFont]:
@@ -73,6 +84,8 @@ class LocalFont:
     weights: dict[str, list[str]]
     homepage: str = ""
     sha256: dict[str, str] = field(default_factory=dict)
+    # NK families this reference is meant for (empty = any family), as in config/lab.toml.
+    families: tuple[str, ...] = ()
 
     def find(self, weight: str, root: Path = ROOT) -> Path | None:
         for name in self.weights.get(weight, []):
@@ -101,7 +114,10 @@ def local_fonts(root: Path = ROOT) -> dict[str, LocalFont]:
     path = root / "config" / "local_fonts.toml"
     if not path.exists():
         return {}
-    return {f["id"]: LocalFont(**f) for f in _load(path).get("font", [])}
+    return {
+        f["id"]: LocalFont(**{**f, "families": tuple(f.get("families", ()))})
+        for f in _load(path).get("font", [])
+    }
 
 
 def patcher_image(root: Path = ROOT) -> str:

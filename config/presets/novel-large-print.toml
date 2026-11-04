@@ -1,0 +1,14 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 큰글씨책"
+family = "novel"
+weight = "Regular"
+note = "큰글씨책: 한글 1.30·한글 획 1.0(영문과 같게), 한·영 자간 +20"
+features = []
+
+[hangul]
+scale = 0.9068
+grade = 10.2
+tracking = -24
+
+[style]
+tracking = 20

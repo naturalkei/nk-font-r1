@@ -1,0 +1,15 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 제목"
+family = "serif"
+weight = "Bold"
+note = "Bold 제목: 한글 1.24·획 1.0(세로획 +24 위에 grade), 한·영 자간 −15"
+features = []
+
+[hangul]
+scale = 0.911
+grade = 11.1
+stem = 24.0
+tracking = 33
+
+[style]
+tracking = -15

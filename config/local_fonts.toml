@@ -31,3 +31,25 @@ id = "hcl-realnote"
 label = "HCL 리얼노트필기 (로컬)"
 license = "license unverified: local only"
 weights = { Regular = ["HCL*리얼노트*.ttf", "HCL*리얼노트*.otf", "*RealNote*.ttf", "*RealNote*.otf", "*Realnote*.ttf", "*Realnote*.otf"] }
+
+[[font]]
+# KoPubWorld 바탕체 (한국출판인회의): the batang most Korean books and e-books are set in, the
+# reading voice NK Novel is measured against. Free to use, but the KoPub terms limit
+# redistribution, so local only. Install from the official KoPub site.
+id = "kopub-batang"
+label = "KoPubWorld 바탕 (로컬)"
+license = "free font, redistribution limited by its terms: local only"
+homepage = "https://www.kopus.org/biz-electronic-font2/"
+families = ["novel"]
+weights = { Regular = ["KoPubWorld*Batang*Medium.ttf", "KoPubWorld*Batang*Medium.otf", "KoPub*Batang*Medium.ttf", "KoPubWorld*바탕*Medium.ttf", "KoPubWorld*Batang*Light.ttf"], Bold = ["KoPubWorld*Batang*Bold.ttf", "KoPubWorld*Batang*Bold.otf", "KoPub*Batang*Bold.ttf"] }
+
+[[font]]
+# 마루 부리 (Naver, 2021): contemporary document myeongjo. Distributed only from Naver's
+# hangeul site (not reachable from our pinned hosts), so it is looked up locally instead of
+# fetched; never committed or shipped either way.
+id = "maruburi"
+label = "마루 부리 (로컬)"
+license = "free font from hangeul.naver.com: local only"
+homepage = "https://hangeul.naver.com/font"
+families = ["serif"]
+weights = { Regular = ["MaruBuri-Regular.ttf", "MaruBuri-Regular.otf", "MaruBuriTTF-Regular.ttf"], Bold = ["MaruBuri-Bold.ttf", "MaruBuri-Bold.otf", "MaruBuriTTF-Bold.ttf"] }

@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 편지"
+family = "serif"
+weight = "Regular"
+note = "편지·청첩장: 한글을 1.24로 키우고 폭 0.94로 좁혀 세로로 긴 글자, 한·영 자간 +30"
+features = []
+
+[hangul]
+scale = 0.9296
+width = 0.94
+
+[style]
+tracking = 30

@@ -186,7 +186,9 @@ async function loadFace(name, url) {
 function buildChips() {
   const f = fam();
   fontLabels = { "nk-edit": `${f.family} (편집 중)`, "nk-saved": `${f.family} (저장값)` };
-  for (const r of info.references) fontLabels[r.id] = r.label;
+  // This family's references first (config/lab.toml `families`), marked with ★.
+  const mine = (r) => (r.families || []).includes(f.id);
+  for (const r of [...info.references].sort((a, b) => mine(b) - mine(a))) fontLabels[r.id] = (mine(r) ? "★ " : "") + r.label;
   $("fontChips").innerHTML = Object.entries(fontLabels).map(([id, label]) => {
     const ref = info.references.find(r => r.id === id);
     const miss = ref && ref.missing;
@@ -518,7 +520,10 @@ $("code").oninput = code;
 (async () => {
   const [fr, ir] = await Promise.all([api("/api/families"), api("/api/lab/info")]);
   families = fr.families; info = ir;
-  for (const r of info.references) fontOn[r.id] = ["ref:jetbrains-mono", "ref:d2coding"].includes(r.id);
+  const startFam = families.some(f => f.id === QUERY.get("family")) ? QUERY.get("family") : families[0]?.id;
+  // Start with two of this family's references switched on (Mono: JetBrains Mono + D2Coding).
+  const first = info.references.filter(r => (r.families || []).includes(startFam) && !r.label.includes("원본")).slice(0, 2).map(r => r.id);
+  for (const r of info.references) fontOn[r.id] = (first.length ? first : ["ref:jetbrains-mono", "ref:d2coding"]).includes(r.id);
   $("family").innerHTML = families.map(f => `<option value="${f.id}">${f.family}</option>`).join("");
   $("presets").innerHTML = info.presets.map((p, i) => `<button data-i="${i}" title="${p.text}">${p.label}</button>`).join("");
   for (const b of $("presets").querySelectorAll("button")) b.onclick = () => { $("focus").value = info.presets[+b.dataset.i].text; active = 0; refresh(); };

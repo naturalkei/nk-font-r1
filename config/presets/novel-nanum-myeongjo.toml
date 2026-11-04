@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 나눔명조 비율"
+family = "novel"
+weight = "Regular"
+note = "나눔명조 실측(높이 1.25·중심 0·획 0.99·자간 0.76): 국내 전자책 기본 명조의 균형"
+features = []
+
+[hangul]
+scale = 0.869
+dy = -26
+grade = 14.7
+tracking = -9

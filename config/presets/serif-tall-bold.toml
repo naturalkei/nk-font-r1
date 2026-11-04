@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Serif · 큰 한글 Bold"
+family = "serif"
+weight = "Bold"
+note = "한글 위주 제목: 한글을 대문자의 1.30배로 키운 Bold (세로획 +24)"
+features = []
+
+[hangul]
+scale = 0.9751
+grade = -9.7
+stem = 24.0
+tracking = 9

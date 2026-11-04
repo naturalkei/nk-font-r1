@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 진한 바탕"
+family = "novel"
+weight = "Regular"
+note = "한·영 획을 함께 35 단위 굵게: 전자잉크 단말"
+features = []
+
+[hangul]
+tracking = -28
+
+[style]
+grade = 35.0

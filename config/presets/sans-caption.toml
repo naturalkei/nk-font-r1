@@ -1,0 +1,13 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Sans · 캡션"
+family = "sans"
+weight = "Regular"
+note = "작은 글씨: 한글 높이 1.27·획 0.97로 키우고 한·영 자간 +18"
+features = []
+
+[hangul]
+scale = 1.0042
+grade = -5.1
+
+[style]
+tracking = 18

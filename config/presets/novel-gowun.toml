@@ -1,0 +1,12 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · 고운바탕 원본 비율"
+family = "novel"
+weight = "Regular"
+note = "고운바탕 원본 실측(높이 1.32·중심 −27·자간 1.05)에 획만 φ 목표 0.92로 맞춤"
+features = []
+
+[hangul]
+scale = 0.9213
+dy = -76
+grade = 7.0
+tracking = 4

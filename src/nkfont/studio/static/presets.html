@@ -104,7 +104,7 @@ section.cmp{min-width:0;display:flex;flex-direction:column}
 const $ = (id) => document.getElementById(id);
 const KNOBS = [ // key, label, min, max, step
   ["scale", "한글 크기 scale", 0.8, 1.2, 0.005], ["dy", "세로 이동 dy", -120, 120, 1], ["width", "한글 폭 width", 0.85, 1.1, 0.005],
-  ["grade", "한글 굵기 grade", -40, 40, 0.5], ["slant", "기울기 slant (°)", -14, 14, 0.5], ["tracking", "한글 자간 tracking (비례폭)", -80, 80, 1]];
+  ["grade", "한글 굵기 grade", -40, 40, 0.5], ["stem", "한글 세로획만 stem", -30, 30, 0.5], ["slant", "기울기 slant (°)", -14, 14, 0.5], ["tracking", "한글 자간 tracking (비례폭)", -80, 80, 1]];
 // Whole-face knobs of proportional families (Latin and Hangul together) and NK Pixel's pixel knobs.
 const STYLE_KNOBS = [
   ["slant", "기울기 slant (°, 한·영 함께)", -15, 15, 0.5], ["grade", "획 굵기 grade (한·영 함께)", -120, 80, 1],
@@ -269,9 +269,11 @@ function renderLists() {
   $("plist").innerHTML = presets.filter(p => !pfam || p.family === pfam).map(p => `<label class="pitem ${p.error ? "err" : ""}" title="${esc(p.error || metaFor(p))}">
       <input type="checkbox" data-pid="${esc(p.id)}" ${shown.has(p.id) ? "checked" : ""} ${p.error ? "disabled" : ""}>
       <span>${esc(p.label)}</span><small>${p.readonly ? "저장값" : esc(famOf(p.family)?.family.replace("NK ", "") || "")}</small></label>`).join("");
-  $("rlist").innerHTML = refs.map(r => `<label class="pitem" title="${r.missing ? "nkfont fetch 필요" : ""}">
+  // With a family filter, that family's references (config/lab.toml `families`) come first.
+  const ours = (r) => !!pfam && (r.families || []).includes(pfam);
+  $("rlist").innerHTML = [...refs].sort((a, b) => ours(b) - ours(a)).map(r => `<label class="pitem" title="${r.missing ? "nkfont fetch 필요" : ""}">
       <input type="checkbox" data-rid="${esc(r.id)}" ${shownRefs.has(r.id) ? "checked" : ""} ${r.missing ? "disabled" : ""}>
-      <span>${esc(r.label)}</span><small>${r.missing ? "없음" : r.weights.join("/")}</small></label>`).join("") || '<span class="hint">config/lab.toml 참고 글꼴 없음</span>';
+      <span>${ours(r) ? "★ " : ""}${esc(r.label)}</span><small>${r.missing ? "없음" : r.weights.join("/")}</small></label>`).join("") || '<span class="hint">config/lab.toml 참고 글꼴 없음</span>';
   for (const c of $("plist").querySelectorAll("input")) c.onchange = () => { c.checked ? shown.add(c.dataset.pid) : shown.delete(c.dataset.pid); LS.set("shown", [...shown]); render(); };
   for (const c of $("rlist").querySelectorAll("input")) c.onchange = () => { c.checked ? shownRefs.add(c.dataset.rid) : shownRefs.delete(c.dataset.rid); LS.set("refs", [...shownRefs]); render(); };
   const ws = [...new Set(families.flatMap(f => f.weights))];
@@ -309,7 +311,7 @@ function editorFamily(reset) {
   if (pixel) {
     html += '<div class="ehead">픽셀 조절 (한·영 함께, 1px 단위)</div>' + PIXEL_KNOBS.map(k => slider("pixel", k, 0)).join("");
   } else {
-    html += '<div class="ehead">한글 조절</div>' + knobs.map(k => slider("hangul", k, f.hangul[k[0]] ?? { scale: 0.96, width: 1, dy: 0, grade: 0, slant: 0, tracking: 0 }[k[0]])).join("");
+    html += '<div class="ehead">한글 조절</div>' + knobs.map(k => slider("hangul", k, f.hangul[k[0]] ?? { scale: 0.96, width: 1, dy: 0, grade: 0, stem: 0, slant: 0, tracking: 0 }[k[0]])).join("");
     if (text) html += '<div class="ehead">글꼴 전체 (한·영 함께: 펜 필기 느낌)</div>' + STYLE_KNOBS.map(k => slider("style", k, 0)).join("");
   }
   $("eKnobs").innerHTML = html;

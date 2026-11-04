@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Novel · φ 정합"
+family = "novel"
+weight = "Regular"
+note = "황금비 목표: 높이 1.174, 획 0.923, 대문자 중심"
+features = []
+
+[hangul]
+scale = 0.8182
+dy = -6
+grade = 12.5

@@ -73,6 +73,8 @@ ruff check src tests && ruff format --check src tests
 - A family whose Latin source draws its own Hangul can re-import it (`[hangul] replace = true`) and fill the
   missing syllables from a second source (weight `fill`, `[fill]` relative knobs, per-weight `fill_adjust`).
 - Pin every upstream input in `sources.lock` (URL + SHA256, patcher image tag + digest).
+  Variable-only upstreams (google/fonts) add `instance = { wght = ... }`: the variable font's SHA256 is pinned
+  and `nkfont fetch` writes the static instance to `sources/<id>.ttf` (references only).
   Reference fonts whose terms don't clearly allow redistribution (e.g. 만화진흥원체/KOMACON) go in
   `config/local_fonts.toml` instead: found on the owner's disk, shown in the Lab, never committed,
   fetched, merged or put on the site.
