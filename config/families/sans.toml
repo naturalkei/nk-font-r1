@@ -32,6 +32,15 @@ ascent = 1025
 descent = -275
 line_height = "phi^5/6"
 
+[weights]
+# Thin..ExtraBold. Plex Sans ships Thin..Bold; ExtraBold is Plex Bold + 24 units (latin_grade).
+# Hangul: the Source Han Sans master nearest to each Latin weight, then a solved grade and
+# contrast keep Hangul stem and bar / Latin stem and bar at Regular's ratios (weights.py).
+match = "stem+bar"
+reference = "Regular"
+
+# Regular first: tools open the first weight. The rest follow in weight-class order.
+
 [[weight]]
 name = "Regular"
 latin = "plex-sans-regular"
@@ -41,5 +50,42 @@ weight_class = 400
 [[weight]]
 name = "Bold"
 latin = "plex-sans-bold"
-hangul = "source-han-sans-kr-bold"
+hangul = "source-han-sans-kr-heavy"
 weight_class = 700
+
+[[weight]]
+name = "Thin"
+latin = "plex-sans-thin"
+hangul = "source-han-sans-kr-extralight"
+weight_class = 100
+
+[[weight]]
+name = "ExtraLight"
+latin = "plex-sans-extralight"
+hangul = "source-han-sans-kr-extralight"
+weight_class = 200
+
+[[weight]]
+name = "Light"
+latin = "plex-sans-light"
+hangul = "source-han-sans-kr-light"
+weight_class = 300
+
+[[weight]]
+name = "Medium"
+latin = "plex-sans-medium"
+hangul = "source-han-sans-kr-medium"
+weight_class = 500
+
+[[weight]]
+name = "SemiBold"
+latin = "plex-sans-semibold"
+hangul = "source-han-sans-kr-bold"
+weight_class = 600
+
+[[weight]]
+name = "ExtraBold"
+latin = "plex-sans-bold"
+latin_grade = 24
+hangul = "source-han-sans-kr-heavy"
+weight_class = 800

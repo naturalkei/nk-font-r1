@@ -21,6 +21,14 @@ name = "Regular"
 source = "neodgm-code"
 weight_class = 400
 
+# A pixel face has one stroke width, 1 px, so Thin..SemiBold have nothing to draw with: the
+# family ships Regular and a bitmap-style Bold (every stem 1 px wider to the right, `smear`).
+[[weight]]
+name = "Bold"
+source = "neodgm-code"
+smear = 1
+weight_class = 700
+
 [terminal]
 # Neo Dunggeunmo draws East Asian Ambiguous symbols (①, ■, ▶) two cells wide; terminals use one.
 # They are unmapped so terminals fall back instead of overlapping the next cell.

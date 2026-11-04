@@ -8,6 +8,9 @@ license = "MIT"  # build tooling; the fonts themselves are OFL-1.1 (OFL.txt)
 # table the checks enforce, Pillow (bundled FreeType) affects golden-image renders.
 dependencies = [
   "fonttools[woff]==4.68.0",
+  # Overlap removal before weight synthesis (weights.py): thinning overlapping or abutting
+  # components separately would open gaps between them.
+  "skia-pathops==0.9.2",
   "wcwidth==0.9.4",
   "pillow==13.0.0",
 ]

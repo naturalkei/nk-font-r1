@@ -23,7 +23,7 @@ def mono():
 def test_mono_regular_passes_all_checks(mono):
     font, base = mono
     result = run_all(font, base)
-    assert set(result) == {"widths", "overflow", "metrics", "names", "features"}
+    assert set(result) == {"widths", "overflow", "metrics", "names", "weight", "features"}
     assert {k: v for k, v in result.items() if v} == {}
 
 

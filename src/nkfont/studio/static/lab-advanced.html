@@ -492,6 +492,7 @@ const QUERY = new URLSearchParams(location.search);
 function onFamily(first) {
   const f = fam();
   $("weight").innerHTML = f.weights.map(w => `<option>${w}</option>`).join("");
+  $("weight").value = f.default_weight || f.weights[0];
   saved = { ...DEFAULTS, ...f.hangul };
   setParams(saved);
   if (first === true) {  // handed over from the core view (/lab)
