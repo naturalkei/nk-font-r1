@@ -115,7 +115,8 @@ const PIXEL_KNOBS = [
   ["italic", "이탤릭 italic (N줄마다 1px, 0=끔)", 0, 8, 1], ["shadow", "그림자 shadow", 0, 1, 1],
   ["dy", "세로 이동 dy (px)", -4, 4, 1], ["hangul_dy", "한글만 세로 이동 hangul_dy (px)", -4, 4, 1]];
 const QA_LABELS = { height: "높이", centre: "중심", weight: "획", contrast: "대비", colour: "회색도", slant: "기울기",
-  spacing: "자간", overflow: "넘침", grid: "격자", pixels: "픽셀", split: "분리", gaps: "틈", broken: "깨짐" };
+  spacing: "자간", overflow: "넘침", grid: "격자", pixels: "픽셀", split: "분리", gaps: "틈", broken: "깨짐",
+  fill_weight: "보충 획", fill_centre: "보충 중심", distinct: "특색 거리", look: "렌더 차이" };
 const TABS = [["hangul", "한글"], ["latin", "영문"], ["code", "코드"], ["terminal", "터미널"], ["custom", "직접 입력"]];
 const LS = { get(k, d) { try { const v = localStorage.getItem("nkp." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
              set(k, v) { try { localStorage.setItem("nkp." + k, JSON.stringify(v)); } catch {} } };
@@ -127,6 +128,10 @@ let shown = new Set(LS.get("shown", [])), shownRefs = new Set(LS.get("refs", [])
 const faceCache = new Map(); // key -> face name
 let nFace = 0;
 
+function near(r, key) {
+  const id = key === "distinct" ? r.metrics.nearest : key === "look" ? r.metrics.look_nearest : null;
+  return id ? ` · 가장 가까운 프리셋: ${esc(id)}` : "";
+}
 function famOf(id) { return families.find(f => f.id === id); }
 function text() { return tab === "custom" ? custom : samples[tab] || ""; }
 function setStatus(t) { $("status").textContent = t; }
@@ -242,14 +247,14 @@ async function fillQa(p, my) {
   const box = $("rows").querySelector(`.prow[data-id="${CSS.escape(p.id)}"] .qa`);
   if (!box) return;
   try {
-    if (!qaCache.has(key)) qaCache.set(key, api("/api/presets/qa", { label: p.label || "check", family: p.family, weight: weightFor(p),
+    if (!qaCache.has(key)) qaCache.set(key, api("/api/presets/qa", { id: p.id, label: p.label || "check", family: p.family, weight: weightFor(p),
       hangul: p.hangul || {}, style: p.style || {}, pixel: p.pixel || {} }));
     const r = await qaCache.get(key);
     if (my !== seq) return;
     if (r.error) { box.innerHTML = `<span class="bad">${esc(r.error)}</span>`; return; }
     const shown = r.checks.filter(c => c.value !== null && !["grid", "pixels", "split", "broken"].includes(c.key) || !c.ok);
-    box.innerHTML = `<span class="sum ${r.ok ? "ok" : "bad"}">${r.ok ? "한·영 조화 ✓" : "조화 벗어남"}</span>` + shown.map(c =>
-      `<span class="${c.ok ? "" : "bad"}" title="허용 ${c.lo ?? ""}…${c.hi ?? ""}">${QA_LABELS[c.key] || c.key} <b>${c.value}</b></span>`).join("");
+    box.innerHTML = `<span class="sum ${r.ok ? "ok" : "bad"}">${r.ok ? "한·영 조화·특색 ✓" : "QA 벗어남"}</span>` + shown.map(c =>
+      `<span class="${c.ok ? "" : "bad"}" title="허용 ${c.lo ?? ""}…${c.hi ?? ""}${near(r, c.key)}">${QA_LABELS[c.key] || c.key} <b>${c.value}</b></span>`).join("");
   } catch (e) { qaCache.delete(key); box.innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
 }
 

@@ -1,14 +1,14 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
-label = "Comics 아이 손글씨"
+label = "Comics 그림일기"
 family = "comics"
-weight = "Regular"
-note = "크게 출렁이고 삐뚤빼뚤한 손글씨"
+weight = "Bold"
+note = "어린이 그림일기: 똑바로 세우고 크게 출렁이게"
 features = []
 
 [style]
-slant = 0.0
-grade = -60.0
+slant = -4.0
+grade = 8.0
 tracking = 40
-bounce = 34.0
-tilt = 5.0
+bounce = 30.0
+tilt = 4.0
 seed = 11

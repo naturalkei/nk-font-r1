@@ -2,13 +2,13 @@
 label = "Comics 사인펜"
 family = "comics"
 weight = "Regular"
-note = "사인펜 굵기, 글자마다 다른 높이·각도"
+note = "사인펜으로 빠르게: 획을 올리고 글자마다 각도가 흔들림"
 features = []
 
 [style]
-slant = 5.0
-grade = -70.0
-tracking = 20
+slant = 1.0
+grade = 10.0
+tracking = 10
 bounce = 16.0
-tilt = 2.0
-seed = 2
+tilt = 3.0
+seed = 7

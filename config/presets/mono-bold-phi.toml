@@ -2,7 +2,7 @@
 label = "Mono Bold φ 정합"
 family = "mono"
 weight = "Bold"
-note = "Bold에도 황금비 목표를 모두 적용 (목표 높이 1.174 · 폭/높이 0.923 · 획 0.923 · 중심 0)"
+note = "Bold에도 황금비 목표를 모두 적용"
 features = []
 
 [hangul]

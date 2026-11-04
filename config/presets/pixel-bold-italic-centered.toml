@@ -1,10 +1,11 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
-label = "Pixel 굵은 완만한 이탤릭"
+label = "Pixel 굵은 이탤릭·한글 중심"
 family = "pixel"
 weight = "Regular"
-note = "볼드 + 6줄마다 1px 기울임"
+note = "굵은 이탤릭에 한글을 1px 올려 대문자 중심과 맞춤"
 features = []
 
 [pixel]
 bold = 1
-italic = 6
+italic = 4
+hangul_dy = 1

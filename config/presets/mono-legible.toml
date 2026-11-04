@@ -2,11 +2,9 @@
 label = "Mono 혼동 방지"
 family = "mono"
 weight = "Regular"
-note = "0 대체 모양, l·j 대체 글자로 0O·Il1·ij 혼동을 줄인 조합 (한글은 저장값 근처) (목표 높이 1.32 · 획 1.03 · 중심 34)"
+note = "0 대체 모양, l·j 대체 글자로 0O·Il1·ij 혼동을 줄이고 한글은 작게"
 features = ["zero", "cv01", "cv04"]
 
 [hangul]
-scale = 1.08
-dy = 40
-width = 1.0
-grade = -5.3
+scale = 0.98
+dy = 35

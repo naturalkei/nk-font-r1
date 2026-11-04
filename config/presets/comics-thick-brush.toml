@@ -1,14 +1,14 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
-label = "Comics 두꺼운 붓"
+label = "Comics 굵은 붓"
 family = "comics"
-weight = "Regular"
-note = "Bagel보다 더 굵게, 붓으로 쓴 제목"
+weight = "Bold"
+note = "굵은 붓으로 쓴 간판 글씨"
 features = []
 
 [style]
-slant = 6.0
-grade = 20.0
-tracking = 10
-bounce = 20.0
+slant = 2.0
+grade = 40.0
+tracking = 20
+bounce = 15.0
 tilt = 3.0
-seed = 14
+seed = 19

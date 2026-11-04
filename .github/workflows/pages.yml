@@ -44,8 +44,7 @@ jobs:
           nkfont check build/master/NKPixel-*.ttf dist/NKPixel*.ttf --base sources/neodgm_code.ttf --master build/master/NKPixel-Regular.ttf
           nkfont check build/master/NKSans-*.ttf --kind text --base sources/IBMPlexSans-Regular.ttf
           nkfont check build/master/NKNovel-*.ttf --kind text --base sources/CrimsonText-Regular.ttf
-          nkfont check build/master/NKComics-Regular.ttf --kind text --base sources/BagelFatOne-Regular.ttf
-          nkfont check build/master/NKComics-Black.ttf --kind text --base sources/GasoekOne-Regular.ttf
+          nkfont check build/master/NKComics-*.ttf --kind text --base sources/Gaegu-Regular.ttf
       - name: Assemble site
         run: nkfont site
       - uses: actions/configure-pages@v5

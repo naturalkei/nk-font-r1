@@ -318,3 +318,67 @@ def test_every_repo_preset_is_inside_its_harmony_bands():
     results = presetqa.run()
     bad = presetqa.gating(results)
     assert not bad, presetqa.format_table(bad)
+
+
+# ---- distinctness ------------------------------------------------------------------------------
+
+STEPS = {
+    "weight": 1.5,
+    "feature": 1.0,
+    "style": {"slant": 2, "grade": 8},
+    "pixel": {"italic": 0.25},
+}
+
+
+def _row(weight="Regular", features=(), **knobs):
+    return {"family": "comics", "weight": weight, "features": list(features), "knobs": knobs}
+
+
+def test_knob_distance_counts_steps_weight_and_features():
+    assert presetqa.knob_distance(_row(), _row(), STEPS) == 0
+    assert presetqa.knob_distance(_row(**{"style.slant": 1.0}), _row(), STEPS) == 1
+    assert presetqa.knob_distance(_row(weight="Bold"), _row(), STEPS) == 1.5
+    assert presetqa.knob_distance(_row(features=["zero"]), _row(), STEPS) == 1
+    a, b = _row(**{"hangul.center": "bbox"}), _row(**{"hangul.center": "advance"})
+    assert presetqa.knob_distance(a, b, STEPS) == 1
+    # knob vectors are already in steps: 3 and 4 steps apart -> 5
+    far = _row(**{"style.slant": 3.0, "style.grade": 4.0})
+    assert presetqa.knob_distance(far, _row(), STEPS) == 5
+
+
+def test_knobs_ignore_seed_and_compare_pixel_italic_as_a_slope():
+    fam = {"hangul": {"scale": 0.96}}
+    k = presetqa._knobs({"style": {"slant": 4, "seed": 99}, "pixel": {"italic": 4}}, fam, STEPS)
+    assert k == {"hangul.scale": 0.0, "style.slant": 2.0, "pixel.italic": 1.0}
+
+
+def test_look_difference_is_zero_for_the_same_face_and_grows_with_change():
+    plain = presetqa.render_sample(make_text_font())
+    assert presetqa.look_difference(plain, presetqa.render_sample(make_text_font())) == 0
+    slanted = make_text_font()
+    apply_style(slanted, StyleParams(slant=10))
+    bold = make_text_font(hangul_stem=150)
+    small = presetqa.look_difference(plain, presetqa.render_sample(bold))
+    big = presetqa.look_difference(plain, presetqa.render_sample(slanted))
+    assert 0 < small < big
+
+
+def test_distinctness_fails_a_near_duplicate_and_names_its_nearest():
+    def result(pid, font, **style):
+        p = {"id": pid, "family": "comics", "weight": "Regular", "features": [], "style": style}
+        return presetqa.Result(p, {}, render=presetqa.render_sample(font))
+
+    leaning = make_text_font()
+    apply_style(leaning, StyleParams(slant=10))
+    twin = make_text_font()
+    apply_style(twin, StyleParams(slant=10.2))
+    rs = [
+        result("a", make_text_font()),
+        result("b", leaning, slant=10.0),
+        result("c", twin, slant=10.2),
+    ]
+    presetqa.distinctness(rs)
+    by = {r.preset["id"]: r for r in rs}
+    assert by["a"].ok
+    assert not by["b"].ok and by["b"].metrics["nearest"] == "c"
+    assert {c.key for c in by["c"].checks if not c.ok} >= {"distinct", "look"}

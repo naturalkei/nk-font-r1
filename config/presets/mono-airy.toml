@@ -2,9 +2,11 @@
 label = "Mono 여유 한글"
 family = "mono"
 weight = "Regular"
-note = "한글을 조금 작고 좁게: 긴 로그에서 영문과 회색도를 맞추는 쪽"
+note = "한글을 좁고 가볍게: 긴 로그에서 영문과 회색도를 맞추는 쪽"
 features = []
 
 [hangul]
 scale = 1.02
-width = 0.97
+dy = 55
+width = 0.92
+grade = -2.0

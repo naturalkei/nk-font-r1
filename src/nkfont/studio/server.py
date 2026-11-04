@@ -182,13 +182,16 @@ def make_handler(studio: Studio, lab: Lab | None = None, restart=None):
                         )
                     threading.Timer(0.3, restart).start()  # answer before the window closes
                     return self._json({"restarting": True})
-                if self.path == "/api/presets/qa":  # Hangul/Latin harmony of one preset
+                if self.path == "/api/presets/qa":  # harmony + distinctness of one preset
                     from ..presetqa import Checker, as_dict
 
-                    preset = presets.validate({**req, "id": req.get("id") or "check"}, studio.root)
+                    rid = str(req.get("id") or "check")
+                    saved = rid.startswith("saved:")  # starting points: not compared
+                    preset = presets.validate({**req, "id": "check" if saved else rid}, studio.root)
                     with _LOCK:
                         checker = studio.__dict__.setdefault("_qa", Checker(studio.root, studio))
-                        return self._json(as_dict(checker.check(preset)))
+                        r = checker.check(preset) if saved else checker.check_in_family(preset)
+                        return self._json(as_dict(r))
                 if self.path == "/api/presets/save":
                     return self._json({"preset": presets.save(req, studio.root)})
                 if self.path == "/api/presets/delete":

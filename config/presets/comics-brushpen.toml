@@ -1,14 +1,14 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
 label = "Comics 붓펜"
 family = "comics"
-weight = "Regular"
-note = "굵기는 살리고 기울기·흔들림으로 붓펜 느낌"
+weight = "Bold"
+note = "굵기는 살리고 더 기울여 흘려 쓴 붓펜"
 features = []
 
 [style]
-slant = 8.0
-grade = -20.0
+slant = 6.0
+grade = 6.0
 tracking = 10
-bounce = 15.0
+bounce = 14.0
 tilt = 3.0
 seed = 8

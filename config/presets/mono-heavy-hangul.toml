@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Mono 굵은 한글"
+family = "mono"
+weight = "Regular"
+note = "저해상도·작은 글씨용: 크기는 저장값, 한글 획을 영문보다 굵게"
+features = []
+
+[hangul]
+scale = 1.04
+dy = 45
+grade = 10.0

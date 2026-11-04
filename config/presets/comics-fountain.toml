@@ -1,14 +1,14 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
 label = "Comics 만년필"
 family = "comics"
-weight = "Regular"
-note = "많이 기울고 흔들림은 적은 정갈한 펜글씨"
+weight = "Light"
+note = "만년필처럼 가늘고 많이 기운 필기"
 features = []
 
 [style]
-slant = 10.0
-grade = -90.0
-tracking = 15
-bounce = 8.0
-tilt = 1.0
-seed = 4
+slant = 8.0
+grade = 4.0
+tracking = 10
+bounce = 10.0
+tilt = 2.0
+seed = 21
