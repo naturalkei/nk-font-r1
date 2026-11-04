@@ -1,14 +1,14 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
 label = "Comics 속삭임"
 family = "comics"
-weight = "Regular"
-note = "가늘고 넓게 벌린 작은 목소리"
+weight = "Light"
+note = "작게 속삭이는 대사: 가늘고 넓게, 살짝 기울여"
 features = []
 
 [style]
-slant = 4.0
-grade = -90.0
-tracking = 70
-bounce = 6.0
-tilt = 0.8
-seed = 13
+slant = 2.0
+grade = -8.0
+tracking = 40
+bounce = 5.0
+tilt = 1.0
+seed = 20

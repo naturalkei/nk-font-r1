@@ -6,9 +6,8 @@ note = "출렁이는 기준선과 넉넉한 자간의 일기 필기"
 features = []
 
 [style]
-slant = 3.0
-grade = -95.0
-tracking = 35
-bounce = 26.0
-tilt = 3.5
+slant = 1.0
+tracking = 30
+bounce = 25.0
+tilt = 2.0
 seed = 5

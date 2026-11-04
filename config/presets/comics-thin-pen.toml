@@ -1,14 +1,13 @@
 # NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
-label = "Comics 가는 펜"
+label = "Comics 0.3 가는 펜"
 family = "comics"
-weight = "Regular"
-note = "개구·나눔손글씨 펜처럼 가늘고 성긴 쪽: 거의 서 있고 자간 넓게 (글자 모양은 Bagel 그대로)"
+weight = "Light"
+note = "0.3mm 가는 펜: 획을 깎고 자간을 띄움"
 features = []
 
 [style]
-slant = 1.0
-grade = -92.0
-tracking = 45
-bounce = 18.0
-tilt = 2.0
-seed = 7
+grade = -10.0
+tracking = 20
+bounce = 4.0
+tilt = 0.5
+seed = 10

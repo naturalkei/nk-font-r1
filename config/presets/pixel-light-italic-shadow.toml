@@ -2,10 +2,10 @@
 label = "Pixel 가는 이탤릭 그림자"
 family = "pixel"
 weight = "Regular"
-note = "1px 획 + 완만한 기울임 + 그림자"
+note = "1px 가는 획 + 4줄마다 1px 이탤릭 + 그림자"
 features = []
 
 [pixel]
 bold = -1
-italic = 6
+italic = 4
 shadow = 1

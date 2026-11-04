@@ -159,6 +159,7 @@ class Studio:
                 ranges=ranges,
                 latin=_font_from(srcs[w["latin"]].path),
                 hangul=self._hangul(w["hangul"]),
+                fill=self._hangul(w["fill"]) if w.get("fill") else None,
                 style=style_params(fam, **style),
                 unicodes=unicodes,
             )

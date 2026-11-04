@@ -22,9 +22,9 @@ NK는 두 갈래입니다. **터미널 갈래**는 1 : 2 셀 격자(0 / 600 / 12
 | **NK Sans** | 문서 (`text`) | 일반 문서·UI·발표 자료 | **IBM Plex Sans** | 본고딕 KR | φ^5/6 = 1.493 |
 | **NK Serif** | 문서 (`text`) | 보고서·논문·편지·인쇄물 | **IBM Plex Serif** | 본명조 KR (한 단계 굵게) | φ^5/6 = 1.493 |
 | **NK Novel** | 읽기 (`text`) | 책·소설·뉴스·신문 본문 | Crimson Text | 고운바탕 | φ = 1.618 |
-| **NK Comics** | 읽기 (`text`) | 만화·웹툰 말풍선·효과음 | **Bagel Fat One / Gasoek One** | 같은 소스 + 본고딕 Heavy 보충 | √φ = 1.272 |
+| **NK Comics** | 읽기 (`text`) | 만화·웹툰 말풍선·손글씨 | **개구 Gaegu** (펜 필기) | 같은 소스 + 나눔손글씨 펜 보충 | √φ = 1.272 |
 
-라이선스는 모두 2026-11-02에 업스트림 원문으로 확인해 `sources.lock`에 고정했습니다. RFN이 있는 소스(`D2Coding`, `Plex`, `Source`, `Neo둥근모`, 비교용 `물마루`)는 `RESERVED_NAMES`가 이름 사용을 막습니다. Crimson Text, 고운바탕, Bagel Fat One, Gasoek One, JetBrains Mono는 RFN이 없습니다.
+라이선스는 모두 2026-11-02에 업스트림 원문으로 확인해 `sources.lock`에 고정했습니다. RFN이 있는 소스(`D2Coding`, `Plex`, `Source`, `Neo둥근모`, 비교용 `물마루`)는 `RESERVED_NAMES`가 이름 사용을 막습니다. 나눔손글씨 펜(`Nanum`, `NanumPen`)도 RFN이 있습니다. Crimson Text, 고운바탕, 개구, JetBrains Mono는 RFN이 없습니다.
 
 ### 1.1 NK Mono: 터미널 대표
 * **영문**: JetBrains Mono. 합자와 cv/ss 기능을 그대로 두고, 합자를 싫어하는 사용자는 `calt`를 끄면 됩니다.
@@ -38,9 +38,13 @@ NK는 두 갈래입니다. **터미널 갈래**는 1 : 2 셀 격자(0 / 600 / 12
 
 ### 1.3 NK Novel과 NK Comics
 * **Novel**: 고운바탕(11,172자) + Crimson Text. 한글 스케일 0.92, 자간 −10, 줄 높이 φ.
-* **Comics**: 통통 튀는 **Bagel Fat One**(Regular)과 굵게 외치는 **Gasoek One**(Black). 둘 다 같은 디자이너(JAMO Typeface)가 영문과 한글을 함께 그려 과장된 만화 레터링이 한 몸으로 맞습니다. 원본은 2,780음절이라 나머지 8,389음절은 본고딕 Heavy를 크기 맞춰 보충해 글자가 빠지지 않게 했습니다(드문 글자만 해당, 이후 원본 스타일로 다시 그리기 과제). 줄 높이 √φ.
+* **Comics** (2026-11-03 필기체로 교체): 사용자가 원한 펜 필기 느낌에 맞춰 **개구 Gaegu**(OFL, RFN 없음, Light/Regular/Bold)를 원본으로 씁니다. 한 디자이너(JAMO Typeface)가 펠트펜으로 영문과 한글을 함께 그려 한 손글씨로 읽힙니다. 개구는 KS X 1001 2,350음절이라, 나머지 8,822음절은 같은 펜 손글씨인 **나눔손글씨 펜**(OFL)으로 보충합니다(무게마다 `fill`, 조절값 `[fill]`/`fill_adjust`). 줄 높이 √φ.
+  * 개구의 한글은 다시 들여옵니다(`[hangul] replace = true`): 원본 그대로면 한글이 대문자 높이의 1.335배로 밴드(1.32)를 넘고 중심이 높으며, 영문 l·I·i는 오른쪽으로 약 4.5° 기우는데 한글은 똑바로 서 있습니다. 그래서 scale 0.95, dy −25, slant 4.5°, 자간 +20으로 맞춥니다.
+  * 나눔손글씨 펜은 같은 크기에서 더 작고(대문자 대비 0.96) 낮게 앉고 왼쪽으로 조금 기울어, 개구 한글 기준으로 scale ×1.33, dy −108, slant +3°, 자간 +40을 더합니다. 원본이 Regular 하나라 획은 무게마다 맞춥니다(Light −37, Regular −13, Bold +8 font unit). 보충 음절의 획·중심은 프리셋 QA `fill_weight`·`fill_centre`가 잽니다.
+  * 이전 원본(Bagel Fat One / Gasoek One, 굵은 레터링)은 펜 필기 요청과 맞지 않아 뺐습니다.
+  * 리얼노트필기(HCL)는 라이선스를 찾지 못해 로컬 비교용으로만 둡니다(아래).
   * 비교 레퍼런스: **만화진흥원체(KOMACON, 한국만화영상진흥원)**. 받은 배포본에 읽을 수 있는 라이선스 전문이 없어 재배포 가능 여부를 확인할 수 없으므로, 레포에 커밋하거나 `sources.lock`에 고정하지 않고 `config/local_fonts.toml`에 **로컬 전용**으로 등록했습니다. 공식 설치본(KomaconFonts.dmg/.exe)으로 설치하면 `KOMACON.ttf`를 `~/Library/Fonts` 등에서 찾아 글리프 랩(`/lab`, `/lab/advanced`, `/presets`)에 비교용으로 띄웁니다(`sources/local/` 또는 `$NK_LOCAL_FONTS`에 둬도 됨). 측정·표시만 하고 병합·사이트 배포는 하지 않습니다.
-  * 필기체 방향 레퍼런스(2026-11-03, 사용자가 HCL 리얼노트필기 같은 펜 필기 느낌을 원함, 디자인 변경 전): **개구 Gaegu**(OFL, RFN 없음, Light/Regular/Bold, 2,350음절)와 **나눔손글씨 펜**(OFL, RFN `Nanum`, 11,172음절)은 `sources.lock`에 고정하고 글리프 랩에 추가했습니다. **HCL 리얼노트필기**는 라이선스를 찾지 못해 `config/local_fonts.toml`에 로컬 전용으로 두고, 설치 파일명을 몰라 `HCL*리얼노트*`, `*RealNote*` 패턴으로 찾습니다. 모두 모양 참고용이며 글리프를 가져오지 않습니다.
+  * 필기체 방향 레퍼런스(2026-11-03, 사용자가 HCL 리얼노트필기 같은 펜 필기 느낌을 원함): **개구 Gaegu**(OFL, RFN 없음, Light/Regular/Bold, 2,350음절)와 **나눔손글씨 펜**(OFL, RFN `Nanum`, 11,172음절)은 `sources.lock`에 고정하고 글리프 랩에 추가했습니다. **HCL 리얼노트필기**는 라이선스를 찾지 못해 `config/local_fonts.toml`에 로컬 전용으로 두고, 설치 파일명을 몰라 `HCL*리얼노트*`, `*RealNote*` 패턴으로 찾습니다. 리얼노트필기는 모양 참고용이며 글리프를 가져오지 않습니다(개구와 나눔손글씨 펜은 이제 Comics 원본).
 
 ### 1.4 NK Pixel과 "mono-pixel" 터미널 스타일
 요청하신 게임 개발자용 mono-pixel 터미널 스타일은 **NK Pixel에 통합**합니다. NK Pixel은 이미 반각 8×16 / 전각 16×16 격자의 터미널 폰트이고 Nerd Font / Nerd Font Mono로 패치됩니다. 별도 가족을 만들면 같은 픽셀 마스터를 두 번 관리하게 되므로, 대신 NK Pixel 안에서 터미널 완성도를 높입니다.
@@ -113,7 +117,7 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 | --- | --- | --- | --- |
 | NK Mono | JetBrains Mono(영문), D2Coding(한글 원본) | `[hangul]` scale·dy·width·grade·center + JetBrains Mono 기능(ss01, ss02, zero, cv01, cv04) | 높이·폭·획·중심 목표(φ 정합, D2Coding에서 잰 비례, 대문자 중심, 획 일치 등)를 Glyph Lab 솔버로 풀어 만든 값. Bold 3종 |
 | NK Pixel | Neo둥근모(원본), 물마루 | `[pixel]` bold(-1/+1px)·italic(N줄마다 1px)·shadow·hangul_dy·dy/scope | 1px 가는 획, 볼드, 계단 이탤릭 3단계, 게임 UI 그림자, 한글 1px 올림(대문자 중심 맞춤)과 그 조합 |
-| NK Comics | 개구, 나눔손글씨 펜, 만화진흥원체(로컬), HCL 리얼노트필기(로컬) | `[style]` slant·grade·tracking·bounce·tilt·seed (영문과 한글을 함께) | 펜 필기 14종(마커·사인펜·볼펜·만년필·노트·일기·붓펜 등: 획을 깎고 기울이고 글자마다 기준선·각도를 흔듦) + 레터링 6종(외침·효과음·포스터 등, Black 포함) |
+| NK Comics | 개구, 나눔손글씨 펜, 만화진흥원체(로컬), HCL 리얼노트필기(로컬) | `[style]` slant·grade·tracking·bounce·tilt·seed (영문과 한글을 함께) | 개구 Light/Regular/Bold 위의 펜 필기 20종: 볼펜·0.3 가는 펜·만년필·급한 메모·속삭임·내레이션(Light), 노트·일기·말풍선·사인펜·수성 마커·바로 선 펜(Regular), 붓펜·유성 마커·굵은 붓·포스터·제목·그림일기·외침·효과음(Bold). 획을 더하고 덜고, 기울이고, 글자마다 기준선·각도를 흔듦 |
 | NK Sans | IBM Plex Sans(원본), 본고딕(원본), **Pretendard**, **IBM Plex Sans KR**, **고딕 A1**, **Inter**(영문) | `[hangul]` scale·dy·width·grade·tracking + `[style]` slant·grade·tracking | 레퍼런스 실측 비율(Pretendard, Plex Sans KR, 고딕 A1의 한글 높이·중심·획·자간)을 솔버로 역산 + φ 정합, 헤드라인·캡션·좁은/넓은 한글·가는/진한 본문·오블리크 등 |
 | NK Serif | IBM Plex Serif(원본), 본명조(원본), **나눔명조**, **함렛 Hahmlet**, **Source Serif 4**(영문), 마루 부리(로컬) | 위와 같음 + `stem` | 나눔명조·함렛 실측 비율, 본명조 원본, φ, 보고서·편지·다단·제목·화면 명조 등. Bold는 세로획(`stem`)으로 채워 명조 대비를 지킴 |
 | NK Novel | Crimson Text·고운바탕(원본), **송명**, **나눔명조**, **Crimson Pro**·**Literata**·**EB Garamond**(영문), KoPubWorld 바탕(로컬) | 위와 같음 + `stem` | 고운바탕 원본·송명·나눔명조 실측 비율, φ, 전자책·문고본·양장본·신문·시집·동화책·큰글씨책 등 |
@@ -121,9 +125,22 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 **조화 QA**: `nkfont presets`가 프리셋마다 한글과 영문의 높이·중심·획 굵기·대비·회색도·기울기·자간과 격자를
 재고 `config/preset_qa.toml` 밴드를 벗어나면 실패합니다(qa 단계 "preset harmony"). QA가 정한 한계:
 
-- Comics(Bagel Fat One)는 grade -95보다 더 깎으면 한글 획이 영문보다 너무 가늘어지고(획 0.84 미만) 윤곽이 뒤집힙니다.
-  더 가는 진짜 펜 느낌은 펜 필기 원본(예: 개구, OFL)으로 Comics 소스를 바꾸는 결정이 필요합니다.
-- Comics Black(Gasoek One)은 원래 한글 획이 영문보다 가벼워(0.85) 깎을 여유가 없습니다.
+**특색 QA** (2026-11-03, 사용자 요청 "모두 다른 특색, 커트라인을 높이고 특색 없는 프리셋은 탈락"): 같은 가족 안에서
+가장 가까운 프리셋과 비교해 두 가지를 모두 넘어야 합니다(`config/preset_qa.toml`).
+
+- `distinct`: 조절값 거리. `[steps]`의 한 단계(한글 scale 0.03, dy 15, width 0.04, grade 8, slant 2°, 자간 15,
+  style bounce 8·tilt 1, 픽셀 1px, 픽셀 이탤릭은 기울기 1/4)로 나눈 유클리드 거리이고, 굵기가 다르면 1.5, 켠 기능
+  하나마다 1을 더합니다. seed는 빼고 셉니다. 기준 1.5단계(픽셀은 1px = 1.0).
+- `look`: 렌더 차이. 샘플 글자를 한 칸에 하나씩 그려(자간 누적 제외) 살짝 흐린 뒤 잉크 차이 합 ÷ 평균 잉크(%).
+  손글씨 흔들림은 seed마다 달라서 흔들림 없는 빌드로 잽니다. 기준 10%(픽셀 15%).
+
+처음 적용했을 때 Mono 13종(한글만 1단계 남짓 옮긴 비슷한 값들), Pixel 4종(이탤릭 4·6·3줄 차이, 가파른 2줄은
+넘침 3px), Comics 2종(수성 마커·사인펜)이 떨어져 더 뚜렷한 값으로 바꿨습니다. `/presets` 화면의 QA 줄에도
+"특색 거리"·"렌더 차이"와 가장 가까운 프리셋 이름이 나옵니다.
+
+- Comics(개구)는 이미 가는 펜이라 Light에서 grade −10보다 더 깎으면 획이 끊기기 쉽습니다. 보충 음절(나눔손글씨 펜)은
+  grade를 깎을수록 개구보다 조금 더 가늘어져(가는 펜 프리셋 0.92) `fill_weight` 밴드 [0.85, 1.15] 안에서만 씁니다.
+- 기울기 지표는 l·I·i와 ㅣ·ㅏ·ㅓ 각각의 중앙값입니다(손글씨는 획마다 기울기가 달라 한 글자만 재면 흔들림).
 - NK Novel(고운바탕 + Crimson Text)은 한글 획이 영문의 0.725로 너무 가늘었습니다. `grade`만 올리면 고운바탕의
   가로획까지 굵어져 대비가 밴드를 넘으므로, 세로획만 굵히는 새 `[hangul] stem`(FreeType EmboldenXY 방식,
   기본 0 = 항등)을 더해 저장값을 scale 0.9 · grade 8 · stem 14로 바꿨습니다(획 0.924 ≈ φ^(−1/6), 대비 1.07).
@@ -134,7 +151,7 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 
 ## 4. 굵기: Thin(100) – ExtraBold(800)
 
-모든 가족이 OpenType 표준 굵기 여덟 단계(Thin 100, ExtraLight 200, Light 300, Regular 400, Medium 500, SemiBold 600, Bold 700, ExtraBold 800)를 정적 TTF로 냅니다(NK Comics는 Black 900 추가, NK Pixel은 아래 예외). 설정은 `config/families/<가족>.toml`의 `[weights]`와 `[[weight]]`, 코드는 `src/nkfont/weights.py`입니다.
+모든 가족이 OpenType 표준 굵기 여덟 단계(Thin 100, ExtraLight 200, Light 300, Regular 400, Medium 500, SemiBold 600, Bold 700, ExtraBold 800)를 정적 TTF로 냅니다(NK Pixel은 아래 예외). 설정은 `config/families/<가족>.toml`의 `[weights]`와 `[[weight]]`, 코드는 `src/nkfont/weights.py`입니다.
 
 **원칙**
 
@@ -149,12 +166,12 @@ MonoLisa의 목록은 참고만 하고 번호와 이름은 NK 기준으로 새�
 | NK Sans | IBM Plex Sans Thin–Bold | ExtraBold = Bold + 24 | 본고딕 ExtraLight–Heavy | 단계마다 가장 가까운 본고딕 + grade |
 | NK Serif | IBM Plex Serif Thin–Bold | ExtraBold = Bold + 24 | 본명조 ExtraLight–Heavy | Regular는 한 단계 무거운 Medium 유지, contrast 0.3 |
 | NK Novel | Crimson Text Regular·SemiBold·Bold | Thin·ExtraLight·Light·Medium·ExtraBold | 고운바탕 Regular·Bold | 세로획 사다리 0.40·0.55·0.75·1.17 × Regular, contrast 0.3 |
-| NK Comics | Bagel Fat One (단일) · Gasoek One(Black) | Thin–ExtraBold 전부 | 본고딕(채움 글자) | 레터링 원본이 하나뿐이라 모두 합성. Bagel의 이음새가 얇아 −60까지만 뺄 수 있어 Thin도 "가벼운 만화체" 정도 |
+| NK Comics | 개구 Light·Regular·Bold | Thin·ExtraLight(Light에서), Medium(Regular에서), SemiBold·ExtraBold(Bold에서) | 개구 한글(같은 원본) + 나눔손글씨 펜 보충 | 펜 필기라 굵기는 펜 두께. 한글 획은 "stem+bar"로 영문에 맞추고, 보충 음절은 같은 grade에 `fill_adjust`를 더함 |
 | NK Pixel | Neo둥근모 Code (단일) | Bold만 | 같은 소스 | 픽셀 글꼴은 획이 1 px뿐이라 Thin–SemiBold는 그릴 수 없음. Bold = 세로획을 오른쪽으로 1 px 넓힌 비트맵식 볼드(격자 유지) |
 
 **이름**: RIBBI(Regular·Bold)는 같은 레거시 패밀리, 나머지는 `NK Sans Light` 같은 레거시 패밀리 + typographic family(16/17번). SemiBold·ExtraBold는 Bold 비트(`fsSelection`, `macStyle`)를 켜지 않습니다.
 
-**가변 폰트(`wght`)**: 지금 원본으로는 만들지 않습니다. 가변 폰트는 모든 굵기의 윤곽이 점 하나까지 호환돼야 하는데, 측정해 보니 D2Coding Regular↔Bold 18%, 고운바탕 0%, Crimson Text 6%, Bagel↔Gasoek 0%만 호환됩니다. 한글을 한 원본 + grade로만 만들면 호환은 되지만 D2Coding Bold 같은 실제 디자인을 버리게 됩니다. 후보 경로: (1) Latin 가변(JetBrains Mono·Plex 가변판) + 한글 grade 델타를 gvar로 합치는 웹용 가변판, (2) 한글 원본 마스터 호환화. Nerd Fonts 패처는 가변 폰트를 지원하지 않으므로 터미널용은 계속 정적입니다.
+**가변 폰트(`wght`)**: 지금 원본으로는 만들지 않습니다. 가변 폰트는 모든 굵기의 윤곽이 점 하나까지 호환돼야 하는데, 측정해 보니 D2Coding Regular↔Bold 18%, 고운바탕 0%, Crimson Text 6%만 호환됩니다. 한글을 한 원본 + grade로만 만들면 호환은 되지만 D2Coding Bold 같은 실제 디자인을 버리게 됩니다. 후보 경로: (1) Latin 가변(JetBrains Mono·Plex 가변판) + 한글 grade 델타를 gvar로 합치는 웹용 가변판, (2) 한글 원본 마스터 호환화. Nerd Fonts 패처는 가변 폰트를 지원하지 않으므로 터미널용은 계속 정적입니다.
 
 **QA** (`nkfont qa --profile ci`, 단계 "weights Thin..ExtraBold"): 굵기 누락·이름·`usWeightClass`, 굵기가 올라갈수록 획이 굵어지는지(단조 증가), 한글/영문 세로획 비율 ±10%·가로획 비율 ±20% 이내(가족별 `[weights] tolerance`). 스튜디오 `/specimen`의 "굵기 단계"와 사이트 "Thin부터 ExtraBold까지"에서 같은 숫자와 모양을 봅니다.
 

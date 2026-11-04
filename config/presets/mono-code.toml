@@ -2,5 +2,10 @@
 label = "Mono 코딩 기능"
 family = "mono"
 weight = "Regular"
-note = "빗금 0과 JetBrains Mono 대체 글자(ss01, ss19)를 켠 조합"
+note = "빗금 0과 대체 글자(ss01, ss19) + 조금 넓고 높은 한글"
 features = ["zero", "ss01", "ss19"]
+
+[hangul]
+scale = 1.02
+dy = 60
+width = 1.03

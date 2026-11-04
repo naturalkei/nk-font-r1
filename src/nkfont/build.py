@@ -26,7 +26,7 @@ from .flags import (
 from .merge import HangulParams, half_width, merge_hangul
 from .names import COPYRIGHT, set_names
 from .phi import line_metrics
-from .pixelstyle import PixelParams, apply_pixel
+from .pixelstyle import PixelParams, apply_pixel, is_hangul
 from .style import StyleParams, apply_style
 from .weights import hangul_weight, pixel_bold, synthesize
 
@@ -78,6 +78,87 @@ def hangul_params(fam: dict, **override) -> HangulParams:
         advance="cell" if is_terminal(fam) else "proportional",
         tracking=h.get("tracking", 0),
     )
+
+
+FILL_KEYS = ("scale", "width", "dy", "grade", "slant", "tracking")
+
+
+def fill_params(fam: dict, base: HangulParams, weight: dict | None = None) -> HangulParams:
+    """`[fill]`: the second Hangul source (a weight's `fill`), relative to the `[hangul]` params.
+
+    scale/width multiply, dy/grade/slant/tracking add, so a preset that moves `[hangul]` moves the
+    fill-in syllables with it. A weight's `fill_adjust` table overrides `[fill]` keys for that
+    weight (one fill source serves every weight, so Light thins it and Bold thickens it).
+    All defaults are the identity.
+    """
+    f = {**fam.get("fill", {}), **((weight or {}).get("fill_adjust") or {})}
+    unknown = set(f) - set(FILL_KEYS)
+    if unknown:
+        raise ValueError(f"unknown [fill] keys: {', '.join(sorted(unknown))}")
+    return dataclasses.replace(
+        base,
+        scale=base.scale * f.get("scale", 1.0),
+        width=base.width * f.get("width", 1.0),
+        dy=base.dy + f.get("dy", 0),
+        grade=base.grade + f.get("grade", 0.0),
+        slant=base.slant + f.get("slant", 0.0),
+        tracking=base.tracking + f.get("tracking", 0),
+    )
+
+
+def drop_hangul(latin: TTFont, hangul: TTFont, ranges) -> int:
+    """Unmap the Latin source's own Hangul that `hangul` also draws (`[hangul] replace = true`).
+
+    Used when one source holds both scripts (e.g. Gaegu): its Hangul is then imported again
+    through `merge_hangul`, so `[hangul]` scale/dy/slant can line it up with the Latin. The old
+    glyphs are removed too, unless a layout table or a composite glyph still uses them.
+    Returns the number of code points unmapped.
+    """
+    src = hangul.getBestCmap()
+    drop = {cp for a, b in ranges for cp in range(a, b + 1) if is_hangul(cp) and cp in src}
+    names, unmapped = set(), set()
+    for table in latin["cmap"].tables:
+        if table.isUnicode():
+            for cp in drop & set(table.cmap):
+                names.add(table.cmap.pop(cp))
+                unmapped.add(cp)
+    if not names:
+        return 0
+    if any(tag in latin for tag in ("GSUB", "GPOS")):
+        # Layout tables may still reach some of them: let the subsetter keep what they use.
+        from fontTools import subset
+
+        opts = subset.Options()
+        opts.layout_features = ["*"]
+        opts.name_IDs = ["*"]
+        opts.name_languages = ["*"]
+        opts.name_legacy = True
+        opts.glyph_names = True
+        opts.notdef_outline = True
+        opts.hinting = True
+        opts.legacy_kern = True
+        opts.prune_unicode_ranges = False
+        opts.prune_codepage_ranges = False
+        opts.drop_tables = []
+        keep = set(latin.getGlyphOrder()) - names
+        sub = subset.Subsetter(opts)
+        sub.populate(glyphs=keep, unicodes=latin.getBestCmap().keys())
+        sub.subset(latin)
+        return len(unmapped)
+    glyf, hmtx = latin["glyf"], latin["hmtx"]
+    still = set(latin.getBestCmap().values())
+    for name in latin.getGlyphOrder():
+        if glyf[name].isComposite():
+            still |= {c.glyphName for c in glyf[name].components}
+    gone = names - still - {".notdef"}
+    order = [g for g in latin.getGlyphOrder() if g not in gone]
+    for g in gone:
+        del glyf.glyphs[g]
+        del hmtx.metrics[g]
+    latin.setGlyphOrder(order)
+    glyf.glyphOrder = order
+    latin["maxp"].numGlyphs = len(order)
+    return len(unmapped)
 
 
 def _names(font: TTFont, fam: dict, weight: dict) -> None:
@@ -138,9 +219,13 @@ def build_master(
     style: StyleParams | None = None,
     pixel: PixelParams | None = None,
     unicodes: set[int] | None = None,
+    fill: TTFont | None = None,
 ) -> TTFont:
-    """`ranges`, `latin`, `hangul` and `unicodes` let the tuning studio build small previews
-    quickly; `style` / `pixel` override the family's `[style]` / `[pixel]` tables."""
+    """`ranges`, `latin`, `hangul`, `fill` and `unicodes` let the tuning studio build small
+    previews quickly; `style` / `pixel` override the family's `[style]` / `[pixel]` tables.
+
+    A weight's optional `fill` source adds the syllables both sources lack (see `fill_params`).
+    """
     if fam.get("kind") == "pixel":
         return build_pixel(fam, weight, pixel, unicodes)
     srcs = config.sources()
@@ -151,6 +236,7 @@ def build_master(
     contrast = fam.get("weights", {}).get("contrast", 1.0)
     # Weights the Latin upstream does not ship are derived from the nearest master (weights.py).
     synthesize(latin, weight.get("latin_grade", 0.0), contrast)
+    ranges = ranges or config.ranges()
     params = params or hangul_params(fam)
     delta, grade_y = hangul_weight(fam, weight, srcs)
     # Grades are in the Latin font's units; the solver works at UPM 1000.
@@ -159,7 +245,12 @@ def build_master(
         params = dataclasses.replace(params, weight_grade=delta * k)
     if grade_y is not None:
         params = dataclasses.replace(params, grade_y=grade_y * k)
-    merge_hangul(latin, hangul, ranges or config.ranges(), params)
+    if fam.get("hangul", {}).get("replace"):
+        drop_hangul(latin, hangul, ranges)
+    merge_hangul(latin, hangul, ranges, params)
+    if weight.get("fill"):
+        fill = fill or TTFont(srcs[weight["fill"]].path)
+        merge_hangul(latin, fill, ranges, fill_params(fam, params, weight))
     if is_terminal(fam):
         return finish(latin, fam, weight, ascent, descent)
     apply_style(latin, style or style_params(fam), unicodes)

@@ -1,0 +1,11 @@
+# NK style preset (nkfont studio -> /presets). Compared side by side; not a build input.
+label = "Pixel 굵은 그림자·한글 중심"
+family = "pixel"
+weight = "Regular"
+note = "게임 UI 버튼: 1px 굵게 + 그림자, 한글은 1px 올려 대문자 중심과 맞춤"
+features = []
+
+[pixel]
+bold = 1
+shadow = 1
+hangul_dy = 1

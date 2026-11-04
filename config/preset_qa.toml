@@ -12,6 +12,8 @@ contrast = [0.75, 1.35]   # bar/stem relation of the two scripts
 colour = [0.85, 1.45]     # Hangul packs more strokes per em, so it may read a little darker
 slant = [-1.5, 1.5]       # both scripts lean the same way (degrees)
 broken = [0, 0]           # no contour may turn inside out
+distinct = [1.5, 99]      # knob steps to the nearest preset of the family ([steps] below)
+look = [10, 999]          # % rendered difference to the nearest preset (one glyph per cell)
 
 [merge]                   # NK Mono: two-cell Hangul next to JetBrains Mono
 height = [1.17, 1.40]     # φ^(2/6) = 1.174 is the floor; D2Coding itself is 1.29
@@ -29,8 +31,43 @@ split = [0, 0]            # shape knobs act on both scripts
 gaps = [0.97, 1.5]        # one-pixel gaps between strokes stay open (를 must not turn into a blob)
 weight = [0.84, 1.2]      # one pixel is the smallest step: +1 px on bars darkens Hangul more
 contrast = [0.7, 1.45]    # 1-px steps: one pixel more is a big relative change
+distinct = [1.0, 99]      # one whole pixel (or italic 1/2 vs 1/4) is the smallest real step
+look = [15, 999]          # pixel changes are coarse, so the rendered floor is higher
 
 [text]                    # proportional families
 height = [1.05, 1.32]
 centre = [-60, 90]
 spacing = [0.4, 2.4]      # Hangul side bearings vs Latin side bearings (share of advance)
+fill_weight = [0.85, 1.15]  # fill-in syllables (a weight's `fill` source) vs the main Hangul
+fill_centre = [-40, 40]   # their ink centre; complex fill syllables sit ~25 higher by nature
+
+# Distinctness (every preset needs its own character): `distinct` is the knob distance to the
+# nearest preset of the same family, in the steps below (Euclidean); `look` is the rendered
+# difference of the sample words to the nearest preset, in % of the mean ink. Bands in [all].
+[steps]
+weight = 1.5              # a different weight
+feature = 1.0             # each OpenType feature turned on in one preset but not the other
+
+[steps.hangul]
+scale = 0.03
+width = 0.04
+dy = 15
+grade = 8
+slant = 2
+tracking = 15
+stem = 8
+
+[steps.style]
+slant = 2
+grade = 8
+tracking = 15
+bounce = 8
+tilt = 1
+
+[steps.pixel]             # whole pixels; italic is compared as its slope (1 / rows per pixel)
+bold = 1
+heavy = 1
+shadow = 1
+dy = 1
+hangul_dy = 1
+italic = 0.25

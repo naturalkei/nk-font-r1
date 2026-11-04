@@ -64,8 +64,8 @@ MonoLisa 같은 상용 코딩 폰트가 신뢰를 주는 이유는 세 가지입
 ### M4.5 가족 재편과 Mono · Novel · Comics (프로토타입 완료 2026-11-02, 상세: [FAMILIES.md](FAMILIES.md))
 * NK Mono: JetBrains Mono + D2Coding 한글, 터미널 대표 가족 (Nerd Font, 터미널 QA)
 * NK Sans: 문서용 비례폭 고딕으로 전환 (IBM Plex Sans + 본고딕, 줄 높이 φ^5/6)
-* NK Novel·NK Comics: 읽기용 비례폭 갈래(`kind = "text"`), 황금비 줄 높이(φ, √φ), 전용 QA(`text-metrics`, `hangul-coverage`, 본문 골든). Comics는 Bagel Fat One / Gasoek One의 과장된 레터링
-* 다음: NK Sans 9 weight(Plex Sans 7 + 본고딕 7 매핑), Novel 굵기 확장(한글 소스 병목), Comics 보충 음절을 원본 스타일로 다시 그리기, NK OpenType 기능(`dlig`, `zero`, `ss11`~ 한글 기능)
+* NK Novel·NK Comics: 읽기용 비례폭 갈래(`kind = "text"`), 황금비 줄 높이(φ, √φ), 전용 QA(`text-metrics`, `hangul-coverage`, 본문 골든). Comics는 처음엔 Bagel Fat One / Gasoek One 레터링, 2026-11-03 펜 필기(개구 + 나눔손글씨 펜 보충)로 교체
+* 다음: NK Sans 9 weight(Plex Sans 7 + 본고딕 7 매핑), Novel 굵기 확장(한글 소스 병목), Comics 보충 음절(나눔손글씨 펜)을 개구 스타일로 다시 그리기, NK OpenType 기능(`dlig`, `zero`, `ss11`~ 한글 기능)
 * **완료 기준:** 각 가족 Regular·Bold가 `nkfont qa --profile ci` 통과, 사이트에서 미리보기·내려받기
 
 ### M5 확장 (이후)

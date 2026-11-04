@@ -128,7 +128,7 @@ class Runner:
         # The family's own Latin base (or the single pixel source) is the comparison point.
         srcs = config.sources()
         bases = {}
-        for w in fam["weight"]:  # weights may use different Latin sources (NK Comics Black)
+        for w in fam["weight"]:  # weights may use different Latin sources (NK Comics Light/Bold)
             sid = w.get("latin") or w["source"]
             bases[w["name"].replace(" ", "")] = TTFont(srcs[sid].path)
         first = next(iter(bases.values()))
