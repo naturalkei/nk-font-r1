@@ -3,7 +3,7 @@ PY ?= .venv/bin/python
 NK ?= .venv/bin/nkfont
 FAMILY ?= mono
 
-.PHONY: setup app app-install fetch build patch check audit proof tune test lint qa qa-ci qa-release all clean
+.PHONY: setup app app-install fetch build patch check audit proof tune test lint qa qa-ci qa-release release-pages all clean
 
 setup:
 	python3 -m venv .venv
@@ -57,6 +57,11 @@ qa-ci:
 qa-release:
 	$(PY) -m pip install -q -e ".[dev,audit]"
 	$(NK) qa --profile release --family $(FAMILY)
+
+# Publish the site: fast-forward the `release` branch to main; .github/workflows/pages.yml deploys it.
+release-pages:
+	git fetch origin main
+	git push origin origin/main:refs/heads/release
 
 all: build check patch check
 

@@ -40,6 +40,8 @@ nkfont phi [FILES]    # golden-ratio proportion report (config/proportions.toml,
 nkfont presets [FAMILY|ID ...] [--proof DIR]   # Hangul/Latin harmony + distinctness QA of every preset
                       #   (config/preset_qa.toml bands; also the qa stage "preset harmony")
 nkfont site           # build/site: prototype site (WOFF2 + zips); deployed by .github/workflows/pages.yml
+                      #   only on push to the `release` branch (`make release-pages` = git push origin main:release),
+                      #   never on merges to main
 python -m pytest -q   # unit tests use synthetic fonts; real-font tests skip without sources/
 ruff check src tests && ruff format --check src tests
 ```

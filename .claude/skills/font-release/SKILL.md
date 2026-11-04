@@ -5,7 +5,8 @@ description: Cut an NK font release (version bump, release QA with fontbakery, t
 
 # Releasing NK fonts
 
-A release is a git tag plus a GitHub Release; Pages redeploys on every merge to main.
+A release is a git tag plus a GitHub Release. Pages redeploys only when the `release` branch moves
+(`make release-pages` = `git push origin main:release`, step 6), never on a merge to main.
 Tagging and publishing are outward-facing: confirm with the owner before pushing a tag.
 
 1. **Version.** Bump `version` in each `config/families/<family>.toml` that changed (semver;
@@ -24,6 +25,7 @@ Tagging and publishing are outward-facing: confirm with the owner before pushing
    `nkfont diff old.ttf new.ttf` per family for glyph/metric changes), renamed names or
    features, known issues from `[warn_only]`.
 6. **Publish** after the owner says go: tag `vX.Y.Z`, push the tag, create the GitHub Release
-   (draft first) and attach the zips.
+   (draft first) and attach the zips. Then update the site: `make release-pages` (fast-forwards
+   `release` to `main`; `.github/workflows/pages.yml` rebuilds, Nerd-patches and deploys).
 
 Never put Reserved Font Names in asset or file names; keep `Copyright 2026 naturalk (nk-font)`.

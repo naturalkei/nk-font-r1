@@ -79,6 +79,7 @@ make qa                      # = nkfont qa
 2. 새 기능이면 검사 단계나 테스트를 같은 커밋에 추가합니다.
 3. 모양이 바뀌는 변경이면 `nkfont diff`로 무엇이 바뀌었는지 확인하고, 의도한 것이면 골든을 갱신합니다.
 4. PR을 열면 CI가 `nkfont qa --profile ci`를 돌리고 요약 표와 교정 시트를 올립니다.
+   GitHub Pages 배포(전체 빌드 + Nerd Fonts 패치)는 `main` 병합이 아니라 `release` 브랜치 push에서만 돕니다(`make release-pages`).
 5. 릴리스 전에는 `--profile release`의 점검표를 채웁니다.
 
 ## 5. 앞으로 추가할 검사 (로드맵 연동)
