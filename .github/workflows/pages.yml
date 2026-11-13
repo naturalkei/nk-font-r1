@@ -24,6 +24,7 @@ jobs:
     # A manual run deploys only from `release`, so Pages never shows an unreleased branch.
     if: github.ref == 'refs/heads/release'
     runs-on: ubuntu-latest
+    timeout-minutes: 90  # a full build + Nerd patch takes ~60 min
     env:
       SOURCE_DATE_EPOCH: "1798761600"
     steps:
@@ -62,6 +63,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

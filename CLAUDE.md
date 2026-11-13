@@ -46,6 +46,13 @@ python -m pytest -q   # unit tests use synthetic fonts; real-font tests skip wit
 ruff check src tests && ruff format --check src tests
 ```
 
+## GitHub Actions
+- `ci.yml` (build) runs on pushes to `main` and on PRs, skipping docs-only changes; a newer push cancels the
+  older PR run. `pages.yml` runs only when `release` moves. Every job has `timeout-minutes`.
+- The repository is public, so GitHub-hosted runners cost nothing. Do not add a self-hosted runner while it
+  stays public: a fork PR could retarget `runs-on` and run code on that machine.
+- Run `python -m pytest -q` and `ruff` locally before pushing; CI is a check, not a test bench.
+
 ## Invariants (do not break)
 - Terminal families: advances are only `0 / 600 / 1200` (UPM 1000) and must equal wcwidth cell counts.
   Reading families (`kind = "text"`) are proportional, never Nerd-patched, and must cover all 11,172
