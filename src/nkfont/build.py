@@ -172,11 +172,109 @@ def _names(font: TTFont, fam: dict, weight: dict) -> None:
     )
 
 
+def isolate_punctuation_ligatures(font: TTFont):
+    """Separate repeated punctuation ligatures (;;, :::, ..., !!) from calt into ss03.
+
+    In monospace fonts, JetBrains Mono's default calt compresses repeated punctuation,
+    shifting characters off the 1:1 monospace grid cell centers. Moving them to ss03
+    preserves strict 1:1 grid alignment in standard calt while allowing users to opt into
+    compressed punctuation when desired.
+    """
+    if "GSUB" not in font:
+        return
+    gsub = font["GSUB"].table
+    if not gsub.FeatureList or not gsub.LookupList:
+        return
+
+    punct_targets = {
+        "semicolon_semicolon.liga",
+        "semicolon_semicolon_semicolon.liga",
+        "colon_colon.liga",
+        "colon_colon_colon.liga",
+        "period_period.liga",
+        "period_period_period.liga",
+        "exclam_exclam.liga",
+        "question_question.liga",
+        "question_question_question.liga",
+    }
+
+    calt_records = [r for r in gsub.FeatureList.FeatureRecord if r.FeatureTag == "calt"]
+    if not calt_records:
+        return
+
+    punct_lookups = set()
+    for calt_rec in calt_records:
+        for l_idx in calt_rec.Feature.LookupListIndex:
+            lookup = gsub.LookupList.Lookup[l_idx]
+            for sub in lookup.SubTable:
+                for ruleset in getattr(sub, "ChainSubRuleSet", []):
+                    if ruleset:
+                        for rule in ruleset.ChainSubRule:
+                            for sl in rule.SubstLookupRecord:
+                                tl = gsub.LookupList.Lookup[sl.LookupListIndex]
+                                for t_sub in tl.SubTable:
+                                    if hasattr(t_sub, "mapping"):
+                                        if any(dst in punct_targets for dst in t_sub.mapping.values()):
+                                            punct_lookups.add(l_idx)
+
+    if not punct_lookups:
+        return
+
+    punct_lookups = sorted(punct_lookups)
+
+    # 1. Remove from calt
+    for calt_rec in calt_records:
+        calt_rec.Feature.LookupListIndex = [
+            i for i in calt_rec.Feature.LookupListIndex if i not in punct_lookups
+        ]
+        calt_rec.Feature.LookupCount = len(calt_rec.Feature.LookupListIndex)
+
+    # 2. Add or update ss03
+    from fontTools.ttLib.tables import otTables
+
+    ss03_records = [r for r in gsub.FeatureList.FeatureRecord if r.FeatureTag == "ss03"]
+    if ss03_records:
+        ss03_rec = ss03_records[0]
+        ss03_rec.Feature.LookupListIndex = punct_lookups
+        ss03_rec.Feature.LookupCount = len(punct_lookups)
+    else:
+        ss03_rec = otTables.FeatureRecord()
+        ss03_rec.FeatureTag = "ss03"
+        ss03_rec.Feature = otTables.Feature()
+        ss03_rec.Feature.FeatureParams = None
+        ss03_rec.Feature.LookupListIndex = punct_lookups
+        ss03_rec.Feature.LookupCount = len(punct_lookups)
+
+        gsub.FeatureList.FeatureRecord.append(ss03_rec)
+        gsub.FeatureList.FeatureCount = len(gsub.FeatureList.FeatureRecord)
+        feature_index = len(gsub.FeatureList.FeatureRecord) - 1
+
+        for script_rec in gsub.ScriptList.ScriptRecord:
+            for lang_rec in [script_rec.Script.DefaultLangSys] + [
+                l.LangSys for l in getattr(script_rec.Script, "LangSysRecord", []) if l.LangSys
+            ]:
+                if lang_rec and feature_index not in lang_rec.FeatureIndex:
+                    lang_rec.FeatureIndex.append(feature_index)
+
+    name_table = font["name"]
+    name_id = 256
+    while any(n.nameID == name_id for n in name_table.names):
+        name_id += 1
+    name_table.setName("Punctuation Ligatures (;; :: ...)", name_id, 3, 1, 0x409)
+    name_table.setName("기호 반복 합자 (;; :: ...)", name_id, 3, 1, 0x412)
+    params = otTables.FeatureParamsStylisticSet()
+    params.Version = 0
+    params.UINameID = name_id
+    ss03_rec.Feature.FeatureParams = params
+
+
 def finish(font: TTFont, fam: dict, weight: dict, ascent: int, descent: int) -> TTFont:
     _names(font, fam, weight)
     half = half_width(font)
     fit_terminal_widths(font, half)
     enforce_terminal_flags(font, half, ascent, descent)
+    if fam.get("file_prefix") == "NKMono":
+        isolate_punctuation_ligatures(font)
     return font
 
 

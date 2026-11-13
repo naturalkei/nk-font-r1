@@ -90,7 +90,13 @@ function applyPlay() {
   a.style.fontSize = size + "px"; $("#sizeV").textContent = size + "px";
   a.classList.toggle("grid-on", $("#playGrid").checked && !isText(play.fam));  // no cells in reading faces
   a.style.lineHeight = { novel: "1.618", comics: "1.272", sans: "1.493" }[play.fam] || "";
-  a.style.fontFeatureSettings = $("#playLiga").checked ? "normal" : '"calt" 0, "liga" 0';
+  const liga = $("#playLiga").checked;
+  const punct = $("#playPunctLiga")?.checked;
+  if (!liga) {
+    a.style.fontFeatureSettings = '"calt" 0, "liga" 0, "ss03" 0';
+  } else {
+    a.style.fontFeatureSettings = punct ? '"calt" 1, "ss03" 1' : '"calt" 1, "ss03" 0';
+  }
 }
 function initPlay() {
   seg($("#famSeg"), Object.entries(FAMILY_INFO).map(([id, i]) => [id, i.css]), play.fam, (v) => {
@@ -103,7 +109,10 @@ function initPlay() {
   });
   seg($("#wSeg"), [["400", "Regular"], ["700", "Bold"]], "400", (w) => { play.weight = +w; applyPlay(); });
   if (innerWidth < 640) $("#sizeR").value = 24;
-  for (const id of ["#sizeR", "#playGrid", "#playLiga"]) $(id).oninput = applyPlay;
+  for (const id of ["#sizeR", "#playGrid", "#playLiga", "#playPunctLiga"]) {
+    const el = $(id);
+    if (el) el.oninput = applyPlay;
+  }
   applyPlay();
 }
 

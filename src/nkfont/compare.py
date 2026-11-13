@@ -42,7 +42,8 @@ REGISTERED = {
 HIDDEN = {"aalt", "ccmp", "locl", "ljmo", "vjmo", "tjmo", "dist", "mark", "mkmk", "kern"}
 # Sample text for features whose effect is contextual (ligatures) rather than per glyph.
 CONTEXT_SAMPLES = {
-    "calt": "-> => != === <= >= :: |> <!-- www 0xFF",
+    "calt": "-> => != === <= >= |> <!-- www 0xFF",
+    "ss03": ";; ;;; :: ::: ... !! ??",
     "liga": "fi fl ff",
     "dlig": "-> => != ===",
     "frac": "1/2 3/4",

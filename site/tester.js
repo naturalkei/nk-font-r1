@@ -35,7 +35,8 @@ type 사용자 = { id: number; 이름: string; 권한: "관리자" | "사용자"
 
 export async function 상태확인(서버: string): Promise<boolean> {
   const 응답 = await fetch(서버);
-  // 프로그래밍 리거처: !==, ===, =>, ->
+  // 연산자 합자(calt): !==, ===, =>, <=
+  // 기호 합자(ss03): ;;; ;; :: ::: ...
   if (응답.status !== 200) return false;
   const 데이터: 사용자[] = await 응답.json();
   return 데이터.every((u) => u.id >= 0 && u.권한 === "사용자");
