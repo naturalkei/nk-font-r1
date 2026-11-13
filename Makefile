@@ -3,7 +3,7 @@ PY ?= .venv/bin/python
 NK ?= .venv/bin/nkfont
 FAMILY ?= mono
 
-.PHONY: setup app app-install fetch build patch check audit proof tune test lint qa qa-ci qa-release release-pages all clean
+.PHONY: setup app app-install fetch build patch minecraft check audit proof tune test lint qa qa-ci qa-release release-pages all clean
 
 setup:
 	python3 -m venv .venv
@@ -26,6 +26,9 @@ build: fetch
 
 patch:
 	$(NK) patch
+
+minecraft:
+	$(NK) minecraft build/master/NKPixel-Regular.ttf
 
 check:
 	$(NK) check build/master/NKMono-*.ttf $(wildcard dist/NKMono*.ttf) --base sources/JetBrainsMono-Regular.ttf

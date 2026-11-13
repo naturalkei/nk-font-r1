@@ -108,6 +108,10 @@ def main(argv: list[str] | None = None) -> int:
     si = sub.add_parser("site", help="assemble the prototype site into build/site")
     si.add_argument("-o", "--out", type=Path, default=None)
 
+    mc = sub.add_parser("minecraft", help="package NK Pixel into Minecraft resource pack")
+    mc.add_argument("font", nargs="?", type=Path, help="source TTF (default NKPixel-Regular)")
+    mc.add_argument("-o", "--out-dir", type=Path, default=None)
+
     args = ap.parse_args(argv)
 
     if args.cmd == "qa":
@@ -189,6 +193,12 @@ def main(argv: list[str] | None = None) -> int:
         from .site import build_site
 
         print(build_site(args.out))
+        return 0
+
+    if args.cmd == "minecraft":
+        from .minecraft import build_minecraft_resourcepack
+
+        print(build_minecraft_resourcepack(args.font, args.out_dir))
         return 0
 
     if args.cmd == "fetch":
