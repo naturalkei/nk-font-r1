@@ -200,12 +200,13 @@ def build_pixel(
     term = fam.get("terminal", {})
     if term.get("unmap_width_conflicts", True):
         unmap_width_conflicts(font, half_width(font), [tuple(r) for r in term.get("unmap", [])])
-    if weight.get("smear"):
-        # Bitmap-style bold: every vertical stroke `smear` pixels wider to the right, horizontal
-        # strokes untouched, so the outline stays on the pixel grid (the classic bitmap bold).
-        pixel_bold(font, fam["grid"]["units_per_pixel"] * weight["smear"])
     px = fam.get("grid", {}).get("units_per_pixel", 64)
-    apply_pixel(font, pixel or pixel_params(fam), px, unicodes)
+    p = pixel or pixel_params(fam)
+    if weight.get("smear") and not p.bold:
+        from dataclasses import replace
+
+        p = replace(p, bold=weight["smear"])
+    apply_pixel(font, p, px, unicodes)
     return finish(font, fam, weight, font["hhea"].ascent, font["hhea"].descent)
 
 
