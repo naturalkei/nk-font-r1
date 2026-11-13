@@ -119,6 +119,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     bm.add_argument("-o", "--out-dir", type=Path, default=None)
 
+    pkg = sub.add_parser("package", help="package target release bundles (coding, gaming, reader)")
+    pkg.add_argument("-o", "--out-dir", type=Path, default=None)
+
     args = ap.parse_args(argv)
 
     if args.cmd == "qa":
@@ -213,6 +216,13 @@ def main(argv: list[str] | None = None) -> int:
 
         fnt, png = export_bmfont(args.font, args.out_dir, scale=args.scale)
         print(f"{fnt}\n{png}")
+        return 0
+
+    if args.cmd == "package":
+        from .package import package_all_targets
+
+        for p in package_all_targets(args.out_dir):
+            print(p)
         return 0
 
     if args.cmd == "fetch":
