@@ -27,12 +27,12 @@ tracking = 20
 
 [fill]
 # Nanum Pen Script relative to the Gaegu Hangul above (scale multiplies, dy/grade/slant add).
-# Calibrated so fill-in syllables match Gaegu's height (550~650 UPM) and baseline alignment.
-scale = 0.72
-dy = 20
-slant = 3
-grade = 20
-tracking = 20
+# Calibrated so fill-in syllables match Gaegu's height, baseline, and stroke thickness.
+scale = 0.88
+dy = 28
+slant = 0
+grade = 15
+tracking = 15
 
 [metrics]
 # Speech bubbles are set tight: default line = √φ = 1.272 em (phi.py). Display ascent/descent.
@@ -64,7 +64,7 @@ latin = "gaegu-light"
 latin_grade = -18
 hangul = "gaegu-light"
 fill = "nanum-pen-script"
-fill_adjust = { grade = -37 }
+fill_adjust = { grade = -15 }
 weight_class = 100
 
 [[weight]]
@@ -73,7 +73,7 @@ latin = "gaegu-light"
 latin_grade = -10
 hangul = "gaegu-light"
 fill = "nanum-pen-script"
-fill_adjust = { grade = -37 }
+fill_adjust = { grade = -12 }
 weight_class = 200
 
 [[weight]]
@@ -81,7 +81,7 @@ name = "Light"
 latin = "gaegu-light"
 hangul = "gaegu-light"
 fill = "nanum-pen-script"
-fill_adjust = { grade = -37 }
+fill_adjust = { grade = -10 }
 weight_class = 300
 
 [[weight]]
@@ -90,6 +90,7 @@ latin = "gaegu-regular"
 latin_grade = 7
 hangul = "gaegu-regular"
 fill = "nanum-pen-script"
+fill_adjust = { grade = 25 }
 weight_class = 500
 
 [[weight]]
@@ -98,7 +99,7 @@ latin = "gaegu-bold"
 latin_grade = -8
 hangul = "gaegu-bold"
 fill = "nanum-pen-script"
-fill_adjust = { grade = 8 }
+fill_adjust = { grade = 55 }
 weight_class = 600
 
 [[weight]]
@@ -106,7 +107,7 @@ name = "Bold"
 latin = "gaegu-bold"
 hangul = "gaegu-bold"
 fill = "nanum-pen-script"
-fill_adjust = { grade = 8 }
+fill_adjust = { grade = 72 }
 weight_class = 700
 
 [[weight]]
@@ -115,5 +116,5 @@ latin = "gaegu-bold"
 latin_grade = 15
 hangul = "gaegu-bold"
 fill = "nanum-pen-script"
-fill_adjust = { grade = 8 }
+fill_adjust = { grade = 80 }
 weight_class = 800
