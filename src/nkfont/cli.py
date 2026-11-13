@@ -112,6 +112,13 @@ def main(argv: list[str] | None = None) -> int:
     mc.add_argument("font", nargs="?", type=Path, help="source TTF (default NKPixel-Regular)")
     mc.add_argument("-o", "--out-dir", type=Path, default=None)
 
+    bm = sub.add_parser("bmfont", help="export BMFont (.fnt + .png) for game engines")
+    bm.add_argument("font", nargs="?", type=Path, help="source TTF (default NKPixel-Regular)")
+    bm.add_argument(
+        "-s", "--scale", type=int, default=1, choices=[1, 2, 3], help="pixel scale (1x, 2x, 3x)"
+    )
+    bm.add_argument("-o", "--out-dir", type=Path, default=None)
+
     args = ap.parse_args(argv)
 
     if args.cmd == "qa":
@@ -199,6 +206,13 @@ def main(argv: list[str] | None = None) -> int:
         from .minecraft import build_minecraft_resourcepack
 
         print(build_minecraft_resourcepack(args.font, args.out_dir))
+        return 0
+
+    if args.cmd == "bmfont":
+        from .bmfont import export_bmfont
+
+        fnt, png = export_bmfont(args.font, args.out_dir, scale=args.scale)
+        print(f"{fnt}\n{png}")
         return 0
 
     if args.cmd == "fetch":
