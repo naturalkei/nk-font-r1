@@ -27,13 +27,12 @@ tracking = 20
 
 [fill]
 # Nanum Pen Script relative to the Gaegu Hangul above (scale multiplies, dy/grade/slant add).
-# Its syllables are drawn smaller (0.96 × cap height at the same scale), lower in the em,
-# a little left-leaning and tighter; one Regular source serves all weights (fill_adjust).
-scale = 1.33
-dy = -108
+# Calibrated so fill-in syllables match Gaegu's height (550~650 UPM) and baseline alignment.
+scale = 0.72
+dy = 20
 slant = 3
-grade = -13
-tracking = 40
+grade = 20
+tracking = 20
 
 [metrics]
 # Speech bubbles are set tight: default line = √φ = 1.272 em (phi.py). Display ascent/descent.
