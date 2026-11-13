@@ -7,6 +7,8 @@ OFL 1.1 한글 글꼴 모음입니다. 터미널 갈래 **NK Mono**·**NK Pixel*
 
 - 기획안: [docs/PLAN.md](docs/PLAN.md)
 - 로드맵: [docs/ROADMAP.md](docs/ROADMAP.md)
+- OpenType 피처 & 스타일세트: [docs/OPENTYPE.md](docs/OPENTYPE.md)
+- 에디터/터미널 추천 설정 가이드: [docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md)
 
 ## 현재 상태 (프로토타입 v0.1.0)
 여섯 가족 모두 빌드되고 검사를 통과합니다. 터미널 갈래는 Nerd Font / Nerd Font Mono 패치와 터미널 호환 검사,
