@@ -30,16 +30,30 @@ const THEMES = {
 };
 
 const CODE = {
-  TypeScript: `// 사용자 목록을 불러와 이름순으로 정렬합니다
-type 사용자 = { id: number; 이름: string; 활성: boolean };
+  "코딩 (TypeScript)": `// NK Mono: JetBrains Mono + D2Coding
+type 사용자 = { id: number; 이름: string; 권한: "관리자" | "사용자" };
 
-export async function 불러오기(url: string): Promise<사용자[]> {
-  const res = await fetch(url);
-  if (res.status !== 200) throw new Error("요청 실패: " + res.status);
-  const 목록 = (await res.json()) as 사용자[];
-  return 목록.filter((u) => u.활성 && u.id >= 0x10)
-             .sort((a, b) => a.이름.localeCompare(b.이름, "ko"));
+export async function 상태확인(서버: string): Promise<boolean> {
+  const 응답 = await fetch(서버);
+  // 프로그래밍 리거처: !==, ===, =>, ->
+  if (응답.status !== 200) return false;
+  const 데이터: 사용자[] = await 응답.json();
+  return 데이터.every((u) => u.id >= 0 && u.권한 === "사용자");
 }`,
+  "픽셀 게임 (Game)": `[시스템] 새로운 퀘스트가 등록되었습니다: '도트 왕국의 비밀'
+NPC 엘프: "용사여, NK Pixel 글꼴을 장착하고 레벨을 올려라!"
+
+▶ 공격력: 128 (+16)   ▶ 방어력: 64   ▶ 마나: 1024 / 1024
+▶ 인벤토리: 다이아몬드 검(1), 회복 물약(10), 황금 열쇠(1)
+
+[선택지 1] 퀘스트를 수락한다. (Enter 키)
+[선택지 2] 나중에 다시 온다. (Esc 키)`,
+  "소설 뷰어 (Novel)": `산허리는 온통 메밀밭이어서 피기 시작한 꽃이 소금을 뿌린 듯이 흐뭇한 달빛에 숨이 막힐 지경이다. 붉은 대궁이 향기로운 애수를 띠고, 방울 소리가 밤 벌판에 청승맞게 울려 퍼졌다.
+
+"장돌뱅이 생활도 이만하면 그만둘 때가 되었지."
+동이는 채찍을 들어 나귀를 몰았다. 달빛이 흐르는 밤길은 끝없이 이어져 있었다.
+
+— 이효석, <메밀꽃 필 무렵> 중에서 (황금비 φ = 1.618 행간)`,
   Python: `# 한글 폭을 고려해 표를 출력합니다
 from unicodedata import east_asian_width as eaw
 
@@ -111,6 +125,18 @@ function highlight(src, lang) {
     return esc(src).replace(/^(#.*)$/gm, '<span class="k">$1</span>').replace(/(\*\*[^*]+\*\*)/g, '<span class="s">$1</span>')
       .replace(/^(&gt;.*)$/gm, '<span class="c">$1</span>').replace(/^(\d+\.)/gm, '<span class="n">$1</span>').replace(/([|])/g, '<span class="t">$1</span>');
   }
+  if (lang === "픽셀 게임 (Game)") {
+    return esc(src)
+      .replace(/(\[[^\]\n]+\])/g, '<span class="k">$1</span>')
+      .replace(/(▶[^\n]+)/g, '<span class="f">$1</span>')
+      .replace(/("[^"\n]*")/g, '<span class="s">$1</span>')
+      .replace(/(\b\d+\b)/g, '<span class="n">$1</span>');
+  }
+  if (lang === "소설 뷰어 (Novel)") {
+    return esc(src)
+      .replace(/("[^"\n]*")/g, '<span class="s">$1</span>')
+      .replace(/(—[^\n]+)/g, '<span class="c">$1</span>');
+  }
   const re = lang === "Python" || lang === "Shell" ? RE.hash : RE.slash;
   let out = "", last = 0;
   for (const m of src.matchAll(re)) {
@@ -123,7 +149,7 @@ function highlight(src, lang) {
   return out + esc(src.slice(last));
 }
 
-const st = { font: fonts[0], weight: 400, lang: "TypeScript", theme: "NK 다크", on: new Set() };
+const st = { font: fonts[0], weight: 400, lang: "코딩 (TypeScript)", theme: "NK 다크", on: new Set() };
 try { const t = localStorage.getItem("nk-ed-theme"); if (THEMES[t]) st.theme = t; } catch {}
 
 function applyStyle() {
@@ -174,8 +200,24 @@ function pickFont(id) {
   applyStyle();
 }
 
+function onLangChange(v) {
+  st.lang = v;
+  if (v.includes("게임") && fonts.some((f) => f.id === "pixel")) {
+    pickFont("pixel");
+    $("#tFam").querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", b.dataset.v === "pixel"));
+  } else if (v.includes("소설") && fonts.some((f) => f.id === "novel")) {
+    pickFont("novel");
+    $("#tFam").querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", b.dataset.v === "novel"));
+    $("#tLh").value = 162;
+  } else if (v.includes("코딩") && fonts.some((f) => f.id === "mono")) {
+    pickFont("mono");
+    $("#tFam").querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", b.dataset.v === "mono"));
+  }
+  setCode();
+}
+
 seg($("#tFam"), fonts.map((f) => [f.id, f.name]), st.font.id, pickFont);
-seg($("#tLang"), Object.keys(CODE).map((k) => [k, k]), st.lang, (v) => { st.lang = v; setCode(); }, "tab");
+seg($("#tLang"), Object.keys(CODE).map((k) => [k, k]), st.lang, onLangChange, "tab");
 const themeEl = $("#tTheme");
 themeEl.innerHTML = Object.entries(THEMES).map(([name, t]) => `<button type="button" role="radio" aria-checked="${name === st.theme}" data-v="${esc(name)}"><i style="background:linear-gradient(135deg,${t.bg} 50%,${t.k} 50%)"></i>${esc(name)}</button>`).join("");
 themeEl.onclick = (e) => {
